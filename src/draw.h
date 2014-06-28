@@ -39,7 +39,5 @@ void mapdc(DC *dc, Window win, unsigned int w, unsigned int h);
 void resizedc(DC *dc, unsigned int w, unsigned int h);
 int textnw(DC *dc, const char *text, size_t len);
 int textw(DC *dc, const char *text);
-void eprintf(const char *fmt, ...);
-void weprintf(const char *fmt, ...);
 
 const char *progname;

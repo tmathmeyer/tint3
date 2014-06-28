@@ -2,17 +2,21 @@
 #include <ctype.h>
 #include <signal.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
 #include <X11/Xlib.h>
+#include <time.h>
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
 #ifdef XINERAMA
 #include <X11/extensions/Xinerama.h>
 #endif
 #include "draw.h"
+#include "utils.h"
+
 
 #define INRECT(x,y,rx,ry,rw,rh) ((x) >= (rx) && (x) < (rx)+(rw) && (y) >= (ry) && (y) < (ry)+(rh))
 #define MIN(a,b)                ((a) < (b) ? (a) : (b))
@@ -22,7 +26,7 @@
 
 
 //will be off in a config somewhere later
-#define RIGHTSIDE {"bspwm","ted"}
+#define RIGHTSIDE {"bspwm","tedaslkdjalskdjalksdjlaksdjalskjdlakdjlaksdjlaksdjlaksjdlaksjdlaskjdlasjd"}
 #define RIGHTCOUNT 2
 
 
@@ -42,7 +46,7 @@ static int height = 0;
 static int itemcount = 0;
 static int lines = 0;
 static int monitor = -1;
-static const char *font = "uushi-9";
+static const char *font = "uushi-10";
 static const char *normbgcolor = "#222222";
 static const char *normfgcolor = "#bbbbbb";
 static const char *selbgcolor  = "#005577";
@@ -56,10 +60,15 @@ static Bool topbar = True;
 static DC *dc;
 static Window root, win;
 
-char* rightside[RIGHTCOUNT] = {"bspwm","ted"};
-
+char* rightside[RIGHTCOUNT];
 
 int main(int argc, char *argv[]) {
+
+	batt_info * info = get_battery_information();
+	char inf_as_str[10];
+	snprintf(inf_as_str, sizeof inf_as_str, "%i %s", info -> percentage, info -> icon);
+	rightside[0] = "bspwm";
+	rightside[1] = inf_as_str;
 
 	dc = initdc();
 	initfont(dc, font ? font : DEFFONT);
@@ -108,14 +117,19 @@ drawmenu(void) {
 	mapdc(dc, win, mw, height);
 }
 
-
 void run(void) {
 	XEvent ev;
 
 	drawmenu();
 
 	while(!XNextEvent(dc->dpy, &ev)){
-		//drawmenu();
+		batt_info * info = get_battery_information();
+		char inf_as_str[10];
+		snprintf(inf_as_str, sizeof inf_as_str, "%i %s", info -> percentage, info -> icon);
+		rightside[0] = "bspwm";
+		rightside[1] = inf_as_str;
+		drawmenu();
+		sleep(1);
 	}
 }
 

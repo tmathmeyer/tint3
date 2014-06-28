@@ -4,7 +4,7 @@ include config.mk
 
 all: tint3
 
-tint3: tint3.o draw.o
+tint3: tint3.o draw.o utils.o
 
 .c.o: config.mk
 	@echo CC -c $<
@@ -16,4 +16,4 @@ tint3 tint3_path:
 
 clean:
 	@echo cleaning
-	@rm -f tint3 tint3.o draw.o tint3-${VERSION}.tar.gz
+	@rm -f tint3 tint3.o draw.o utils.o tint3-${VERSION}.tar.gz
