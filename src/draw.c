@@ -14,7 +14,7 @@
 #define unlong unsigned long
 
 
-#define MAX_TITLE_LENGTH 30
+#define MAX_TITLE_LENGTH 50
 
 // draw a rectangle on the screen; either solid or bordered
 void drawrect(DC * dc, int x, int y, unint w, unint h, Bool fill, unlong color) {

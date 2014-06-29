@@ -1,6 +1,6 @@
 /* See LICENSE file for copyright and license details. */
 
-#include <X11/Xft/Xft.h>
+#include "utils.h"
 
 typedef struct {
 	int x, y, w, h;
@@ -18,12 +18,6 @@ typedef struct {
 		XftFont *xft_font;
 	} font;
 } DC;  /* draw context */
-
-typedef struct {
-    unsigned long FG;
-    XftColor FG_xft;
-    unsigned long BG;
-} ColorSet;
 
 
 unsigned long getcolor(DC *dc, const char *colstr);
