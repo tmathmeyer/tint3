@@ -34,8 +34,7 @@ batt_info * get_battery_information() {
 		if (fgets(tmp, sizeof tmp, fp)) energy_now = atoi(tmp);
 		fclose(fp);
 	} else {
-		puts(battery_read);
-		return bi;
+		return NULL;
 	}
 
 	snprintf(battery_read, sizeof battery_read, "%s/%s", path, "energy_full");
@@ -44,7 +43,7 @@ batt_info * get_battery_information() {
 		if (fgets(tmp, sizeof tmp, fp)) energy_full = atoi(tmp);
 		fclose(fp);
 	} else {
-		return bi;
+		return NULL;
 	}
 
 	snprintf(battery_read, sizeof battery_read, "%s/%s", path, "status");

@@ -59,6 +59,9 @@ int main(int argc, char *argv[]) {
 
 baritem * battery_s(DC * dc) {
     batt_info * info = get_battery_information();
+    if (info == NULL) {
+        return NULL;
+    }
     char * inf_as_str = malloc(20);
     snprintf(inf_as_str, 20, "%i %s", info -> percentage, info -> icon);
     baritem * result = malloc(sizeof(baritem));
@@ -180,15 +183,18 @@ itemlist * config_to_list (char * list) {
     itemlist * head = NULL;
     itemlist * tail = NULL; // add to tail
     while (*(list) != 0) {
-        itemlist * next = malloc(sizeof(itemlist));
-        next -> item = char_to_item(*(list++));
-        next -> next = NULL;
-        if (head == NULL) {
-            head = next;
-            tail = next;
-        } else {
-            tail -> next = next;
-            tail = tail -> next;
+        baritem * item = char_to_item(*(list++));
+        if (item != NULL) {
+            itemlist * next = malloc(sizeof(itemlist));
+            next -> item = item;
+            next -> next = NULL;
+            if (head == NULL) {
+                head = next;
+                tail = next;
+            } else {
+                tail -> next = next;
+                tail = tail -> next;
+            }
         }
     }
     return head;

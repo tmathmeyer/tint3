@@ -28,7 +28,7 @@
 #define CLOCK_FOREGROUND "#f80"
 
 //#define FONT "uushi-11"
-#define FONT "uushi-11"
+#define FONT "nanochan-11"
 
 
 #endif
