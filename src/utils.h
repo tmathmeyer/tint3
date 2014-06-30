@@ -23,9 +23,14 @@ typedef struct itemlist {
 } itemlist;
 
 typedef struct batt_info {
-	char * icon;
-	int  percentage;
+    char * icon;
+    int  percentage;
 } batt_info;
+
+typedef struct net_info {
+    char * graph;
+    int  percentage;
+} net_info;
 
 
 
@@ -36,6 +41,7 @@ void free_list(itemlist * list);
 void free_baritem(baritem * item);
 void draw_list(itemlist * list);
 unsigned int total_list_length(itemlist * list);
+void get_net_info(void);
 
 
 #endif

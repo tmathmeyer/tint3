@@ -76,3 +76,29 @@ batt_info * get_battery_information() {
     return bi;
 }
 
+int old_net_total = 0;
+void get_net_info (void) {
+	FILE * fp = fopen("/proc/net/dev", "r");
+	if (fp == NULL) {
+		return;
+	}
+	char c = 0;
+	unsigned long long up, down;
+	char * name = calloc(10, 0);
+	int i;
+
+	while( (c = fgetc(fp)) != '\n');
+	while( (c = fgetc(fp)) != '\n');
+
+	while((c = fgetc(fp)) != EOF) {
+		fscanf(fp, "%s %llu %llu", name, &up, &down);
+		while( (c = fgetc(fp)) != '\n') { }
+		if (i = strncmp(name, "eth0", 4) == 0) {
+			printf("%s %llu %llu\n", name, up, down);
+		}
+
+	}
+
+
+	fclose(fp);
+}

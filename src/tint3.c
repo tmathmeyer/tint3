@@ -288,6 +288,7 @@ void run(void) {
     while(1){
         drawmenu();
         sleep(1);
+        get_net_info();
     }
 }
 
