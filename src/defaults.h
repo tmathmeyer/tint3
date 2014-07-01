@@ -57,3 +57,11 @@
 #define CLOCK_BACKGROUND "#222222"
 #endif
 
+#ifndef NET_FOREGROUND
+#define NET_FOREGROUND "#bbbbbb"
+#endif
+
+#ifndef NET_BACKGROUND
+#define NET_BACKGROUND "#222222"
+#endif
+

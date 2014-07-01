@@ -76,29 +76,111 @@ batt_info * get_battery_information() {
     return bi;
 }
 
-int old_net_total = 0;
-void get_net_info (void) {
+
+unsigned long long old_down, old_up;
+graph * gu = NULL;
+graph * gd = NULL;
+char * get_net_info (void) {
+	int i = 0;
+	if (gu == NULL) {
+		gu = malloc(sizeof(graph));
+		gu -> start = 0;
+		gu -> max = 0;
+		for(; i<GRAPHLENGTH; i++) {
+			(gu->graph)[i] = 0;
+		}
+	}
+	if (gd == NULL) {
+		gd = malloc(sizeof(graph));
+		gd -> start = 0;
+		gd -> max = 0;
+		for(; i<GRAPHLENGTH; i++) {
+			(gd->graph)[i] = 0;
+		}
+	}
 	FILE * fp = fopen("/proc/net/dev", "r");
 	if (fp == NULL) {
-		return;
+		return "";
 	}
 	char c = 0;
 	unsigned long long up, down;
 	char * name = calloc(10, 0);
-	int i;
 
 	while( (c = fgetc(fp)) != '\n');
 	while( (c = fgetc(fp)) != '\n');
 
 	while((c = fgetc(fp)) != EOF) {
-		fscanf(fp, "%s %llu %llu", name, &up, &down);
-		while( (c = fgetc(fp)) != '\n') { }
-		if (i = strncmp(name, "eth0", 4) == 0) {
-			printf("%s %llu %llu\n", name, up, down);
+		if (c == ' ') {
+			fscanf(fp, "%s %llu %llu", name, &up, &down);
+		} else {
+			fscanf(fp, "%s %llu %llu", name+1, &up, &down);
+			name[0] = c;
 		}
-
+		while( (c = fgetc(fp)) != '\n') { }
+		if ((i = strncmp(name, "wlp2s0", 6)) == 0) {
+			unsigned long long diff_down = down - old_down;
+			unsigned long long diff_up = up - old_up;
+			old_down = down;
+			old_up = up;
+			add_to_graph( (int)diff_up , gu);
+			add_to_graph( (int)diff_down , gd);
+			fclose(fp);
+			return graph_to_string(gu);
+		}
 	}
 
 
 	fclose(fp);
+	return NULL;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+char * bar_map = "▁▂▃▄▅▆▇";
+
+void recalc_max(graph * gr) {
+	int ctr = 0, i = 0;
+	for(; i < GRAPHLENGTH; i++) {
+		if ((gr -> graph)[i] > ctr) {
+			ctr = (gr -> graph)[i];
+		}
+	}
+	gr -> max = ctr;
+}
+
+void add_to_graph(int i, graph * gr) {
+	int old = (gr -> graph)[gr -> start];
+	(gr -> graph)[gr -> start] = i;
+	if (i > gr -> max) {
+		gr -> max = i;
+	}
+	if (old ==  gr -> max) {
+		recalc_max(gr);
+	}
+	gr -> start = ((gr -> start)+1)%GRAPHLENGTH;
+}
+
+char * graph_to_string(graph * gr) {
+	char * result = malloc(GRAPHLENGTH*3+1);
+	int ctr = 0, i = 0;
+	for(; i < GRAPHLENGTH*3+1; i++) {
+		result[i] = 0;
+	} i = 0;
+	for(; i < GRAPHLENGTH; i++) {
+		int val = (gr -> graph)[((gr -> start)+i)%GRAPHLENGTH]*7/((gr -> max)+1) + 1;
+		result[ctr++] = bar_map[(val-1)*3+0];
+		result[ctr++] = bar_map[(val-1)*3+1];
+		result[ctr++] = bar_map[(val-1)*3+2];
+	}
+	result[GRAPHLENGTH*3] = 0;
+	return result;
 }

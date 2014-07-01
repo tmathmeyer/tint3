@@ -131,6 +131,14 @@ baritem * desktops_s(DC * d) {
     return result;
 }
 
+baritem * network_s() {
+    baritem * result = malloc(sizeof(baritem));
+    result -> string = get_net_info();
+    result -> color = initcolor(dc, NET_FOREGROUND, NET_BACKGROUND);
+    result -> type = 'N';
+    return result;
+}
+
 
 
 
@@ -159,7 +167,7 @@ void drawmenu(void) {
     itemlist * right = config_to_list(RIGHT_ALIGN);
     itemlist * center = config_to_list(CENTER_ALIGN);
     
-    int llen = total_list_length(left);
+               total_list_length(left);
     int rlen = total_list_length(right);
     int clen = total_list_length(center);
 
@@ -210,6 +218,8 @@ baritem * char_to_item(char c) {
             return wmname_s(dc);
         case 'D':
             return desktops_s(dc);
+        case 'N':
+            return network_s();
         default :
             return NULL;
     }
@@ -227,6 +237,7 @@ void free_list(itemlist * list) {
 void free_baritem(baritem * item) {
     switch(item -> type) {
         case 'B':
+        case 'N':
             free(item -> string);
     }
     free(item);
@@ -288,7 +299,6 @@ void run(void) {
     while(1){
         drawmenu();
         sleep(1);
-        get_net_info();
     }
 }
 

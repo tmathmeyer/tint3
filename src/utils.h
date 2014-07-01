@@ -4,6 +4,9 @@
 
 #include <X11/Xft/Xft.h>
 
+#define GRAPHLENGTH 10
+
+
 typedef struct {
     unsigned long FG;
     XftColor FG_xft;
@@ -32,6 +35,12 @@ typedef struct net_info {
     int  percentage;
 } net_info;
 
+typedef struct graph {
+	int graph[GRAPHLENGTH*3+1];
+	int start;
+	int max;
+} graph;
+
 
 
 batt_info * get_battery_information();
@@ -41,7 +50,8 @@ void free_list(itemlist * list);
 void free_baritem(baritem * item);
 void draw_list(itemlist * list);
 unsigned int total_list_length(itemlist * list);
-void get_net_info(void);
-
+char * get_net_info(void);
+void add_to_graph(int i, graph * gr);
+char * graph_to_string(graph * gr);
 
 #endif

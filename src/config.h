@@ -17,15 +17,18 @@
  *   M -> music (mpd?)   NYE
  */
 #define LEFT_ALIGN "W"
-#define RIGHT_ALIGN "TB"
+#define RIGHT_ALIGN "TNB"
 #define CENTER_ALIGN "D"
 
 #define BATTERY_FOREGROUND_HIGH "#0f0"
+#define BATTERY_BACKGROUND_HIGH "#282"
 #define BATTERY_FOREGROUND_MED "#ff0"
 #define BATTERY_BACKGROUND_MED "#886"
 #define BATTERY_FOREGROUND_LOW "#f00"
 
 #define CLOCK_FOREGROUND "#f80"
+#define NET_FOREGROUND "#f80"
+#define NET_BACKGROUND "#840"
 
 //#define FONT "uushi-11"
 #define FONT "nanochan-11"
