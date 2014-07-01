@@ -79,7 +79,7 @@ batt_info * get_battery_information() {
 }
 
 
-unsigned long long old_down, old_up;
+unsigned long long old_down=0, old_up=0;
 graph * gu = NULL;
 graph * gd = NULL;
 char * netiface = NETIFACE;
