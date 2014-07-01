@@ -5,6 +5,7 @@
 #include <X11/Xft/Xft.h>
 
 #define GRAPHLENGTH 10
+#define UNUSED(x) (void)(x)
 
 
 typedef struct {

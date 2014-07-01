@@ -25,7 +25,7 @@
 #define BATTERY_FOREGROUND_MED "#ff0"
 #define BATTERY_BACKGROUND_MED "#886"
 #define BATTERY_FOREGROUND_LOW "#f00"
-#define NETIFACE "wlp2s0"
+#define NETIFACE "eth0"
 
 #define CLOCK_FOREGROUND "#f80"
 #define NET_FOREGROUND "#f80"

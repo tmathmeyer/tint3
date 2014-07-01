@@ -109,36 +109,26 @@ char * get_net_info (void) {
 	if (fp == NULL) {
 		return "";
 	}
-	char c = 0;
+
 	unsigned long long up, down;
-	char * name = calloc(10, 0);
-
-	while( (c = fgetc(fp)) != '\n');
-	while( (c = fgetc(fp)) != '\n');
-
-	while((c = fgetc(fp)) != EOF) {
-		if (c == ' ') {
-			fscanf(fp, "%s %llu %llu", name, &up, &down);
-		} else {
-			fscanf(fp, "%s %llu %llu", name+1, &up, &down);
-			name[0] = c;
-		}
-		while( (c = fgetc(fp)) != '\n') { }
-		if ((i = strncmp(name, netiface, matching_length)) == 0) {
-			unsigned long long diff_down = down - old_down;
-			unsigned long long diff_up = up - old_up;
-			old_down = down;
-			old_up = up;
-			add_to_graph( (int)diff_up , gu);
-			add_to_graph( (int)diff_down , gd);
-			fclose(fp);
-			return graph_to_string(gu);
-		}
+	char * name = malloc(10);
+	for(i=0; i<10; i++) {
+		name[i] = 0;
 	}
 
+	while ( (i = strncmp(name, netiface, matching_length)) != 0) {
+		up = fscanf(fp, "%s", name);
+	}
 
+	i = fscanf(fp, "%llu %llu", &down, &up);
+	unsigned long long diff_down = down - old_down;
+	unsigned long long diff_up = up - old_up;
+	old_down = down;
+	old_up = up;
+	add_to_graph( (int)diff_up , gu);
+	add_to_graph( (int)diff_down , gd);
 	fclose(fp);
-	return NULL;
+	return graph_to_string(gu);
 }
 
 
