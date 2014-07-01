@@ -65,3 +65,9 @@
 #define NET_BACKGROUND "#222222"
 #endif
 
+#ifndef NETIFACE
+#define NETIFACE "eth0"
+#endif
+
+
+

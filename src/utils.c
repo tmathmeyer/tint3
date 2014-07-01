@@ -3,6 +3,8 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
+#include "config.h"
+#include "defaults.h"
 
 /*
 ⮎
@@ -80,6 +82,8 @@ batt_info * get_battery_information() {
 unsigned long long old_down, old_up;
 graph * gu = NULL;
 graph * gd = NULL;
+char * netiface = NETIFACE;
+int matching_length = -1;
 char * get_net_info (void) {
 	int i = 0;
 	if (gu == NULL) {
@@ -97,6 +101,9 @@ char * get_net_info (void) {
 		for(; i<GRAPHLENGTH; i++) {
 			(gd->graph)[i] = 0;
 		}
+	}
+	if (matching_length == -1) {
+		matching_length = strlen(netiface);
 	}
 	FILE * fp = fopen("/proc/net/dev", "r");
 	if (fp == NULL) {
@@ -117,7 +124,7 @@ char * get_net_info (void) {
 			name[0] = c;
 		}
 		while( (c = fgetc(fp)) != '\n') { }
-		if ((i = strncmp(name, "wlp2s0", 6)) == 0) {
+		if ((i = strncmp(name, netiface, matching_length)) == 0) {
 			unsigned long long diff_down = down - old_down;
 			unsigned long long diff_up = up - old_up;
 			old_down = down;
