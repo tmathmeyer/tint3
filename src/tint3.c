@@ -131,10 +131,24 @@ baritem * desktops_s(DC * d) {
     return result;
 }
 
-baritem * network_s() {
+char ** netstack = NULL;
+baritem * network_up_s() {
+    if (netstack == NULL) {
+        netstack = get_net_info();
+    }
     baritem * result = malloc(sizeof(baritem));
-    result -> string = get_net_info();
-    result -> color = initcolor(dc, NET_FOREGROUND, NET_BACKGROUND);
+    result -> string = netstack[0];
+    result -> color = initcolor(dc, NET_UP_FOREGROUND, NET_UP_BACKGROUND);
+    result -> type = 'N';
+    return result;
+}
+baritem * network_down_s() {
+    if (netstack == NULL) {
+        netstack = get_net_info();
+    }
+    baritem * result = malloc(sizeof(baritem));
+    result -> string = netstack[1];
+    result -> color = initcolor(dc, NET_DOWN_FOREGROUND, NET_DOWN_BACKGROUND);
     result -> type = 'N';
     return result;
 }
@@ -166,7 +180,7 @@ void drawmenu(void) {
     itemlist * left = config_to_list(LEFT_ALIGN);
     itemlist * right = config_to_list(RIGHT_ALIGN);
     itemlist * center = config_to_list(CENTER_ALIGN);
-    
+
                total_list_length(left);
     int rlen = total_list_length(right);
     int clen = total_list_length(center);
@@ -176,11 +190,11 @@ void drawmenu(void) {
     draw_list(right);
     dc -> x = (mw-clen)/2;
     draw_list(center);
-    
+
     free_list(left);
     free_list(right);
     free_list(center);
-    
+
     mapdc(dc, win, mw, height);
 }
 
@@ -219,7 +233,9 @@ baritem * char_to_item(char c) {
         case 'D':
             return desktops_s(dc);
         case 'N':
-            return network_s();
+            return network_down_s();
+        case 'M':
+            return network_up_s();
         default :
             return NULL;
     }
@@ -238,8 +254,14 @@ void free_baritem(baritem * item) {
     switch(item -> type) {
         case 'B':
         case 'N':
+        case 'W':
+        case 'T':
             free(item -> string);
+            if (netstack != NULL) {
+                free(netstack);
+            } netstack = NULL;
     }
+    free(item -> color);
     free(item);
 }
 
@@ -298,7 +320,7 @@ void draw_list(itemlist * list) {
 void run(void) {
     while(1){
         drawmenu();
-        sleep(1);
+        usleep(500000);
     }
 }
 

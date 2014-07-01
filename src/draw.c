@@ -68,7 +68,6 @@ void drawtextn(DC * dc, const char * text, size_t n, ColorSet * col) {
             // TODO: change to a logger
             printf("error, xft drawable does not exist");
         }
-            
         XftDrawStringUtf8(dc->xftdraw, &col->FG_xft,
             dc->font.xft_font, x, y, (unsigned char*)text, n);
 
@@ -96,7 +95,6 @@ unlong getcolor(DC * dc, const char * colstr) {
 ColorSet * initcolor(DC * dc, const char * foreground, const char * background) {
     ColorSet * col = (ColorSet *)malloc(sizeof(ColorSet));
 
-    // dont forget to check your mallocs!
     if(!col) {
         printf("error, cannot allocate memory for color set");
     }
@@ -106,9 +104,9 @@ ColorSet * initcolor(DC * dc, const char * foreground, const char * background) 
 
     if(dc->font.xft_font) {
         if(!XftColorAllocName(dc->dpy, DefaultVisual(dc->dpy, DefaultScreen(dc->dpy)),
-        	DefaultColormap(dc->dpy, DefaultScreen(dc->dpy)), foreground, &col->FG_xft)) {
+            DefaultColormap(dc->dpy, DefaultScreen(dc->dpy)), foreground, &col->FG_xft)) {
             printf("error, cannot allocate xft font color '%s'\n", foreground);
-    	}
+        }
     }
     return col;
 }
@@ -119,7 +117,7 @@ DC * initdc(void) {
         printf("no locale support\n");
     }
 
- 	DC * dc = malloc(sizeof(DC));
+     DC * dc = malloc(sizeof(DC));
     if(! dc) {
         printf("cannot allocate memory");
     }

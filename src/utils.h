@@ -5,6 +5,7 @@
 #include <X11/Xft/Xft.h>
 
 #define GRAPHLENGTH 10
+
 #define UNUSED(x) (void)(x)
 
 
@@ -37,9 +38,9 @@ typedef struct net_info {
 } net_info;
 
 typedef struct graph {
-	int graph[GRAPHLENGTH*3+1];
-	int start;
-	int max;
+    int graph[GRAPHLENGTH*3+1];
+    int start;
+    int max;
 } graph;
 
 
@@ -51,8 +52,9 @@ void free_list(itemlist * list);
 void free_baritem(baritem * item);
 void draw_list(itemlist * list);
 unsigned int total_list_length(itemlist * list);
-char * get_net_info(void);
+char ** get_net_info(void);
 void add_to_graph(int i, graph * gr);
 char * graph_to_string(graph * gr);
+graph * make_new_graph();
 
 #endif

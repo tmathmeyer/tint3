@@ -57,12 +57,20 @@
 #define CLOCK_BACKGROUND "#222222"
 #endif
 
-#ifndef NET_FOREGROUND
-#define NET_FOREGROUND "#bbbbbb"
+#ifndef NET_UP_FOREGROUND
+#define NET_UP_FOREGROUND "#bbbbbb"
 #endif
 
-#ifndef NET_BACKGROUND
-#define NET_BACKGROUND "#222222"
+#ifndef NET_UP_BACKGROUND
+#define NET_UP_BACKGROUND "#222222"
+#endif
+
+#ifndef NET_DOWN_FOREGROUND
+#define NET_DOWN_FOREGROUND "#bbbbbb"
+#endif
+
+#ifndef NET_DOWN_BACKGROUND
+#define NET_DOWN_BACKGROUND "#222222"
 #endif
 
 #ifndef NETIFACE
