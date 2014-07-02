@@ -43,6 +43,14 @@ typedef struct graph {
     int max;
 } graph;
 
+typedef struct weather_info {
+    unsigned int timeout;
+    unsigned int lastime;
+    int temperature;
+    int humidity;
+    char * condition;
+} weather_info;
+
 
 
 batt_info * get_battery_information();
@@ -56,5 +64,14 @@ char ** get_net_info(void);
 void add_to_graph(int i, graph * gr);
 char * graph_to_string(graph * gr);
 graph * make_new_graph();
+void host_to_ip(char *ptr, char* address);
+int get_socket(int port_number, char* ip);
+char * generate_header(char * url, char * host);
+void url_to_memory(char * buffer, int buf_size, char * url, char * host, char * ip);
+
+
+
+
+weather_info * get_weather();
 
 #endif

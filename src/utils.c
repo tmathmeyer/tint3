@@ -1,10 +1,16 @@
-#include "utils.h"
 #include <stdlib.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <netdb.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <time.h>
 #include <string.h>
 #include "config.h"
 #include "defaults.h"
+#include "utils.h"
 
 /*
 ⮎
@@ -131,6 +137,48 @@ char ** get_net_info (void) {
 }
 
 
+weather_info * weather = NULL;
+weather_info * get_weather() {
+
+    if (weather == NULL) {
+        weather = malloc(sizeof(weather_info));
+        weather -> timeout = 1800; // 30 minutes
+        weather -> lastime = 0; // start over;
+        weather -> temperature = 0;
+        weather -> humidity = 0;
+        weather -> condition = NULL;
+    }
+
+    if (time(NULL) - weather -> lastime > weather -> timeout) {
+        int weather_parse_size = 1024;
+        char * weather_s = malloc(weather_parse_size);
+        char * host = "weather.noaa.gov";
+        char * url  = "/pub/data/observations/metar/decoded/" "KBOS" ".TXT";
+
+        url_to_memory(weather_s, weather_parse_size, url, host, "208.59.215.33");
+        puts(weather_s);
+
+        char * conf = strstr(weather_s, "conditions");
+        char * condition = malloc(20);
+        while(conf[0] != ' ') {
+            conf ++;
+        } conf ++;
+
+        puts(conf);
+
+
+        free(weather_s);
+    }
+
+
+    return weather;
+}
+
+
+
+
+
+
 
 
 
@@ -190,4 +238,83 @@ graph * make_new_graph() {
         (g->graph)[i] = 0;
     }
     return g;
+}
+
+int get_socket(int port_number, char* ip) {
+    int sockfd = 0;
+    struct sockaddr_in serv_addr;
+
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+
+    memset(&serv_addr, '0', sizeof(serv_addr));
+
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_port = htons(port_number);
+
+    if (inet_pton(AF_INET, ip, &serv_addr.sin_addr)<=0) {
+        perror ("inet_pton error occured");
+        return -1;
+    }
+
+    if (connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
+       perror("Error : Connect Failed");
+       return -1;
+    }
+
+    return sockfd;
+}
+
+void host_to_ip(char *ptr, char* address) {
+    char ** pptr;
+    char str[INET6_ADDRSTRLEN];
+    struct hostent * hptr;
+
+    if ( (hptr = gethostbyname(ptr)) == NULL) {
+        strcpy(address, "127.0.0.1"); // hit localhost
+        return;
+    }
+
+    pptr = hptr->h_addr_list;
+    for ( ; *pptr != NULL; pptr++) {
+        strcpy( address,  inet_ntop(hptr->h_addrtype,
+                       *pptr, str, sizeof(str)));
+        return;
+    }
+
+    strcpy(address, "127.0.0.1");
+}
+
+char * generate_header(char * url, char * host) {
+    char * header =
+        "GET %s "
+        "HTTP/1.1\r\n"
+        "Host: %s\r\n"
+        "Cache-Control: no-cache\r\n"
+        "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\r\n"
+        "Pragma: no-cache\r\n"
+        "Accept-Encoding: gzip,deflate,sdch\r\n"
+        "Accept-Language: en-US,en;q=0.8,ru;q=0.6,el;q=0.4\r\n\r\n";
+    char * filled_header = malloc(2048); // this should be big enough i think
+    memset(filled_header, 0, 2048);
+    snprintf(filled_header, 2048, header, url, host);
+    return filled_header;
+}
+
+void url_to_memory(char * buffer, int buf_size, char * url, char * host, char * ip) {
+    int n = 0;
+
+    memset(buffer, 0, buf_size);
+
+    int sockfd = get_socket(80, ip);
+    char * header = generate_header(url, host);
+    n = write(sockfd, header, strlen(header));
+
+    do {
+        n = read(sockfd, buffer, buf_size-1);
+        buffer[n] = 0;
+    }
+    while ( n == buf_size );
+
+    free(header);
+    shutdown(sockfd, 2);
 }

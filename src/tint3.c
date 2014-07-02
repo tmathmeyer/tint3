@@ -46,6 +46,9 @@ static Window root, win;
 
 int main(int argc, char *argv[]) {
 
+    weather_info * winf = get_weather();
+    printf("weather:\n\ttemp: %i\n\thum : %i\n", winf -> temperature, winf -> humidity);
+
     dc = initdc();
     initfont(dc, font ? font : DEFFONT);
     normcol = initcolor(dc, BAR_BACKGROUND, BAR_FOREGROUND);
@@ -130,6 +133,8 @@ baritem * desktops_s(DC * d) {
     result -> type = 'D';
     return result;
 }
+
+
 
 char ** netstack = NULL;
 baritem * network_up_s() {
