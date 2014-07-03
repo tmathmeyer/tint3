@@ -4,7 +4,7 @@
 
 #include <X11/Xft/Xft.h>
 
-#define GRAPHLENGTH 10
+#define GRAPHLENGTH 15
 
 #define UNUSED(x) (void)(x)
 
@@ -73,5 +73,19 @@ void url_to_memory(char * buffer, int buf_size, char * url, char * host, char * 
 
 
 weather_info * get_weather();
+
+
+/* SPECIAL CHARACTERS */
+//⮎
+//⮒
+//⮏
+//⮑
+//⮐
+//▉ <- full thermometer
+//▊ <- medium thermometer
+//▋ <- low thermometer
+//▌ <- humidity symbol
+
+
 
 #endif

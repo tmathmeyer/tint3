@@ -36,7 +36,7 @@
 #define NETIFACE "eth0"
 
 
-#define FONT "nanochan-11"
+#define FONT "sakamoto-11"
 
 
 #endif

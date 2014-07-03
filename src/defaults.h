@@ -77,5 +77,9 @@
 #define NETIFACE "eth0"
 #endif
 
+#ifndef WEATHER_FOREGROUND
+#define WEATHER_FOREGROUND "#bbbbbb"
+#endif
+
 
 

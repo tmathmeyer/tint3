@@ -12,13 +12,7 @@
 #include "defaults.h"
 #include "utils.h"
 
-/*
-⮎
-⮒
-⮏
-⮑
-⮐
-*/
+
 
 
 batt_info * get_battery_information() {
@@ -150,22 +144,19 @@ weather_info * get_weather() {
     }
 
     if (time(NULL) - weather -> lastime > weather -> timeout) {
+        time((time_t*)&(weather -> lastime));
         int weather_parse_size = 1024;
         char * weather_s = malloc(weather_parse_size);
         char * host = "weather.noaa.gov";
         char * url  = "/pub/data/observations/metar/decoded/" "KBOS" ".TXT";
 
         url_to_memory(weather_s, weather_parse_size, url, host, "208.59.215.33");
-        puts(weather_s);
 
-        char * conf = strstr(weather_s, "conditions");
-        char * condition = malloc(20);
-        while(conf[0] != ' ') {
-            conf ++;
-        } conf ++;
+        char * temp = strstr(weather_s, "Temperature") + 13;
+        char * humd = strstr(weather_s, "Humidity") + 10;
 
-        puts(conf);
-
+        sscanf(temp, "%i", &(weather -> temperature));
+        sscanf(humd, "%i", &(weather -> humidity));
 
         free(weather_s);
     }

@@ -37,7 +37,7 @@ static Window root, win;
 
 
 
-
+baritem * weather_s();
 
 
 
@@ -45,10 +45,6 @@ static Window root, win;
 
 
 int main(int argc, char *argv[]) {
-
-    weather_info * winf = get_weather();
-    printf("weather:\n\ttemp: %i\n\thum : %i\n", winf -> temperature, winf -> humidity);
-
     dc = initdc();
     initfont(dc, font ? font : DEFFONT);
     normcol = initcolor(dc, BAR_BACKGROUND, BAR_FOREGROUND);
@@ -125,7 +121,7 @@ baritem * timeclock_s(DC * d) {
     return result;
 }
 
-
+// lol WIP
 baritem * desktops_s(DC * d) {
     baritem * result = malloc(sizeof(baritem));
     result -> string = "□ □ ■ □ ▶";
@@ -155,6 +151,45 @@ baritem * network_down_s() {
     result -> string = netstack[1];
     result -> color = initcolor(dc, NET_DOWN_FOREGROUND, NET_DOWN_BACKGROUND);
     result -> type = 'N';
+    return result;
+}
+
+baritem * weather_s() {
+    weather_info * winf = get_weather();
+    int temp_for_color = winf -> temperature;
+    if (temp_for_color > 100) {
+        temp_for_color = 100;
+    }
+    if (temp_for_color < 0) {
+        temp_for_color = 0;
+    }
+    temp_for_color *= 4;
+    temp_for_color /= 25;
+    char * netcolor = malloc(8);
+    memset(netcolor, 0, 8);
+    strncpy(netcolor, "#000", 4);
+    netcolor[1] = "0123456789ABCDEF"[temp_for_color];
+    netcolor[3] = "0123456789abcdef"[16-temp_for_color];
+
+    baritem * result = malloc(sizeof(baritem));
+    result -> color = initcolor(dc, WEATHER_FOREGROUND, netcolor);
+    result -> type = 'W';
+
+    free(netcolor);
+
+    char * text = malloc(16);
+    memset(text, 0, 16);
+
+
+    if (winf -> temperature > 70) {
+        snprintf(text, 16, "%i%s %i%s", winf -> temperature, "▉", winf -> humidity, "▌");
+    } else if (winf -> temperature < 32) {
+        snprintf(text, 16, "%i%s", winf -> temperature, "▊");
+    } else {
+        snprintf(text, 16, "%i%s", winf -> temperature, "▋");
+    }
+
+    result -> string = text;
     return result;
 }
 
@@ -233,14 +268,14 @@ baritem * char_to_item(char c) {
             return battery_s(dc);
         case 'T':
             return timeclock_s(dc);
-        case 'W':
-            return wmname_s(dc);
         case 'D':
             return desktops_s(dc);
         case 'N':
             return network_down_s();
         case 'M':
             return network_up_s();
+        case 'W':
+            return weather_s();
         default :
             return NULL;
     }
@@ -259,8 +294,8 @@ void free_baritem(baritem * item) {
     switch(item -> type) {
         case 'B':
         case 'N':
-        case 'W':
         case 'T':
+        case 'W':
             free(item -> string);
             if (netstack != NULL) {
                 free(netstack);
