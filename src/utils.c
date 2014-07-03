@@ -13,8 +13,6 @@
 #include "utils.h"
 
 
-
-
 batt_info * get_battery_information() {
     batt_info * bi = malloc(sizeof (batt_info));
     bi -> icon = "X";

@@ -1,4 +1,3 @@
-
 #ifndef BAR_FOREGROUND
 #define BAR_FOREGROUND "#bbbbbb"
 #endif
@@ -6,8 +5,6 @@
 #ifndef BAR_BACKGROUND
 #define BAR_FOREGROUND "#222222"
 #endif
-
-
 
 #ifndef BATTERY_FOREGROUND_LOW
 #define BATTERY_FOREGROUND_LOW "#bbbbbb"

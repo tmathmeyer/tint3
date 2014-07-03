@@ -56,6 +56,7 @@ typedef struct weather_info {
 batt_info * get_battery_information();
 itemlist * config_to_list (char * list);
 baritem * char_to_item(char c);
+baritem * weather_s();
 void free_list(itemlist * list);
 void free_baritem(baritem * item);
 void draw_list(itemlist * list);

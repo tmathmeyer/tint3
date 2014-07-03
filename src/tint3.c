@@ -37,15 +37,8 @@ static Window root, win;
 
 
 
-baritem * weather_s();
-
-
-
-
-
 
 int main(int argc, char *argv[]) {
-    srand(time(NULL));
     dc = initdc();
     initfont(dc, font ? font : DEFFONT);
     normcol = initcolor(dc, BAR_BACKGROUND, BAR_FOREGROUND);
