@@ -82,5 +82,9 @@
 #define WEATHER_BACKGROUND "#222"
 #endif
 
+#ifndef WEATHER_LOCATION
+#define WEATHER_LOCATION "KBOS"
+#endif
+
 
 

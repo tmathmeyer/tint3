@@ -146,7 +146,7 @@ weather_info * get_weather() {
         int weather_parse_size = 1024;
         char * weather_s = malloc(weather_parse_size);
         char * host = "weather.noaa.gov";
-        char * url  = "/pub/data/observations/metar/decoded/" "KBOS" ".TXT";
+        char * url  = "/pub/data/observations/metar/decoded/" WEATHER_LOCATION ".TXT";
 
         url_to_memory(weather_s, weather_parse_size, url, host, "208.59.215.33");
 
