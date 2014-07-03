@@ -78,7 +78,11 @@
 #endif
 
 #ifndef WEATHER_FOREGROUND
-#define WEATHER_FOREGROUND "#bbbbbb"
+#define WEATHER_FOREGROUND "#eee"
+#endif
+
+#ifndef WEATHER_BACKGROUND
+#define WEATHER_BACKGROUND "#222"
 #endif
 
 

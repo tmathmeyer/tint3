@@ -5,20 +5,21 @@
 #define BAR_BACKGROUND "#bbbbbb"
 
 /*
- * NFE = not fully implemented
- * NYE = not yet implemented
+ * NFI = not fully implemented
+ * NYI = not yet implemented
  *
  * Elements are:
  *   B -> battery
  *   T -> time
- *   W -> window name
- *   H -> hostname       NYE
- *   D -> desktops       NFE
- *   M -> music (mpd?)   NYE
+ *   W -> Weather        NOTE: uses custom icons (see sakamoto font)
+ *   H -> hostname       NYI
+ *   D -> desktops       NFI
+ *   M -> music (mpd?)   NYI
+ *  ' '-> spacer(one space)
  */
-#define LEFT_ALIGN "W"
-#define RIGHT_ALIGN "TMNB"
-#define CENTER_ALIGN "D"
+#define LEFT_ALIGN "T"
+#define RIGHT_ALIGN " uM dN WB"
+#define CENTER_ALIGN ""
 
 // Colors
 #define BATTERY_FOREGROUND_HIGH "#0f0"
@@ -28,9 +29,9 @@
 #define BATTERY_FOREGROUND_LOW "#f00"
 #define CLOCK_FOREGROUND "#f80"
 #define NET_UP_FOREGROUND "#f80"
-#define NET_UP_BACKGROUND "#840"
+#define NET_UP_BACKGROUND "#222"
 #define NET_DOWN_FOREGROUND "#08f"
-#define NET_DOWN_BACKGROUND "#048"
+#define NET_DOWN_BACKGROUND "#222"
 
 // Net
 #define NETIFACE "eth0"

@@ -45,6 +45,7 @@ baritem * weather_s();
 
 
 int main(int argc, char *argv[]) {
+    srand(time(NULL));
     dc = initdc();
     initfont(dc, font ? font : DEFFONT);
     normcol = initcolor(dc, BAR_BACKGROUND, BAR_FOREGROUND);
@@ -74,6 +75,16 @@ baritem * battery_s(DC * dc) {
         result -> color = initcolor(dc, BATTERY_FOREGROUND_MED, BATTERY_BACKGROUND_MED);
     }
     free(info);
+    return result;
+}
+
+baritem * spacer_s(char c) {
+    baritem * result = malloc(sizeof(baritem));
+    result -> string = malloc(2);
+    (result -> string)[0] = c;
+    (result -> string)[1] = 0;
+    result -> type = ' ';
+    result -> color = initcolor(dc, BAR_BACKGROUND, BAR_FOREGROUND);
     return result;
 }
 
@@ -154,25 +165,33 @@ baritem * network_down_s() {
     return result;
 }
 
+
 baritem * weather_s() {
     weather_info * winf = get_weather();
+
     int temp_for_color = winf -> temperature;
-    if (temp_for_color > 100) {
-        temp_for_color = 100;
+    if (temp_for_color > 99) {
+        temp_for_color = 99;
     }
     if (temp_for_color < 0) {
         temp_for_color = 0;
     }
-    temp_for_color *= 4;
-    temp_for_color /= 25;
+    temp_for_color *= temp_for_color;
+    temp_for_color *= 255;
+    temp_for_color /= (99*99);
+
     char * netcolor = malloc(8);
     memset(netcolor, 0, 8);
-    strncpy(netcolor, "#000", 4);
-    netcolor[1] = "0123456789ABCDEF"[temp_for_color];
-    netcolor[3] = "0123456789abcdef"[16-temp_for_color];
+    strncpy(netcolor, "#000000", 7);
+    char * colorpallete = "0123456789ABCDEF";
+    netcolor[1] = colorpallete[temp_for_color/16];
+    netcolor[2] = colorpallete[temp_for_color%16];
+    temp_for_color = 255 - temp_for_color;
+    netcolor[5] = colorpallete[temp_for_color/16];
+    netcolor[6] = colorpallete[temp_for_color%16];
 
     baritem * result = malloc(sizeof(baritem));
-    result -> color = initcolor(dc, WEATHER_FOREGROUND, netcolor);
+    result -> color = initcolor(dc, netcolor, WEATHER_BACKGROUND);
     result -> type = 'W';
 
     free(netcolor);
@@ -181,12 +200,12 @@ baritem * weather_s() {
     memset(text, 0, 16);
 
 
-    if (winf -> temperature > 70) {
-        snprintf(text, 16, "%i%s %i%s", winf -> temperature, "▉", winf -> humidity, "▌");
+    if (winf -> temperature > 75) {
+        snprintf(text, 16, "%i%s%i", winf -> temperature, "▉", winf -> humidity);
     } else if (winf -> temperature < 32) {
-        snprintf(text, 16, "%i%s", winf -> temperature, "▊");
-    } else {
         snprintf(text, 16, "%i%s", winf -> temperature, "▋");
+    } else {
+        snprintf(text, 16, "%i%s", winf -> temperature, "▊");
     }
 
     result -> string = text;
@@ -276,8 +295,8 @@ baritem * char_to_item(char c) {
             return network_up_s();
         case 'W':
             return weather_s();
-        default :
-            return NULL;
+        default:
+            return spacer_s(c);
     }
 }
 
@@ -293,9 +312,8 @@ void free_list(itemlist * list) {
 void free_baritem(baritem * item) {
     switch(item -> type) {
         case 'B':
-        case 'N':
-        case 'T':
-        case 'W':
+            break;
+        default:
             free(item -> string);
             if (netstack != NULL) {
                 free(netstack);
