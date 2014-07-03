@@ -304,7 +304,7 @@ void free_list(itemlist * list) {
 
 void free_baritem(baritem * item) {
     switch(item -> type) {
-        case 'B':
+        case 'D':
             break;
         default:
             free(item -> string);
@@ -335,47 +335,12 @@ void draw_list(itemlist * list) {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void run(void) {
     while(1){
         drawmenu();
         usleep(500000);
     }
 }
-
-
 
 // TODO: clean this shit
 void setup(void) {
