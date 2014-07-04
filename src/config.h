@@ -34,7 +34,7 @@
 #define NET_DOWN_BACKGROUND "#222"
 
 // Net
-#define NETIFACE "eth0"
+#define NETIFACE "wlp2s0"
 
 
 #define FONT "sakamoto-11"

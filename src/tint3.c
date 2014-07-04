@@ -193,7 +193,7 @@ baritem * weather_s() {
     memset(text, 0, 16);
 
 
-    if (winf -> temperature > 75) {
+    if (winf -> temperature > 70) {
         snprintf(text, 16, "%i%s%i", winf -> temperature, "▉", winf -> humidity);
     } else if (winf -> temperature < 32) {
         snprintf(text, 16, "%i%s", winf -> temperature, "▋");
