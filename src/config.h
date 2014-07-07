@@ -5,18 +5,21 @@
 #define BAR_BACKGROUND "#bbbbbb"
 
 /*
- * NFI = not fully implemented
- * NYI = not yet implemented
  *
  * Elements are:
  *   B -> battery
  *   T -> time
- *   W -> Weather        NOTE: uses custom icons (see sakamoto font)
- *   H -> hostname       NYI
- *   D -> desktops       NFI
- *   M -> music (mpd?)   NYI
- *  ' '-> spacer(one space)
+ *   D -> desktops
+ *   N -> network down graph   NOTE: uses custom icons (see sakamoto font)
+ *   M -> network up graph     NOTE: uses custom icons (see sakamoto font)
+ *   W -> Weather              NOTE: uses custom icons (see sakamoto font)
+ *
+ *   Any character not in the list will show up as a simple string in the bar
+ *
  */
+
+
+
 #define LEFT_ALIGN "T"
 #define RIGHT_ALIGN " uM dN WB"
 #define CENTER_ALIGN "D"
