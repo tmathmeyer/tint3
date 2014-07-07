@@ -163,6 +163,8 @@ baritem * weather_s() {
     weather_info * winf = get_weather();
 
     int temp_for_color = winf -> temperature;
+
+
     if (temp_for_color > 99) {
         temp_for_color = 99;
     }
@@ -173,33 +175,25 @@ baritem * weather_s() {
     temp_for_color *= 255;
     temp_for_color /= (99*99);
 
-    char * netcolor = malloc(8);
-    memset(netcolor, 0, 8);
-    strncpy(netcolor, "#000000", 7);
-    char * colorpallete = "0123456789ABCDEF";
-    netcolor[1] = colorpallete[temp_for_color/16];
-    netcolor[2] = colorpallete[temp_for_color%16];
-    temp_for_color = 255 - temp_for_color;
-    netcolor[5] = colorpallete[temp_for_color/16];
-    netcolor[6] = colorpallete[temp_for_color%16];
-
     baritem * result = malloc(sizeof(baritem));
-    result -> color = initcolor(dc, netcolor, WEATHER_BACKGROUND);
+    result -> color = initcolor(dc, "#000", WEATHER_BACKGROUND);
+    result -> color -> FG = temp_for_color + ((255-temp_for_color) * 65536);
     result -> type = 'W';
-
-    free(netcolor);
 
     char * text = malloc(16);
     memset(text, 0, 16);
 
 
+    char * icon = NULL;
     if (winf -> temperature > 70) {
-        snprintf(text, 16, "%i%s%i", winf -> temperature, "▉", winf -> humidity);
+        icon = "▉";
     } else if (winf -> temperature < 32) {
-        snprintf(text, 16, "%i%s", winf -> temperature, "▋");
+        icon = "▋";
     } else {
-        snprintf(text, 16, "%i%s", winf -> temperature, "▊");
+        icon = "▊";
     }
+
+    snprintf(text, 16, "%i%s%i", winf -> temperature, icon, winf -> humidity);
 
     result -> string = text;
     return result;
