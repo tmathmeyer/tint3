@@ -99,14 +99,15 @@ net_info * get_net_info (void) {
         while( (temp=fgetc(fp)) != EOF) {
             *(bt++) = temp;
         }
-        buffer = strstr(buffer, NETIFACE);
-        if (buffer == 0) {
+        bt = strstr(buffer, NETIFACE);
+        if (bt == 0) {
+            free(buffer);
             return net;
         }
-        buffer += (strlen(NETIFACE) + 2);
+        bt += (strlen(NETIFACE) + 2);
 
         unsigned long long up, down;
-        sscanf(buffer, "%llu %llu", &down, &up);
+        sscanf(bt, "%llu %llu", &down, &up);
 
         int ud = up-old_up, dd = down-old_down;
 
@@ -115,6 +116,8 @@ net_info * get_net_info (void) {
 
         old_down = down;
         old_up = up;
+
+        free(buffer);
     }
 
     return net;
