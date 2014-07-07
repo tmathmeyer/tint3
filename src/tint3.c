@@ -36,7 +36,10 @@ static DC *dc;
 static Window root, win;
 
 
-
+int scale_to(int from, int to, float by) {
+    float f = (to-from) * by;
+    return to-f;
+}
 
 int main(int argc, char *argv[]) {
     dc = initdc();
@@ -158,7 +161,6 @@ baritem * network_down_s() {
     return result;
 }
 
-
 baritem * weather_s() {
     weather_info * winf = get_weather();
 
@@ -175,10 +177,19 @@ baritem * weather_s() {
     temp_for_color *= 255;
     temp_for_color /= (99*99);
 
+    temp_for_color = 255 - ((255 - temp_for_color) * .9);
+
+    int r = scale_to(temp_for_color, 255, .7);
+    int b = scale_to(255-temp_for_color, 255, .7);
+    int g = scale_to(0, 255, .7);
+
+    char * color = malloc(8);
+    snprintf(color, 8, "#%x", b + g*256 + r*65536);
     baritem * result = malloc(sizeof(baritem));
-    result -> color = initcolor(dc, "#000", WEATHER_BACKGROUND);
+    result -> color = initcolor(dc, color, WEATHER_BACKGROUND);
     result -> color -> FG = temp_for_color + ((255-temp_for_color) * 65536);
     result -> type = 'W';
+    free(color);
 
     char * text = malloc(16);
     memset(text, 0, 16);
@@ -330,7 +341,7 @@ void draw_list(itemlist * list) {
 void run(void) {
     while(1){
         drawmenu();
-        usleep(200000);
+        usleep(500000);
     }
 }
 
