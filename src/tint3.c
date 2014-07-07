@@ -36,7 +36,10 @@ static DC *dc;
 static Window root, win;
 
 
-
+int scale_to(int from, int to, float by) {
+    float f = (to-from) * by;
+    return to-f;
+}
 
 int main(int argc, char *argv[]) {
     dc = initdc();
@@ -128,36 +131,29 @@ baritem * timeclock_s(DC * d) {
 // lol WIP
 baritem * desktops_s(DC * d) {
     baritem * result = malloc(sizeof(baritem));
-    result -> string = "□ □ ■ □ ▶";
+    result -> string = get_desktops_info();
     result -> color = initcolor(dc, CLOCK_FOREGROUND, CLOCK_BACKGROUND);
     result -> type = 'D';
     return result;
 }
 
 
-
-char ** netstack = NULL;
 baritem * network_up_s() {
-    if (netstack == NULL) {
-        netstack = get_net_info();
-    }
+    net_info * netstack = get_net_info();
     baritem * result = malloc(sizeof(baritem));
-    result -> string = netstack[0];
+    result -> string = graph_to_string(netstack -> up);
     result -> color = initcolor(dc, NET_UP_FOREGROUND, NET_UP_BACKGROUND);
     result -> type = 'N';
     return result;
 }
 baritem * network_down_s() {
-    if (netstack == NULL) {
-        netstack = get_net_info();
-    }
+    net_info * netstack = get_net_info();
     baritem * result = malloc(sizeof(baritem));
-    result -> string = netstack[1];
+    result -> string = graph_to_string(netstack -> down);
     result -> color = initcolor(dc, NET_DOWN_FOREGROUND, NET_DOWN_BACKGROUND);
     result -> type = 'N';
     return result;
 }
-
 
 baritem * weather_s() {
     weather_info * winf = get_weather();
@@ -175,10 +171,19 @@ baritem * weather_s() {
     temp_for_color *= 255;
     temp_for_color /= (99*99);
 
+    temp_for_color = 255 - ((255 - temp_for_color) * .9);
+
+    int r = scale_to(temp_for_color, 255, .7);
+    int b = scale_to(255-temp_for_color, 255, .7);
+    int g = scale_to(0, 255, .7);
+
+    char * color = malloc(8);
+    snprintf(color, 8, "#%x", b + g*256 + r*65536);
     baritem * result = malloc(sizeof(baritem));
-    result -> color = initcolor(dc, "#000", WEATHER_BACKGROUND);
+    result -> color = initcolor(dc, color, WEATHER_BACKGROUND);
     result -> color -> FG = temp_for_color + ((255-temp_for_color) * 65536);
     result -> type = 'W';
+    free(color);
 
     char * text = malloc(16);
     memset(text, 0, 16);
@@ -297,15 +302,7 @@ void free_list(itemlist * list) {
 }
 
 void free_baritem(baritem * item) {
-    switch(item -> type) {
-        case 'D':
-            break;
-        default:
-            free(item -> string);
-            if (netstack != NULL) {
-                free(netstack);
-            } netstack = NULL;
-    }
+    free(item -> string);
     free(item -> color);
     free(item);
 }
@@ -332,7 +329,7 @@ void draw_list(itemlist * list) {
 void run(void) {
     while(1){
         drawmenu();
-        usleep(500000);
+        usleep(100000);
     }
 }
 

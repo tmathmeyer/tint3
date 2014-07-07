@@ -78,54 +78,50 @@ batt_info * get_battery_information() {
 
 
 unsigned long long old_down=0, old_up=0;
-graph * gu = NULL;
-graph * gd = NULL;
-char * netiface = NETIFACE;
-int matching_length = -1;
-char ** get_net_info (void) {
-    int i = 0;
-    if (gu == NULL) {
-        gu = make_new_graph();
-    }
-    if (gd == NULL) {
-        gd = make_new_graph();
-    }
-    if (matching_length == -1) {
-        matching_length = strlen(netiface);
-    }
-    FILE * fp = fopen("/proc/net/dev", "r");
-    if (fp == NULL) {
-        return NULL;
+net_info * net = NULL;
+net_info * get_net_info (void) {
+    if (net == NULL) {
+        net = malloc(sizeof(net_info));
+        net -> timeout = 0; // 2 seconds
+        net -> lastime = 0; // start over;
+        net -> up = make_new_graph();
+        net -> down = make_new_graph();
     }
 
-    unsigned long long up, down;
-    char * name = malloc(10);
-    for(i=0; i<10; i++) {
-        name[i] = 0;
+    if (time(NULL) - net -> lastime > net -> timeout) {
+        time((time_t*)&(net -> lastime));
+        FILE * fp = fopen("/proc/net/dev", "r");
+        if (fp == NULL) {
+            return net;
+        }
+
+        char * buffer = malloc(4096), * bt = buffer, temp = 0;
+        while( (temp=fgetc(fp)) != EOF) {
+            *(bt++) = temp;
+        }
+        fclose(fp);
+        bt = strstr(buffer, NETIFACE);
+        if (bt == 0) {
+            free(buffer);
+            return net;
+        }
+        bt += (strlen(NETIFACE) + 2);
+
+        unsigned long long up, down;
+        sscanf(bt, "%llu %llu", &down, &up);
+
+        int ud = up-old_up, dd = down-old_down;
+
+        add_to_graph(dd, net -> down);
+        add_to_graph(ud, net -> up);
+
+        old_down = down;
+        old_up = up;
+
+        free(buffer);
     }
 
-    while ( (i = strncmp(name, netiface, matching_length)) != 0) {
-        up = fscanf(fp, "%s", name);
-    }
-
-    free(name);
-    i = fscanf(fp, "%llu %llu", &down, &up);
-    unsigned long long diff_down = down - old_down;
-    unsigned long long diff_up = up - old_up;
-    if (old_up != 0) {
-        add_to_graph( (int)diff_up , gu);
-    }
-    if (old_down != 0) {
-        add_to_graph( (int)diff_down , gd);
-    }
-    old_down = down;
-    old_up = up;
-    fclose(fp);
-
-    char ** result = malloc(sizeof(char*) * 2);
-    result[0] = graph_to_string(gu);
-    result[1] = graph_to_string(gd);
-    return result;
+    return net;
 }
 
 
@@ -163,6 +159,35 @@ weather_info * get_weather() {
     return weather;
 }
 
+char * get_desktops_info() {
+    FILE * query = popen(DESKTOP_QUERY, "r");
+    FILE * count = popen(DESKTOP_COUNT, "r");
+    if (count == NULL || query == NULL) {
+        return NULL;
+    }
+    int numdesk = 0;
+    int curdesk = 0;
+    int swap = 0;
+
+    swap = fscanf(query, "%i", &curdesk);
+    swap = fscanf(count, "%i", &numdesk);
+    fclose(count);
+    fclose(query);
+
+    int dsktplen = numdesk * 4 - 1;
+    char * result = malloc(dsktplen);
+
+    for(swap=0; swap < dsktplen; swap++) {
+        int sqp = swap%4;
+        result[swap] = sqp==3?' ':DESKTOP_DEFAULT[sqp];
+    }
+
+    result[(curdesk-DESKTOP_ZIDEX)*4 + 0] = DESKTOP_CURRENT[0];
+    result[(curdesk-DESKTOP_ZIDEX)*4 + 1] = DESKTOP_CURRENT[1];
+    result[(curdesk-DESKTOP_ZIDEX)*4 + 2] = DESKTOP_CURRENT[2];
+
+    return result;
+}
 
 
 

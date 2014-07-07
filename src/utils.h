@@ -9,13 +9,13 @@
 #define UNUSED(x) (void)(x)
 
 
-typedef struct {
+typedef struct ColorSet{
     unsigned long FG;
     XftColor FG_xft;
     unsigned long BG;
 } ColorSet;
 
-typedef struct baritem {
+typedef struct baritem{
     ColorSet * color;
     char     * string;
     char       type; // used to determine the freeing mechanism
@@ -27,17 +27,12 @@ typedef struct itemlist {
     struct itemlist * next;
 } itemlist;
 
-typedef struct batt_info {
+typedef struct batt_info{
     char * icon;
     int  percentage;
 } batt_info;
 
-typedef struct net_info {
-    char * graph;
-    int  percentage;
-} net_info;
-
-typedef struct graph {
+typedef struct graph{
     int graph[GRAPHLENGTH*3+1];
     int start;
     int max;
@@ -45,11 +40,18 @@ typedef struct graph {
 
 typedef struct weather_info {
     unsigned int timeout;
-    unsigned int lastime;
+    unsigned long lastime;
     int temperature;
     int humidity;
     char * condition;
 } weather_info;
+
+typedef struct {
+    unsigned int timeout;
+    unsigned long lastime;
+    graph * up;
+    graph * down;
+} net_info;
 
 
 
@@ -61,7 +63,7 @@ void free_list(itemlist * list);
 void free_baritem(baritem * item);
 void draw_list(itemlist * list);
 unsigned int total_list_length(itemlist * list);
-char ** get_net_info(void);
+net_info * get_net_info(void);
 void add_to_graph(int i, graph * gr);
 char * graph_to_string(graph * gr);
 graph * make_new_graph();
@@ -69,6 +71,7 @@ void host_to_ip(char *ptr, char* address);
 int get_socket(int port_number, char* ip);
 char * generate_header(char * url, char * host);
 void url_to_memory(char * buffer, int buf_size, char * url, char * host, char * ip);
+char * get_desktops_info();
 
 
 
