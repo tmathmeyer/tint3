@@ -99,6 +99,7 @@ net_info * get_net_info (void) {
         while( (temp=fgetc(fp)) != EOF) {
             *(bt++) = temp;
         }
+        fclose(fp);
         bt = strstr(buffer, NETIFACE);
         if (bt == 0) {
             free(buffer);
