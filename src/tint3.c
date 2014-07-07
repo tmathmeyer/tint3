@@ -329,7 +329,7 @@ void draw_list(itemlist * list) {
 void run(void) {
     while(1){
         drawmenu();
-        usleep(5000);
+        usleep(100000);
     }
 }
 
