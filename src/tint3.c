@@ -128,7 +128,7 @@ baritem * timeclock_s(DC * d) {
 // lol WIP
 baritem * desktops_s(DC * d) {
     baritem * result = malloc(sizeof(baritem));
-    result -> string = "□ □ ■ □ ▶";
+    result -> string = get_desktops_info();
     result -> color = initcolor(dc, CLOCK_FOREGROUND, CLOCK_BACKGROUND);
     result -> type = 'D';
     return result;
@@ -304,8 +304,6 @@ void free_list(itemlist * list) {
 
 void free_baritem(baritem * item) {
     switch(item -> type) {
-        case 'D':
-            break;
         default:
             free(item -> string);
             if (netstack != NULL) {
@@ -338,7 +336,7 @@ void draw_list(itemlist * list) {
 void run(void) {
     while(1){
         drawmenu();
-        usleep(500000);
+        usleep(200000);
     }
 }
 

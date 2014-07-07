@@ -164,17 +164,31 @@ weather_info * get_weather() {
 }
 
 char * get_desktops_info() {
-    FILE * file = popen(DESKTOP_COUNT, "r");
-    if (file == NULL) {
+    FILE * query = popen(DESKTOP_QUERY, "r");
+    FILE * count = popen(DESKTOP_COUNT, "r");
+    if (count == NULL || query == NULL) {
         return NULL;
     }
-    int desktops = 0;
-    fscanf(file, "%i", &desktops);
-    fclose(file);
+    int numdesk = 0;
+    int curdesk = 0;
+    int swap = 0;
 
-    int dsktplen = desktops * 2 - 1;
+    swap = fscanf(query, "%i", &curdesk);
+    swap = fscanf(count, "%i", &numdesk);
+    fclose(count);
+    fclose(query);
+
+    int dsktplen = numdesk * 4 - 1;
     char * result = malloc(dsktplen);
-    memset(result, 'D', dsktplen);
+
+    for(swap=0; swap < dsktplen; swap++) {
+        int sqp = swap%4;
+        result[swap] = sqp==3?' ':DESKTOP_DEFAULT[sqp];
+    }
+
+    result[(curdesk-DESKTOP_ZIDEX)*4 + 0] = DESKTOP_CURRENT[0];
+    result[(curdesk-DESKTOP_ZIDEX)*4 + 1] = DESKTOP_CURRENT[1];
+    result[(curdesk-DESKTOP_ZIDEX)*4 + 2] = DESKTOP_CURRENT[2];
 
     return result;
 }

@@ -19,7 +19,7 @@
  */
 #define LEFT_ALIGN "T"
 #define RIGHT_ALIGN " uM dN WB"
-#define CENTER_ALIGN ""
+#define CENTER_ALIGN "D"
 
 // Colors
 #define BATTERY_FOREGROUND_HIGH "#0f0"
@@ -42,5 +42,7 @@
 #define DESKTOP_QUERY "bspc query -D | grep -nx $(bspc query --desktops --desktop focused)"
 #define DESKTOP_COUNT "bspc query -D | wc -l"
 #define DESKTOP_ZIDEX 1 // is DESKTOP_QUERY from {0 -> DESKTOP_COUNT-1}?? or {1 -> DESKTOP_COUNT}
+#define DESKTOP_CURRENT "◆" //◇◆◈○◉
+#define DESKTOP_DEFAULT "◇"
 
 #endif
