@@ -163,6 +163,21 @@ weather_info * get_weather() {
     return weather;
 }
 
+char * get_desktops_info() {
+    FILE * file = popen(DESKTOP_COUNT, "r");
+    if (file == NULL) {
+        return NULL;
+    }
+    int desktops = 0;
+    fscanf(file, "%i", &desktops);
+    fclose(file);
+
+    int dsktplen = desktops * 2 - 1;
+    char * result = malloc(dsktplen);
+    memset(result, 'D', dsktplen);
+
+    return result;
+}
 
 
 
