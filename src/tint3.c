@@ -138,24 +138,18 @@ baritem * desktops_s(DC * d) {
 }
 
 
-
-char ** netstack = NULL;
 baritem * network_up_s() {
-    if (netstack == NULL) {
-        netstack = get_net_info();
-    }
+    net_info * netstack = get_net_info();
     baritem * result = malloc(sizeof(baritem));
-    result -> string = netstack[0];
+    result -> string = graph_to_string(netstack -> up);
     result -> color = initcolor(dc, NET_UP_FOREGROUND, NET_UP_BACKGROUND);
     result -> type = 'N';
     return result;
 }
 baritem * network_down_s() {
-    if (netstack == NULL) {
-        netstack = get_net_info();
-    }
+    net_info * netstack = get_net_info();
     baritem * result = malloc(sizeof(baritem));
-    result -> string = netstack[1];
+    result -> string = graph_to_string(netstack -> down);
     result -> color = initcolor(dc, NET_DOWN_FOREGROUND, NET_DOWN_BACKGROUND);
     result -> type = 'N';
     return result;
@@ -308,13 +302,7 @@ void free_list(itemlist * list) {
 }
 
 void free_baritem(baritem * item) {
-    switch(item -> type) {
-        default:
-            free(item -> string);
-            if (netstack != NULL) {
-                free(netstack);
-            } netstack = NULL;
-    }
+    free(item -> string);
     free(item -> color);
     free(item);
 }
@@ -341,7 +329,7 @@ void draw_list(itemlist * list) {
 void run(void) {
     while(1){
         drawmenu();
-        usleep(500000);
+        usleep(5000);
     }
 }
 

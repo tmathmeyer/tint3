@@ -78,54 +78,46 @@ batt_info * get_battery_information() {
 
 
 unsigned long long old_down=0, old_up=0;
-graph * gu = NULL;
-graph * gd = NULL;
-char * netiface = NETIFACE;
-int matching_length = -1;
-char ** get_net_info (void) {
-    int i = 0;
-    if (gu == NULL) {
-        gu = make_new_graph();
-    }
-    if (gd == NULL) {
-        gd = make_new_graph();
-    }
-    if (matching_length == -1) {
-        matching_length = strlen(netiface);
-    }
-    FILE * fp = fopen("/proc/net/dev", "r");
-    if (fp == NULL) {
-        return NULL;
+net_info * net = NULL;
+net_info * get_net_info (void) {
+    if (net == NULL) {
+        net = malloc(sizeof(net_info));
+        net -> timeout = 0; // 2 seconds
+        net -> lastime = 0; // start over;
+        net -> up = make_new_graph();
+        net -> down = make_new_graph();
     }
 
-    unsigned long long up, down;
-    char * name = malloc(10);
-    for(i=0; i<10; i++) {
-        name[i] = 0;
+    if (time(NULL) - net -> lastime > net -> timeout) {
+        time((time_t*)&(net -> lastime));
+        FILE * fp = fopen("/proc/net/dev", "r");
+        if (fp == NULL) {
+            return net;
+        }
+
+        char * buffer = malloc(4096), * bt = buffer, temp = 0;
+        while( (temp=fgetc(fp)) != EOF) {
+            *(bt++) = temp;
+        }
+        buffer = strstr(buffer, NETIFACE);
+        if (buffer == 0) {
+            return net;
+        }
+        buffer += (strlen(NETIFACE) + 2);
+
+        unsigned long long up, down;
+        sscanf(buffer, "%llu %llu", &down, &up);
+
+        int ud = up-old_up, dd = down-old_down;
+
+        add_to_graph(dd, net -> down);
+        add_to_graph(ud, net -> up);
+
+        old_down = down;
+        old_up = up;
     }
 
-    while ( (i = strncmp(name, netiface, matching_length)) != 0) {
-        up = fscanf(fp, "%s", name);
-    }
-
-    free(name);
-    i = fscanf(fp, "%llu %llu", &down, &up);
-    unsigned long long diff_down = down - old_down;
-    unsigned long long diff_up = up - old_up;
-    if (old_up != 0) {
-        add_to_graph( (int)diff_up , gu);
-    }
-    if (old_down != 0) {
-        add_to_graph( (int)diff_down , gd);
-    }
-    old_down = down;
-    old_up = up;
-    fclose(fp);
-
-    char ** result = malloc(sizeof(char*) * 2);
-    result[0] = graph_to_string(gu);
-    result[1] = graph_to_string(gd);
-    return result;
+    return net;
 }
 
 
