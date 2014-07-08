@@ -88,7 +88,7 @@ weather_info * get_weather();
 //▉ <- full thermometer
 //▊ <- medium thermometer
 //▋ <- low thermometer
-//▌ <- humidity symbol
+//▌ <- humidity symbol <- lol what the fuck
 
 
 
