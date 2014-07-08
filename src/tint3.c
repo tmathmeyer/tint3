@@ -131,7 +131,7 @@ baritem * timeclock_s(DC * d) {
 baritem * desktops_s(DC * d) {
     baritem * result = malloc(sizeof(baritem));
     result -> string = get_desktops_info();
-    result -> color = initcolor(dc, CLOCK_FOREGROUND, CLOCK_BACKGROUND);
+    result -> color = initcolor(dc, DESKTOP_FOREGROUND, DESKTOP_BACKGROUND);
     result -> type = 'D';
     return result;
 }

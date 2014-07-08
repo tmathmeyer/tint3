@@ -86,5 +86,30 @@
 #define WEATHER_LOCATION "KBOS"
 #endif
 
+#ifndef DESKTOP_DEFAULT
+#define DESKTOP_DEFAULT "◇"
+#endif
 
+#ifndef DESKTOP_CURRENT
+#define DESKTOP_CURRENT "◆"
+#endif
 
+#ifndef DESKTOP_QUERY
+#define DESKTOP_QUERY "echo 1"
+#endif
+
+#ifndef DESKTOP_COUNT
+#define DESKTOP_COUNT "echo 1"
+#endif
+
+#ifndef DESKTOP_ZIDEX
+#define DESKTOP_ZIDEX 1
+#endif
+
+#ifndef DESKTOP_FOREGROUND
+#define DESKTOP_FOREGROUND "#bbbbbb"
+#endif
+
+#ifndef DESKTOP_BACKGROUND
+#define DESKTOP_BACKGROUND "#222222"
+#endif
