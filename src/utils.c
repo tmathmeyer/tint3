@@ -34,6 +34,7 @@ batt_info * get_battery_information() {
         if (fgets(tmp, sizeof tmp, fp)) energy_now = atoi(tmp);
         fclose(fp);
     } else {
+        free(bi);
         return NULL;
     }
 
@@ -43,6 +44,7 @@ batt_info * get_battery_information() {
         if (fgets(tmp, sizeof tmp, fp)) energy_full = atoi(tmp);
         fclose(fp);
     } else {
+        free(bi);
         return NULL;
     }
 
@@ -112,8 +114,10 @@ net_info * get_net_info (void) {
 
         int ud = up-old_up, dd = down-old_down;
 
-        add_to_graph(dd, net -> down);
-        add_to_graph(ud, net -> up);
+        if (old_down != 0 && old_up != 0) {
+            add_to_graph(dd, net -> down);
+            add_to_graph(ud, net -> up);
+        }
 
         old_down = down;
         old_up = up;
@@ -235,6 +239,9 @@ char * graph_to_string(graph * gr) {
     } i = 0;
     for(; i < GRAPHLENGTH; i++) {
         int val = (gr -> graph)[((gr -> start)+i)%GRAPHLENGTH]*7/((gr -> max)+1) + 1;
+        if (val < 0) {
+            val = 0;
+        }
         result[ctr++] = bar_map[(val-1)*3+0];
         result[ctr++] = bar_map[(val-1)*3+1];
         result[ctr++] = bar_map[(val-1)*3+2];

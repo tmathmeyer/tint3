@@ -128,7 +128,6 @@ baritem * timeclock_s(DC * d) {
     return result;
 }
 
-// lol WIP
 baritem * desktops_s(DC * d) {
     baritem * result = malloc(sizeof(baritem));
     result -> string = get_desktops_info();
