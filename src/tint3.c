@@ -128,11 +128,10 @@ baritem * timeclock_s(DC * d) {
     return result;
 }
 
-// lol WIP
 baritem * desktops_s(DC * d) {
     baritem * result = malloc(sizeof(baritem));
     result -> string = get_desktops_info();
-    result -> color = initcolor(dc, CLOCK_FOREGROUND, CLOCK_BACKGROUND);
+    result -> color = initcolor(dc, DESKTOP_FOREGROUND, DESKTOP_BACKGROUND);
     result -> type = 'D';
     return result;
 }
@@ -329,6 +328,10 @@ void draw_list(itemlist * list) {
 void run(void) {
     while(1){
         drawmenu();
+        XEvent xe;
+        while(QLength(dc->dpy)) {
+            XNextEvent(dc->dpy, &xe);
+        }
         usleep(100000);
     }
 }

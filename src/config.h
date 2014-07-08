@@ -32,9 +32,7 @@
 #define BATTERY_FOREGROUND_LOW "#f00"
 #define CLOCK_FOREGROUND "#5f5"
 #define NET_UP_FOREGROUND "#f80"
-#define NET_UP_BACKGROUND "#222"
 #define NET_DOWN_FOREGROUND "#08f"
-#define NET_DOWN_BACKGROUND "#222"
 
 // Net
 #define NETIFACE "eth0"
@@ -47,5 +45,8 @@
 #define DESKTOP_ZIDEX 1 // is DESKTOP_QUERY from {0 -> DESKTOP_COUNT-1}?? or {1 -> DESKTOP_COUNT}
 #define DESKTOP_CURRENT "◆" //◇◆◈○◉
 #define DESKTOP_DEFAULT "◇"
+
+#define DESKTOP_FOREGROUND "#ff8800"
+#define DESKTOP_BACKGROUND "#222222"
 
 #endif
