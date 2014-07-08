@@ -99,7 +99,7 @@
 #endif
 
 #ifndef DESKTOP_COUNT
-#define DESKTOP_COUNT "echo 1"
+#define DESKTOP_COUNT "echo 10"
 #endif
 
 #ifndef DESKTOP_ZIDEX
