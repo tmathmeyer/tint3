@@ -328,6 +328,10 @@ void draw_list(itemlist * list) {
 void run(void) {
     while(1){
         drawmenu();
+        XEvent xe;
+        while(QLength(dc->dpy)) {
+            XNextEvent(dc->dpy, &xe);
+        }
         usleep(100000);
     }
 }
