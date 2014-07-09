@@ -15,8 +15,11 @@ tint3
 
 ##Screenshots (and screencasts*)
 ![Clock](screenshots/clock.png)
+
 ![Desktops](screenshots/desktops.png)
+
 ![Network](screenshots/netgraphs.png)
+
 ![Weather](screenshots/thermometer.png)
 
 
