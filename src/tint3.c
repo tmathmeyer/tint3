@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
 
 /* SPACE FOR MODULE FUNCTIONS */
 
-baritem * battery_s(DC * dc) {
+baritem * battery_s() {
     batt_info * info = get_battery_information();
     if (info == NULL) {
         return NULL;
@@ -85,7 +85,7 @@ baritem * spacer_s(char c) {
 }
 
 
-baritem * wmname_s(DC * dc) {
+baritem * wmname_s() {
     FILE * desc = popen("wmname", "r");
     char * msg = malloc(20);
     int msg_c = 0; char msg_s;
@@ -107,7 +107,7 @@ baritem * wmname_s(DC * dc) {
 }
 
 
-baritem * timeclock_s(DC * d) {
+baritem * timeclock_s() {
     FILE * desc = popen("date +'%H:%M:%S'", "r");
     char * msg = malloc(20);
     int msg_c = 0; char msg_s;
@@ -128,7 +128,7 @@ baritem * timeclock_s(DC * d) {
     return result;
 }
 
-baritem * desktops_s(DC * d) {
+baritem * desktops_s() {
     baritem * result = malloc(sizeof(baritem));
     result -> string = get_desktops_info();
     result -> color = initcolor(dc, DESKTOP_FOREGROUND, DESKTOP_BACKGROUND);
@@ -203,7 +203,13 @@ baritem * weather_s() {
     return result;
 }
 
-
+baritem * window_s() {
+    baritem * result = malloc(sizeof(baritem));
+    result -> string = get_active_window_name();
+    result -> color = initcolor(dc, CURRENT_WINDOW_FOREGROUND, CURRENT_WINDOW_BACKGROUND);
+    result -> type = 'A';
+    return result;
+}
 
 
 
@@ -213,7 +219,6 @@ baritem * weather_s() {
 
 
 void drawmenu(void) {
-
     dc->x = 0;
     dc->y = 0;
     dc->w = 0;
@@ -286,6 +291,8 @@ baritem * char_to_item(char c) {
             return network_up_s();
         case 'W':
             return weather_s();
+        case 'A':
+            return window_s();
         default:
             return spacer_s(c);
     }

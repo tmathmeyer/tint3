@@ -193,7 +193,16 @@ char * get_desktops_info() {
     return result;
 }
 
-
+char * get_active_window_name() {
+    FILE * fp = popen(CURRENT_WINDOW_GETTER, "r");
+    if (fp == NULL) {
+        return NULL;
+    }
+    char * window_title = malloc(256); // max displayed window size
+    fscanf(fp, "%s", window_title);
+    fclose(fp);
+    return window_title;
+}
 
 
 

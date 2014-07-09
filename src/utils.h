@@ -72,6 +72,7 @@ int get_socket(int port_number, char* ip);
 char * generate_header(char * url, char * host);
 void url_to_memory(char * buffer, int buf_size, char * url, char * host, char * ip);
 char * get_desktops_info();
+char * get_active_window_name();
 
 
 

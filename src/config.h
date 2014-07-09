@@ -20,8 +20,8 @@
 
 
 
-#define LEFT_ALIGN "T"
-#define RIGHT_ALIGN " uM dN WB"
+#define LEFT_ALIGN "A"
+#define RIGHT_ALIGN "T uM dN WB"
 #define CENTER_ALIGN "D"
 
 // Colors
@@ -48,5 +48,10 @@
 
 #define DESKTOP_FOREGROUND "#ff8800"
 #define DESKTOP_BACKGROUND "#222222"
+
+#define CURRENT_WINDOW_BACKGROUND "#222222"
+#define CURRENT_WINDOW_FOREGROUND "#bbbbbb"
+
+#define CURRENT_WINDOW_GETTER "xtitle"
 
 #endif
