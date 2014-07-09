@@ -13,6 +13,16 @@ tint3
 
 ######tint3 is licensed under the GPLv2 (I just havent added the license file yet)
 
-##Screenshots (and screencasts)
-Font coloring on the thermometer module (before better font monospacing)
-![ScreenShot](http://webmup.com/2fnOp/vid.webm)
+##Screenshots (and screencasts*)
+![Clock](screenshots/clock.png)
+![Desktops](screenshots/desktops.png)
+![Network](screenshots/netgraphs.png)
+![Weather](screenshots/thermometer.png)
+
+
+
+
+
+
+
+*maybe github will support these one day
