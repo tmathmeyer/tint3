@@ -199,7 +199,7 @@ char * get_active_window_name() {
         return NULL;
     }
     char * window_title = malloc(256); // max displayed window size
-    if (!fscanf(fp, "%s", window_title)) {
+    if (!fgets(window_title, 100, fp)) {
         return NULL;
     }
     fclose(fp);
