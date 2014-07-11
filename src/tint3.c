@@ -230,6 +230,14 @@ baritem * window_s() {
     return result;
 }
 
+baritem * volume_s() {
+    baritem * result = malloc(sizeof(baritem));
+    result -> string = malloc(100);
+    strncpy(result -> string, "leather", 50);
+    result -> color = initcolor(dc, CURRENT_WINDOW_FOREGROUND, CURRENT_WINDOW_BACKGROUND);
+    result -> type = 'V';
+    return result;
+}
 
 
 
@@ -312,6 +320,8 @@ baritem * char_to_item(char c) {
             return weather_s();
         case 'A':
             return window_s();
+        case 'V':
+            return volume_s();
         default:
             return spacer_s(c);
     }

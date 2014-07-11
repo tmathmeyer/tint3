@@ -41,7 +41,7 @@
 
 #define LEFT_ALIGN "A"
 #define RIGHT_ALIGN "T uM dN WB"
-#define CENTER_ALIGN "D"
+#define CENTER_ALIGN "D V"
 
 // Colors
 #define BATTERY_FOREGROUND_HIGH "#0f0"
