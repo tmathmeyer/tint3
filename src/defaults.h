@@ -113,3 +113,8 @@
 #ifndef DESKTOP_BACKGROUND
 #define DESKTOP_BACKGROUND "#222222"
 #endif
+
+#ifndef ALSA_DEVICE_ID
+#define ALSA_DEVICE_ID "0"
+#endif
+

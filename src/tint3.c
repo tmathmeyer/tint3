@@ -42,6 +42,10 @@ int scale_to(int from, int to, float by) {
 }
 
 int main(int argc, char *argv[]) {
+
+    volume_info * vi = get_volume_info();
+    printf("%i\n", vi -> volume_level);
+
     dc = initdc();
     initfont(dc, font ? font : DEFFONT);
     normcol = initcolor(dc, BAR_BACKGROUND, BAR_FOREGROUND);
@@ -203,6 +207,15 @@ baritem * weather_s() {
     return result;
 }
 
+baritem * volume_s() {
+    volume_info * vol = get_volume_info();
+    baritem * result = malloc(sizeof(baritem));
+    result -> string = malloc(4);
+    snprintf(result -> string, 4, "%u", vol -> volume_level);
+    result -> color = initcolor(dc, NET_UP_FOREGROUND, NET_UP_BACKGROUND);
+    result -> type = 'N';
+    return result;
+}
 
 
 
@@ -286,6 +299,8 @@ baritem * char_to_item(char c) {
             return network_up_s();
         case 'W':
             return weather_s();
+        case 'V':
+            return volume_s();
         default:
             return spacer_s(c);
     }

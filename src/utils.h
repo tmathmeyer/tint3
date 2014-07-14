@@ -53,6 +53,11 @@ typedef struct {
     graph * down;
 } net_info;
 
+typedef struct {
+	unsigned char volume_level; // 0-100
+	char volume_size;
+} volume_info;
+
 
 
 batt_info * get_battery_information();
@@ -72,6 +77,7 @@ int get_socket(int port_number, char* ip);
 char * generate_header(char * url, char * host);
 void url_to_memory(char * buffer, int buf_size, char * url, char * host, char * ip);
 char * get_desktops_info();
+volume_info * get_volume_info();
 
 
 

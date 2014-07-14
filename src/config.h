@@ -20,7 +20,7 @@
 
 
 
-#define LEFT_ALIGN "T"
+#define LEFT_ALIGN "T V"
 #define RIGHT_ALIGN " uM dN WB"
 #define CENTER_ALIGN "D"
 
@@ -35,7 +35,7 @@
 #define NET_DOWN_FOREGROUND "#08f"
 
 // Net
-#define NETIFACE "eth0"
+#define NETIFACE "wlp2s0"
 
 
 #define FONT "sakamoto-11"
