@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2014 Ted Meyer
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ */
+
 #include <ctype.h>
 #include <signal.h>
 #include <stdio.h>
@@ -42,10 +61,6 @@ int scale_to(int from, int to, float by) {
 }
 
 int main(int argc, char *argv[]) {
-
-    volume_info * vi = get_volume_info();
-    printf("%i\n", vi -> volume_level);
-
     dc = initdc();
     initfont(dc, font ? font : DEFFONT);
     normcol = initcolor(dc, BAR_BACKGROUND, BAR_FOREGROUND);
@@ -57,7 +72,7 @@ int main(int argc, char *argv[]) {
 
 /* SPACE FOR MODULE FUNCTIONS */
 
-baritem * battery_s(DC * dc) {
+baritem * battery_s() {
     batt_info * info = get_battery_information();
     if (info == NULL) {
         return NULL;
@@ -89,7 +104,7 @@ baritem * spacer_s(char c) {
 }
 
 
-baritem * wmname_s(DC * dc) {
+baritem * wmname_s() {
     FILE * desc = popen("wmname", "r");
     char * msg = malloc(20);
     int msg_c = 0; char msg_s;
@@ -111,7 +126,7 @@ baritem * wmname_s(DC * dc) {
 }
 
 
-baritem * timeclock_s(DC * d) {
+baritem * timeclock_s() {
     FILE * desc = popen("date +'%H:%M:%S'", "r");
     char * msg = malloc(20);
     int msg_c = 0; char msg_s;
@@ -132,7 +147,7 @@ baritem * timeclock_s(DC * d) {
     return result;
 }
 
-baritem * desktops_s(DC * d) {
+baritem * desktops_s() {
     baritem * result = malloc(sizeof(baritem));
     result -> string = get_desktops_info();
     result -> color = initcolor(dc, DESKTOP_FOREGROUND, DESKTOP_BACKGROUND);
@@ -213,11 +228,17 @@ baritem * volume_s() {
     result -> string = malloc(4);
     snprintf(result -> string, 4, "%u", vol -> volume_level);
     result -> color = initcolor(dc, NET_UP_FOREGROUND, NET_UP_BACKGROUND);
-    result -> type = 'N';
+    result -> type = 'V';
     return result;
 }
 
-
+baritem * window_s() {
+    baritem * result = malloc(sizeof(baritem));
+    result -> string = get_active_window_name();
+    result -> color = initcolor(dc, CURRENT_WINDOW_FOREGROUND, CURRENT_WINDOW_BACKGROUND);
+    result -> type = 'A';
+    return result -> string == NULL ? NULL : result;
+}
 
 
 
@@ -226,7 +247,6 @@ baritem * volume_s() {
 
 
 void drawmenu(void) {
-
     dc->x = 0;
     dc->y = 0;
     dc->w = 0;
@@ -299,6 +319,8 @@ baritem * char_to_item(char c) {
             return network_up_s();
         case 'W':
             return weather_s();
+        case 'A':
+            return window_s();
         case 'V':
             return volume_s();
         default:

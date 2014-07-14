@@ -1,2 +1,4 @@
 *.o
 tint3
+*.out
+a.out
