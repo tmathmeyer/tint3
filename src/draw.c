@@ -210,6 +210,7 @@ void resizedc(DC * dc, unsigned int w, unsigned int h) {
 
 
 int textnw(DC * dc, const char * text, size_t len) {
+    len = MIN(MAX_TITLE_LENGTH, len);
     if(dc->font.xft_font) {
         XGlyphInfo gi;
         XftTextExtentsUtf8(dc->dpy, dc->font.xft_font, (const FcChar8*)text, len, &gi);

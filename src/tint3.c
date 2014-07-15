@@ -152,7 +152,7 @@ baritem * desktops_s() {
     result -> string = get_desktops_info();
     result -> color = initcolor(dc, DESKTOP_FOREGROUND, DESKTOP_BACKGROUND);
     result -> type = 'D';
-    return result;
+    return result->string==NULL ? NULL : result;
 }
 
 
