@@ -170,7 +170,7 @@ weather_info * get_weather() {
         url_to_memory(weather_s, weather_parse_size, url, host, "208.59.215.33");
 
         char * temp = strstr(weather_s, "Temperature") + 13;
-        char * humd = strstr(weather_s, "Humidity") + 10;
+        char * humd = strstr(weather_s, "Dew Point") + 11;
 
         sscanf(temp, "%i", &(weather -> temperature));
         sscanf(humd, "%i", &(weather -> humidity));
@@ -196,10 +196,9 @@ volume_info * get_volume_info() {
 		vol_inf -> volume_level = 0;
 		return vol_inf;
 	}
-	fscanf(fp, "%i\n", &temp);
+	vol_inf -> volume_level = fscanf(fp, "%i\n", &temp); // if it fails to read, this will set it as -1. also avoids warning
 	fclose(fp);
 	vol_inf -> volume_level = (unsigned char)temp;
-	
 	return vol_inf;
 }
 
