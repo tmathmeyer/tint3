@@ -196,7 +196,7 @@ volume_info * get_volume_info() {
 		vol_inf -> volume_level = 0;
 		return vol_inf;
 	}
-	vol_inf -> volume_level = fscanf(fp, "%i\n", &temp); // if it fails to read, this will set it as -1. also avoids warning
+	fscanf(fp, "%i\n", &temp);
 	fclose(fp);
 	vol_inf -> volume_level = (unsigned char)temp;
 	return vol_inf;
