@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2014 Ted Meyer
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ */
+
 #include <stdlib.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
@@ -151,7 +170,7 @@ weather_info * get_weather() {
         url_to_memory(weather_s, weather_parse_size, url, host, "208.59.215.33");
 
         char * temp = strstr(weather_s, "Temperature") + 13;
-        char * humd = strstr(weather_s, "Humidity") + 10;
+        char * humd = strstr(weather_s, "Dew Point") + 11;
 
         sscanf(temp, "%i", &(weather -> temperature));
         sscanf(humd, "%i", &(weather -> humidity));
@@ -161,6 +180,26 @@ weather_info * get_weather() {
 
 
     return weather;
+}
+
+volume_info * vol_inf = NULL;
+volume_info * get_volume_info() {
+	if (vol_inf == NULL) {
+		vol_inf = malloc(sizeof(vol_inf));
+		vol_inf -> volume_size = 0; // config later
+	}
+
+	int temp = 0;
+	FILE * fp = popen("amixer get -c "ALSA_DEVICE_ID " Master | tail -n 1 | cut -d '[' -f 2 | sed 's/\\%].*//g'", "r");
+	if (fp == NULL) {
+		vol_inf -> volume_size = -1;
+		vol_inf -> volume_level = 0;
+		return vol_inf;
+	}
+	fscanf(fp, "%i\n", &temp);
+	fclose(fp);
+	vol_inf -> volume_level = (unsigned char)temp;
+	return vol_inf;
 }
 
 char * get_desktops_info() {
@@ -193,7 +232,18 @@ char * get_desktops_info() {
     return result;
 }
 
-
+char * get_active_window_name() {
+    FILE * fp = popen(CURRENT_WINDOW_GETTER, "r");
+    if (fp == NULL) {
+        return NULL;
+    }
+    char * window_title = malloc(256); // max displayed window size
+    if (!fgets(window_title, 100, fp)) {
+        return NULL;
+    }
+    fclose(fp);
+    return window_title;
+}
 
 
 
