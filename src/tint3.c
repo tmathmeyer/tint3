@@ -404,4 +404,9 @@ void setup(void) {
 
     resizedc(dc, mw, height);
     XMapRaised(dc->dpy, win);
+
+    long pval = XInternAtom (dc->dpy, "_NET_WM_WINDOW_TYPE_DOCK", False);
+    long prop = XInternAtom (dc->dpy, "_NET_WM_WINDOW_TYPE", False);
+
+    XChangeProperty (dc->dpy, win, prop, XA_ATOM, 32, PropModeReplace, (unsigned char *) &pval, 1);
 }
