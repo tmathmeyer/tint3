@@ -92,8 +92,8 @@
  *
  */
 
-#define LEFT_ALIGN ""
-#define RIGHT_ALIGN "EMNW"
+#define LEFT_ALIGN "DA"
+#define RIGHT_ALIGN "MNW"
 #define CENTER_ALIGN "T"
 
 
