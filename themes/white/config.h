@@ -31,6 +31,10 @@
 #define CURRENT_WINDOW_BACKGROUND "#ffffff"
 #define CURRENT_WINDOW_FOREGROUND "#000000"
 
+/* MPD INFO COLORS */
+#define MPD_INFO_BACKGROUND "#000000"
+#define MPD_INFO_FOREGROUND "#00aaaa"
+
 
 
 /** UTILS **/
@@ -53,6 +57,22 @@
 /* SOUND CARD ID */
 #define ALSA_DEVICE_ID "0"
 
+/* microseconds between redrawing */
+#define UPDATE_DELAY 200000
+
+/* MPD INFO FORMAT STRING
+ * Describes the format of the MPD info utility
+ * A string containing any of the following patterns:
+ *  %n  The name of the current song.
+ *  %a  The artist of the current song.
+ *  %l  The album title of the current song.
+ *  %c  The current time in the song.
+ *  %r  The amount of time remaining in the current song.
+ *  %t  The total time of the current song.
+ *  %%  Print out a literal '%' character.
+ */
+#define MPD_INFO_FORMAT_STRING "%n - %a | %c/%t"
+
 
 
 /*
@@ -66,13 +86,14 @@
  *   M -> network up graph     NOTE: uses custom icons (see sakamoto font)
  *   W -> Weather              NOTE: uses custom icons (see sakamoto font)
  *   V -> volume
+ *   E -> MPD info
  *
  *   Any character not in the list will show up as a simple string in the bar
  *
  */
 
 #define LEFT_ALIGN "D|A"
-#define RIGHT_ALIGN "V|MNBW"
+#define RIGHT_ALIGN "E|V|MNBW"
 #define CENTER_ALIGN "|T|"
 
 

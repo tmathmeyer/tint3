@@ -248,9 +248,13 @@ baritem * window_s() {
 baritem * mpd_s() {
     baritem * result = malloc(sizeof(baritem));
     result -> string = malloc(64);
-    get_mpd_info(MPD_INFO_FORMAT_STRING, result -> string, 64);
+    if (!get_mpd_info(MPD_INFO_FORMAT_STRING, result -> string, 64)) {
+    	free(result -> string);
+    	free(result);
+    	return NULL;
+    }
     result -> color = initcolor(dc, MPD_INFO_FOREGROUND, MPD_INFO_BACKGROUND);
-    result -> type = 'V';
+    result -> type = 'E';
     return result;
 }
 #endif
@@ -377,12 +381,6 @@ void draw_list(itemlist * list) {
         dc -> x += dc -> w;
         list = list -> next;
     }
-}
-
-unsigned long long microtime() {
-    struct timeval tv;
-    gettimeofday(&tv,NULL);
-    return tv.tv_sec*(unsigned long long)1000000+tv.tv_usec;
 }
 
 void run(void) {
