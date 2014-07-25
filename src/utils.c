@@ -184,19 +184,20 @@ weather_info * get_weather() {
 
 volume_info * vol_inf = NULL;
 volume_info * get_volume_info() {
+    int warning_machine = 0;
 	if (vol_inf == NULL) {
 		vol_inf = malloc(sizeof(vol_inf));
 		vol_inf -> volume_size = 0; // config later
 	}
 
-	int temp = 0;
+	int temp = warning_machine;
 	FILE * fp = popen("amixer get -c "ALSA_DEVICE_ID " Master | tail -n 1 | cut -d '[' -f 2 | sed 's/\\%].*//g'", "r");
 	if (fp == NULL) {
 		vol_inf -> volume_size = -1;
 		vol_inf -> volume_level = 0;
 		return vol_inf;
 	}
-	fscanf(fp, "%i\n", &temp);
+	warning_machine = fscanf(fp, "%i\n", &temp);
 	fclose(fp);
 	vol_inf -> volume_level = (unsigned char)temp;
 	return vol_inf;

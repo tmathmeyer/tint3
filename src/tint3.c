@@ -362,14 +362,18 @@ void draw_list(itemlist * list) {
     }
 }
 
+unsigned long long microtime() {
+    struct timeval tv;
+    gettimeofday(&tv,NULL);
+    return tv.tv_sec*(unsigned long long)1000000+tv.tv_usec;
+}
+
 void run(void) {
-    while(1){
+    XEvent xe;
+    drawmenu();
+    while(!XNextEvent(dc->dpy, &xe)){
         drawmenu();
-        XEvent xe;
-        while(QLength(dc->dpy)) {
-            XNextEvent(dc->dpy, &xe);
-        }
-        usleep(100000);
+        usleep(UPDATE_DELAY);
     }
 }
 

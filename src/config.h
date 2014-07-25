@@ -55,7 +55,8 @@
 /* SOUND CARD ID */
 #define ALSA_DEVICE_ID "1"
 
-
+/* microseconds between redrawing */
+#define UPDATE_DELAY 200000
 
 /*
  *
