@@ -28,3 +28,23 @@ if you use bspwm, and use my default commands for getting desktop information, y
 
 
 *maybe github will support these one day
+
+
+
+Using tint3 without mpd
+=======================
+
+tint3 now supports mpd. It depends on libmpdclient by default. If you want to
+build tint3 without support for mpd, open the file src/config.mk and find these
+three lines:
+
+    MPDLIBS = -lmpdclient
+    MPDDEPS = mpd.o
+    MPDFLAGS= -D_WITH_MPD
+
+Comment out these lines by inserting a '#' character at the beginning of each
+line. When you're done, it will look like this:
+
+    # MPDLIBS = -lmpdclient
+    # MPDDEPS = mpd.o
+    # MPDFLAGS= -D_WITH_MPD
