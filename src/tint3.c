@@ -32,6 +32,10 @@
 #include "config.h"
 #include "defaults.h"
 
+#ifdef _WITH_MPD
+#include "mpd.h"
+#endif
+
 #define INRECT(x,y,rx,ry,rw,rh) ((x) >= (rx) && (x) < (rx)+(rw) && (y) >= (ry) && (y) < (ry)+(rh))
 #define MIN(a,b)                ((a) < (b) ? (a) : (b))
 #define MAX(a,b)                ((a) > (b) ? (a) : (b))
@@ -240,7 +244,16 @@ baritem * window_s() {
     return result -> string == NULL ? NULL : result;
 }
 
-
+#ifdef _WITH_MPD
+baritem * mpd_s() {
+    baritem * result = malloc(sizeof(baritem));
+    result -> string = malloc(64);
+    get_mpd_info(MPD_INFO_FORMAT_STRING, result -> string, 64);
+    result -> color = initcolor(dc, MPD_INFO_FOREGROUND, MPD_INFO_BACKGROUND);
+    result -> type = 'V';
+    return result;
+}
+#endif
 
 
 /* END SPACE FOR MODULE FUNCTIONS */
@@ -323,6 +336,10 @@ baritem * char_to_item(char c) {
             return window_s();
         case 'V':
             return volume_s();
+#ifdef _WITH_MPD
+        case 'E':
+            return mpd_s();
+#endif
         default:
             return spacer_s(c);
     }
