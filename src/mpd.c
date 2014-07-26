@@ -109,7 +109,7 @@ void mpd_info_str(const char fmt[], char* const dest, int len,
     }
 }
 
-void get_mpd_info(const char fmt[], char* const dest, int len)
+int get_mpd_info(const char fmt[], char* const dest, int len)
 {
     struct mpd_connection *conn;
     struct mpd_status *stat;
@@ -118,8 +118,7 @@ void get_mpd_info(const char fmt[], char* const dest, int len)
     conn = mpd_connection_new(NULL, 0, 0);
     if (mpd_connection_get_error(conn) != MPD_ERROR_SUCCESS) {
         mpd_connection_free(conn);
-        fprintf(stderr, "error: Could not connect to mpd.\n");
-        return;
+        return 0;
     }
     stat = mpd_run_status(conn);
     song = mpd_run_current_song(conn);
@@ -129,4 +128,5 @@ void get_mpd_info(const char fmt[], char* const dest, int len)
     mpd_song_free(song);
     mpd_status_free(stat);
     mpd_connection_free(conn);
+    return 1;
 }
