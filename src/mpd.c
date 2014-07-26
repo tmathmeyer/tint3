@@ -107,6 +107,9 @@ void mpd_info_str(const char fmt[], char* const dest, int len,
             }
         }
     }
+    if (loc >= len)
+        --loc;
+    dest[loc] = '\0';
 }
 
 int get_mpd_info(const char fmt[], char* const dest, int len)
