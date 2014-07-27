@@ -167,7 +167,9 @@ weather_info * get_weather() {
         char * host = "weather.noaa.gov";
         char * url  = "/pub/data/observations/metar/decoded/" WEATHER_LOCATION ".TXT";
 
-        url_to_memory(weather_s, weather_parse_size, url, host, "208.59.215.33");
+        if (!url_to_memory(weather_s, weather_parse_size, url, host, "208.59.215.33")) {
+            return NULL;
+        }
 
         char * temp = strstr(weather_s, "Temperature") + 13;
         char * humd = strstr(weather_s, "Dew Point") + 11;
@@ -372,14 +374,20 @@ char * generate_header(char * url, char * host) {
     return filled_header;
 }
 
-void url_to_memory(char * buffer, int buf_size, char * url, char * host, char * ip) {
+int url_to_memory(char * buffer, int buf_size, char * url, char * host, char * ip) {
     int n = 0;
 
     memset(buffer, 0, buf_size);
 
     int sockfd = get_socket(80, ip);
+    if (sockfd < 0) {
+        return 0;
+    }
     char * header = generate_header(url, host);
     n = write(sockfd, header, strlen(header));
+    if (n < 0) {
+        return 0;
+    }
 
     do {
         n = read(sockfd, buffer, buf_size-1);
@@ -389,4 +397,5 @@ void url_to_memory(char * buffer, int buf_size, char * url, char * host, char * 
 
     free(header);
     shutdown(sockfd, 2);
+    return 1;
 }

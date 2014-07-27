@@ -179,7 +179,9 @@ baritem * network_down_s() {
 
 baritem * weather_s() {
     weather_info * winf = get_weather();
-
+    if (winf == NULL) {
+        return NULL;
+    }
     int temp_for_color = winf -> temperature;
 
 
