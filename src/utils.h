@@ -74,6 +74,7 @@ typedef struct {
 typedef struct {
 	unsigned char volume_level; // 0-100
 	char volume_size;
+  unsigned char muted; // 0 or 1
 } volume_info;
 
 
