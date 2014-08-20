@@ -20,3 +20,6 @@ clean:
 
 install: tint3
 	cp tint3 /usr/bin/tint3
+
+uninstall:
+	rm -f /usr/bin/tint3

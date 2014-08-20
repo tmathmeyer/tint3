@@ -201,7 +201,16 @@ volume_info * get_volume_info() {
 	}
 	warning_machine = fscanf(fp, "%i\n", &temp);
 	fclose(fp);
-	vol_inf -> volume_level = (unsigned char)temp;
+	fp = popen("amixer get -c " ALSA_DEVICE_ID " Master | tail -n 1 | cut -d '[' -f 4 | sed 's/].*//g'", "r");
+	vol_inf -> volume_level = temp;
+  if (fp == NULL) {
+    vol_inf -> volume_size = -1;
+    vol_inf -> volume_level = 0;
+    return vol_inf;
+  }
+  warning_machine = fscanf(fp, "o%c\n", (unsigned char *)&temp);
+  fclose(fp);
+	vol_inf -> muted = temp/'n';
 	return vol_inf;
 }
 

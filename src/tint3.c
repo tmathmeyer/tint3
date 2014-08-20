@@ -233,7 +233,7 @@ baritem * volume_s() {
     baritem * result = malloc(sizeof(baritem));
     result -> string = malloc(4);
     snprintf(result -> string, 4, "%u", vol -> volume_level);
-    result -> color = initcolor(dc, NET_UP_FOREGROUND, NET_UP_BACKGROUND);
+    result -> color = vol -> muted ? initcolor(dc, NET_UP_BACKGROUND, NET_UP_FOREGROUND) : initcolor(dc, NET_UP_FOREGROUND, NET_UP_BACKGROUND);
     result -> type = 'V';
     return result;
 }
