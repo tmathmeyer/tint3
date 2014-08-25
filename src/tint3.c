@@ -58,7 +58,6 @@ static Bool topbar = True;
 static DC *dc;
 static Window root, win;
 
-
 int scale_to(int from, int to, float by) {
     float f = (to-from) * by;
     return to-f;
@@ -251,9 +250,9 @@ baritem * mpd_s() {
     baritem * result = malloc(sizeof(baritem));
     result -> string = malloc(64);
     if (!get_mpd_info(MPD_INFO_FORMAT_STRING, result -> string, 64)) {
-    	free(result -> string);
-    	free(result);
-    	return NULL;
+        free(result -> string);
+        free(result);
+        return NULL;
     }
     result -> color = initcolor(dc, MPD_INFO_FOREGROUND, MPD_INFO_BACKGROUND);
     result -> type = 'E';
@@ -283,7 +282,7 @@ void drawmenu(void) {
     itemlist * right = config_to_list(RIGHT_ALIGN);
     itemlist * center = config_to_list(CENTER_ALIGN);
 
-               total_list_length(left);
+    total_list_length(left);
     int rlen = total_list_length(right);
     int clen = total_list_length(center);
 
@@ -419,9 +418,9 @@ void setup(void) {
     wa.background_pixmap = ParentRelative;
     wa.event_mask = ExposureMask | KeyPressMask | VisibilityChangeMask;
     win = XCreateWindow(dc->dpy, root, x, y, mw, height, 0,
-                        DefaultDepth(dc->dpy, screen), CopyFromParent,
-                        DefaultVisual(dc->dpy, screen),
-                        CWOverrideRedirect | CWBackPixmap | CWEventMask, &wa);
+            DefaultDepth(dc->dpy, screen), CopyFromParent,
+            DefaultVisual(dc->dpy, screen),
+            CWOverrideRedirect | CWBackPixmap | CWEventMask, &wa);
 
     resizedc(dc, mw, height);
     XMapRaised(dc->dpy, win);
@@ -457,4 +456,29 @@ void setup(void) {
     prop = XInternAtom (dc->dpy, "_NET_WM_DESKTOP", False);
     long all_desktops = 0xffffffff;
     XChangeProperty(dc->dpy, win, prop, ptyp, 32, PropModeReplace, (unsigned char *) &all_desktops, 1);
+
+    NET_CURRENT_DESKTOP = XInternAtom(dc -> dpy, "_NET_CURRENT_DESKTOP", 0);
+    NET_NUMBER_DESKTOPS = XInternAtom(dc -> dpy, "_NET_NUMBER_OF_DESKTOPS", 0);
+    _CARDINAL_ = XA_CARDINAL;
+}
+
+
+int get_x11_property(Atom at, Atom type) {
+    Atom type_ret;
+    int format_ret = 0, data = 1;
+    unsigned long nitems_ret = 0,
+                  bafter_ret = 0;
+    unsigned char * prop_value = 0;
+    int result;
+
+    result = XGetWindowProperty(dc->dpy, root, at, 0, 0x7fffffff,
+            0, type, &type_ret, &format_ret,
+            &nitems_ret, &bafter_ret, &prop_value);
+
+    if (result == Success && prop_value) {
+        data = ((unsigned long * ) prop_value)[0];
+        //XFree(prop_value);
+    }
+
+    return data;
 }

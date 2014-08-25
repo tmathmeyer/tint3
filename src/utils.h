@@ -98,11 +98,18 @@ int url_to_memory(char * buffer, int buf_size, char * url, char * host, char * i
 char * get_desktops_info();
 volume_info * get_volume_info();
 char * get_active_window_name();
-
+int get_x11_property(Atom at, Atom type);
 
 
 
 weather_info * get_weather();
+
+Atom NET_NUMBER_DESKTOPS,
+     NET_CURRENT_DESKTOP;
+
+Atom _CARDINAL_;
+
+
 
 
 /* SPECIAL CHARACTERS */

@@ -214,20 +214,19 @@ volume_info * get_volume_info() {
 	return vol_inf;
 }
 
-char * get_desktops_info() {
-    FILE * query = popen(DESKTOP_QUERY, "r");
-    FILE * count = popen(DESKTOP_COUNT, "r");
-    if (count == NULL || query == NULL) {
-        return NULL;
-    }
-    int numdesk = 0;
-    int curdesk = 0;
-    int swap = 0;
+int get_number_of_desktops () {
+    return get_x11_property(NET_NUMBER_DESKTOPS, _CARDINAL_);
+}
 
-    swap = fscanf(query, "%i", &curdesk);
-    swap = fscanf(count, "%i", &numdesk);
-    fclose(count);
-    fclose(query);
+int get_current_desktop () {
+    return get_x11_property(NET_CURRENT_DESKTOP, _CARDINAL_);
+}
+
+
+char * get_desktops_info() {
+    int numdesk = 12;//get_number_of_desktops();
+    int curdesk = 0;//get_current_desktop();
+    int swap = 0;
 
     int dsktplen = numdesk * 4 - 1;
     char * result = malloc(dsktplen);
@@ -240,6 +239,11 @@ char * get_desktops_info() {
     result[(curdesk-DESKTOP_ZIDEX)*4 + 0] = DESKTOP_CURRENT[0];
     result[(curdesk-DESKTOP_ZIDEX)*4 + 1] = DESKTOP_CURRENT[1];
     result[(curdesk-DESKTOP_ZIDEX)*4 + 2] = DESKTOP_CURRENT[2];
+
+    char * res = malloc(3);
+    res[0] = 'F';
+    res[1] = 'U';
+    res[2] = 0;
 
     return result;
 }
