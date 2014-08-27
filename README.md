@@ -48,3 +48,6 @@ line. When you're done, it will look like this:
     # MPDLIBS = -lmpdclient
     # MPDDEPS = mpd.o
     # MPDFLAGS= -D_WITH_MPD
+
+
+#### see the official mirror at git.tmathmeyer.com
