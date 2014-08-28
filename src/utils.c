@@ -224,8 +224,8 @@ int get_current_desktop () {
 
 
 char * get_desktops_info() {
-    int numdesk = 12;//get_number_of_desktops();
-    int curdesk = 0;//get_current_desktop();
+    int numdesk = get_number_of_desktops();
+    int curdesk = get_current_desktop();
     int swap = 0;
 
     int dsktplen = numdesk * 4 - 1;
@@ -236,14 +236,9 @@ char * get_desktops_info() {
         result[swap] = sqp==3?' ':DESKTOP_DEFAULT[sqp];
     }
 
-    result[(curdesk-DESKTOP_ZIDEX)*4 + 0] = DESKTOP_CURRENT[0];
-    result[(curdesk-DESKTOP_ZIDEX)*4 + 1] = DESKTOP_CURRENT[1];
-    result[(curdesk-DESKTOP_ZIDEX)*4 + 2] = DESKTOP_CURRENT[2];
-
-    char * res = malloc(3);
-    res[0] = 'F';
-    res[1] = 'U';
-    res[2] = 0;
+    result[curdesk*4 + 0] = DESKTOP_CURRENT[0];
+    result[curdesk*4 + 1] = DESKTOP_CURRENT[1];
+    result[curdesk*4 + 2] = DESKTOP_CURRENT[2];
 
     return result;
 }

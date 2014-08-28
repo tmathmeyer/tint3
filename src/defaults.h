@@ -113,18 +113,6 @@
 #define DESKTOP_CURRENT "◆"
 #endif
 
-#ifndef DESKTOP_QUERY
-#define DESKTOP_QUERY "echo 1"
-#endif
-
-#ifndef DESKTOP_COUNT
-#define DESKTOP_COUNT "echo 10"
-#endif
-
-#ifndef DESKTOP_ZIDEX
-#define DESKTOP_ZIDEX 1
-#endif
-
 #ifndef DESKTOP_FOREGROUND
 #define DESKTOP_FOREGROUND "#bbbbbb"
 #endif

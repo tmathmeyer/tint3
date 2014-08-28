@@ -3,8 +3,8 @@
 
 /** COLORS **/
 /* BAR DEFAULTS */
-#define BAR_FOREGROUND "#ffffff"
-#define BAR_BACKGROUND "#bbbbbb"
+#define BAR_FOREGROUND "#000000"
+#define BAR_BACKGROUND "#eeeeee"
 
 /* BATTERY COLORS */
 #define BATTERY_FOREGROUND_HIGH "#0f0"
@@ -14,22 +14,24 @@
 #define BATTERY_FOREGROUND_LOW "#f00"
 
 /* CLOCK COLORS */
-#define CLOCK_BACKGROUND "#ffffff"
-#define CLOCK_FOREGROUND "#000000"
+#define CLOCK_BACKGROUND "#000000"
+#define CLOCK_FOREGROUND "#00aaaa"
 
 /* NETWORK COLORS */
-#define NET_UP_FOREGROUND "#222222"
-#define NET_UP_BACKGROUND "#ffffff"
-#define NET_DOWN_FOREGROUND "#000000"
-#define NET_DOWN_BACKGROUND "#ffffff"
+#define NET_UP_FOREGROUND "#777"
+#define NET_UP_BACKGROUND "#000"
+#define NET_DOWN_FOREGROUND "#aaa"
+#define NET_DOWN_BACKGROUND "#000"
 
 /* MULTI-DESKTOP COLORS */
-#define DESKTOP_FOREGROUND "#000000"
-#define DESKTOP_BACKGROUND "#ffffff"
+#define DESKTOP_FOREGROUND "#00aaaa"
+#define DESKTOP_BACKGROUND "#000000"
 
 /* ACTIVE WINDOW TITLE COLORS */
-#define CURRENT_WINDOW_BACKGROUND "#ffffff"
-#define CURRENT_WINDOW_FOREGROUND "#000000"
+#define CURRENT_WINDOW_BACKGROUND "#000000"
+#define CURRENT_WINDOW_FOREGROUND "#00aaaa"
+
+#define WEATHER_BACKGROUND "#000000"
 
 /* MPD INFO COLORS */
 #define MPD_INFO_BACKGROUND "#000000"
@@ -39,12 +41,9 @@
 
 /** UTILS **/
 /* NETWORK INTERFACE */
-#define NETIFACE "wlp2s0"
+#define NETIFACE "eth0"
 
 /* MULTIDESKTOP QUERY */
-#define DESKTOP_QUERY "bspc query -D | grep -nx $(bspc query --desktops --desktop focused)" // executable
-#define DESKTOP_COUNT "bspc query -D | wc -l" // executable
-#define DESKTOP_ZIDEX 1 // is DESKTOP_QUERY from {0 -> DESKTOP_COUNT-1}?? or {1 -> DESKTOP_COUNT}
 #define DESKTOP_CURRENT "◆" //◇◆◈○◉
 #define DESKTOP_DEFAULT "◇"
 
@@ -55,7 +54,7 @@
 #define CURRENT_WINDOW_GETTER "xtitle" // executable
 
 /* SOUND CARD ID */
-#define ALSA_DEVICE_ID "0"
+#define ALSA_DEVICE_ID "1"
 
 /* microseconds between redrawing */
 #define UPDATE_DELAY 200000
@@ -72,8 +71,6 @@
  *  %%  Print out a literal '%' character.
  */
 #define MPD_INFO_FORMAT_STRING "%n - %a | %c/%t"
-
-
 
 /*
  *
@@ -92,9 +89,9 @@
  *
  */
 
-#define LEFT_ALIGN "D|A"
-#define RIGHT_ALIGN "E|V|MNBW"
-#define CENTER_ALIGN "|T|"
+#define LEFT_ALIGN "DA"
+#define RIGHT_ALIGN "MNWB"
+#define CENTER_ALIGN "T"
 
 
 
