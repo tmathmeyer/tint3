@@ -21,9 +21,12 @@ MPDLIBS = -lmpdclient
 MPDDEPS = mpd.o
 MPDFLAGS= -D_WITH_MPD
 
+#lxcb libraries
+LXCBLIBS = -lxcb -lxcb-icccm -lxcb-ewmh
+
 # includes and libs
 INCS = -I${X11INC} -I${XFTINC}
-LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${XFTLIBS} ${MPDLIBS}
+LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${XFTLIBS} ${MPDLIBS} ${LXCBLIBS}
 
 # flags
 CPPFLAGS = -D_BSD_SOURCE -DVERSION=\"${VERSION}\" ${XINERAMAFLAGS} ${MPDFLAGS}

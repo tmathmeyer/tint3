@@ -51,3 +51,10 @@ line. When you're done, it will look like this:
 
 
 #### see the official mirror at git.tmathmeyer.com
+
+##TODO:
+ - [ ] theme switcher (hopefully with an api!)
+ - [ ] clean up defaults.h
+ - [x] remove the call to xtitle
+ - [ ] add clock format string
+ - [ ] add support for pianobar (pandora internet radio)

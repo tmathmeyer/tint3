@@ -4,7 +4,7 @@ include config.mk
 
 all: tint3
 
-tint3: tint3.o draw.o utils.o ${MPDDEPS}
+tint3: tint3.o draw.o utils.o lwxt.o ${MPDDEPS}
 
 .c.o: config.mk
 	@echo CC -c $<

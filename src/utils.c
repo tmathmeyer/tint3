@@ -27,10 +27,12 @@
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
+#include <xcb/xcb.h>
+
 #include "config.h"
 #include "defaults.h"
 #include "utils.h"
-
+#include "lwxt.h"
 
 batt_info * get_battery_information() {
     batt_info * bi = malloc(sizeof (batt_info));
@@ -244,15 +246,8 @@ char * get_desktops_info() {
 }
 
 char * get_active_window_name() {
-    FILE * fp = popen(CURRENT_WINDOW_GETTER, "r");
-    if (fp == NULL) {
-        return NULL;
-    }
     char * window_title = malloc(256); // max displayed window size
-    if (!fgets(window_title, 100, fp)) {
-        return NULL;
-    }
-    fclose(fp);
+    get_title(window_title, 256);
     return window_title;
 }
 

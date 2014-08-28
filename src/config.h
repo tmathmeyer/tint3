@@ -50,9 +50,6 @@
 /* FONT */
 #define FONT "sakamoto-11"
 
-/* WINDOW TITLE QUERY */
-#define CURRENT_WINDOW_GETTER "xtitle" // executable
-
 /* SOUND CARD ID */
 #define ALSA_DEVICE_ID "1"
 
