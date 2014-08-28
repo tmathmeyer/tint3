@@ -41,7 +41,7 @@
 
 /** UTILS **/
 /* NETWORK INTERFACE */
-#define NETIFACE "eth0"
+#define NETIFACE "wlp2s0"
 
 /* MULTIDESKTOP QUERY */
 #define DESKTOP_CURRENT "◆" //◇◆◈○◉

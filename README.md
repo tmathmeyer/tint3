@@ -1,18 +1,18 @@
 tint3
 ===============
-####tint3 is not a fork of tint2.
-####tint3 does not use any code from tint2.
-####tint3 is not (for now) backwards compatible with tint2.
-####tint2 appears to be a dead project, has an unmaintainable codebase, and has strayed from it's original goal of being lightweight.
+####tint3 is
+ - a bar for the X11 window server
+ - lightweight
+ - always up to date, with new features being added continuously
+ - configured with header files (it's a C project)
+ - NOT BASED ON tint2 (just a similar name)
+ - free software
+ - open to contribution
 
-######*much of the code wrapping X is pulled from the suckless tools, namely dmenu
-######*like many of the suckless tools, tint3 is configured with header files. I eventually hope to write a parser from tint2rc to tint3/config.h.
+####Contributions
+tint3 uses feature branches. If you would like to submit a PR, submit it on a feature branch. all external PR's to master will be closed.
 
-######**tint3 uses feature branches. If you would like to submit a PR, submit it on a feature branch. all external PR's to master will be closed.
-
-if you use bspwm, and use my default commands for getting desktop information, you can't start tint3 from inside tmux. It works fine with dmenu however
-
-##Screenshots (and screencasts*)
+####Screenshots
 ![Clock](screenshots/clock.png)
 
 ![Desktops](screenshots/desktops.png)
@@ -21,13 +21,8 @@ if you use bspwm, and use my default commands for getting desktop information, y
 
 ![Weather](screenshots/thermometer.png)
 
-
-
-
-
-
-
-*maybe github will support these one day
+#### Mirrors
+- git.tmathmeyer.com
 
 
 
@@ -50,11 +45,12 @@ line. When you're done, it will look like this:
     # MPDFLAGS= -D_WITH_MPD
 
 
-#### see the official mirror at git.tmathmeyer.com
+
 
 ##TODO:
  - [ ] theme switcher (hopefully with an api!)
  - [ ] clean up defaults.h
- - [x] remove the call to xtitle
  - [ ] add clock format string
  - [ ] add support for pianobar (pandora internet radio)
+ - [ ] mouse and notification support
+ - [ ] api for adding modules
