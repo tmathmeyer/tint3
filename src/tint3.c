@@ -477,7 +477,7 @@ int get_x11_property(Atom at, Atom type) {
 
     if (result == Success && prop_value) {
         data = ((unsigned long * ) prop_value)[0];
-        //XFree(prop_value);
+        XFree(prop_value);
     }
 
     return data;
