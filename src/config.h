@@ -51,10 +51,34 @@
 #define FONT "sakamoto-11"
 
 /* SOUND CARD ID */
-#define ALSA_DEVICE_ID "1"
+#define ALSA_DEVICE_ID "0"
+
+/* WEATHER LOCATION  */
+#define WEATHER_LOCATION "KORH" // worcester
 
 /* microseconds between redrawing */
 #define UPDATE_DELAY 200000
+
+/* TIME FORMAT STRING
+ * for a detailed list of patterns used by the unix 'date'
+ * program, see 'date --help' or 'man date'
+ * some common ones:
+ *
+ * %[A/a] => full/abbreviated weekday name (Sunday/Sun)
+ * %[B/b] => full/abbreviated month name (January/Jan)
+ * %c     => full time and date
+ * %D     => same as %m/%d/%y
+ * %m     => month (number)
+ * %d     => day (number)
+ * %y     => year (full)
+ * %[H/I] => hour, 24 / 12 format
+ * %M     => minute of hour
+ * %S     => second of minute
+ * %T     => same as %H/%M/%S
+ *
+ *
+ */
+#define CLOCK_FORMAT "%T (%a.%m)"
 
 /* MPD INFO FORMAT STRING
  * Describes the format of the MPD info utility
@@ -89,7 +113,7 @@
 
 
 #define LEFT_ALIGN "DA"
-#define RIGHT_ALIGN "MNWB"
+#define RIGHT_ALIGN "MNWVB"
 #define CENTER_ALIGN "T"
 
 

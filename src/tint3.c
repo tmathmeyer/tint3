@@ -130,7 +130,7 @@ baritem * wmname_s() {
 
 
 baritem * timeclock_s() {
-    FILE * desc = popen("date +'%H:%M:%S'", "r");
+    FILE * desc = popen("date +'" CLOCK_FORMAT "'", "r");
     char * msg = malloc(20);
     int msg_c = 0; char msg_s;
     if (desc) {

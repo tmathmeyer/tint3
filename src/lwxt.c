@@ -18,29 +18,40 @@ xcb_connection_t *dpy;
 int default_screen;
 xcb_window_t root;
 
+int _setup = 1;
+
 void get_title(char * buffer, size_t buf_len) {
-	setup();
+	if (_setup) {
+		if (setup()) {
+			return;
+		}
+	}
 	xcb_window_t win = XCB_NONE;
 	if (get_active_window(&win)) {
 		get_window_title(win, buffer, buf_len);
 	}
 
-	xcb_ewmh_connection_wipe(ewmh);
-	free(ewmh);
-	xcb_disconnect(dpy);
+	//xcb_ewmh_connection_wipe(ewmh);
+	//free(ewmh);
+	//xcb_disconnect(dpy);
 }
 
-void setup(void) {
+int setup(void) {
+	_setup = 0;
 	dpy = xcb_connect(NULL, &default_screen);
-	if (xcb_connection_has_error(dpy))
-		exit(EXIT_FAILURE);		
+	if (xcb_connection_has_error(dpy)) {
+		return 1;	
+	}
 	xcb_screen_t *screen = xcb_setup_roots_iterator(xcb_get_setup(dpy)).data;
-	if (screen == NULL)
-		exit(EXIT_FAILURE);	
+	if (screen == NULL) {
+		return 1;	
+	}
 	root = screen->root;
 	ewmh = malloc(sizeof(xcb_ewmh_connection_t));
-	if (xcb_ewmh_init_atoms_replies(ewmh, xcb_ewmh_init_atoms(dpy, ewmh), NULL) == 0)
-		exit(EXIT_FAILURE);	
+	if (xcb_ewmh_init_atoms_replies(ewmh, xcb_ewmh_init_atoms(dpy, ewmh), NULL) == 0) {
+		return 1;
+	}
+	return 0;
 }
 
 char * expand_escapes(const char *src) {
@@ -81,8 +92,10 @@ void get_window_title(xcb_window_t win, char *title, size_t len) {
 			title[title_len] = '\0';
 		}
 	}
-	if (ewmh_txt_prop.strings != NULL)
+	if (ewmh_txt_prop.strings != NULL) {
 		xcb_ewmh_get_utf8_strings_reply_wipe(&ewmh_txt_prop);
-	if (icccm_txt_prop.name != NULL)
+	}
+	if (icccm_txt_prop.name != NULL) {
 		xcb_icccm_get_text_property_reply_wipe(&icccm_txt_prop);
+	}
 }
