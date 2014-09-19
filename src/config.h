@@ -78,7 +78,7 @@
  *
  *
  */
-#define CLOCK_FORMAT "%T (%a.%m)"
+#define CLOCK_FORMAT "%T (%a.%d)"
 
 /* MPD INFO FORMAT STRING
  * Describes the format of the MPD info utility

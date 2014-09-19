@@ -125,3 +125,6 @@
 #define ALSA_DEVICE_ID "0"
 #endif
 
+#ifndef CLOCK_FORMAT
+#define "%T"
+#endif
