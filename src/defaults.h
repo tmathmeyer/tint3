@@ -121,10 +121,30 @@
 #define DESKTOP_BACKGROUND "#222222"
 #endif
 
+#ifndef VOLUME_FOREGROUND
+#define VOLUME_FOREGROUND "#bbbbbb"
+#endif
+
+#ifndef VOLUME_BACKGROUND
+#define VOLUME_BACKGROUND "#222222"
+#endif
+
 #ifndef ALSA_DEVICE_ID
 #define ALSA_DEVICE_ID "0"
 #endif
 
 #ifndef CLOCK_FORMAT
 #define "%T"
+#endif
+
+#ifndef BAR_BORDER
+#define BAR_BORDER 0
+#endif
+
+#ifndef BAR_MARGIN
+#define BAR_MARGIN 0
+#endif
+
+#ifndef BAR_PADDING
+#define BAR_PADDING 0
 #endif

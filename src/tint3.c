@@ -46,17 +46,31 @@ static void drawmenu(void);
 static void run(void);
 static void setup(void);
 
-static int bh, mw, mh;
+
 static int height = 0;
-static int itemcount = 0;
-static int lines = 0;
+static int width  = 0;
+
+
 static const char *font = FONT;
 static ColorSet *normcol;
 
-static Atom utf8;
 static Bool topbar = True;
 static DC *dc;
 static Window root, win;
+
+
+// get the height of the bar
+int get_bar_height(int font_height) {
+    return font_height - 1 + 2 * (BAR_PADDING + BAR_BORDER);
+}
+
+// get the bar width
+int get_bar_width(int display_width) {
+    return display_width - 2 * BAR_MARGIN;
+}
+
+
+
 
 int scale_to(int from, int to, float by) {
     float f = (to-from) * by;
@@ -232,7 +246,7 @@ baritem * volume_s() {
     baritem * result = malloc(sizeof(baritem));
     result -> string = malloc(4);
     snprintf(result -> string, 4, "%u", vol -> volume_level);
-    result -> color = vol -> muted ? initcolor(dc, NET_UP_BACKGROUND, NET_UP_FOREGROUND) : initcolor(dc, NET_UP_FOREGROUND, NET_UP_BACKGROUND);
+    result -> color = vol -> muted ? initcolor(dc, VOLUME_BACKGROUND, VOLUME_FOREGROUND) : initcolor(dc, NET_UP_FOREGROUND, NET_UP_BACKGROUND);
     result -> type = 'V';
     return result;
 }
@@ -264,6 +278,62 @@ baritem * mpd_s() {
 /* END SPACE FOR MODULE FUNCTIONS */
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void drawmenu(void) {
     dc->x = 0;
     dc->y = 0;
@@ -272,11 +342,10 @@ void drawmenu(void) {
 
     dc->text_offset_y = 0;
 
-    if(mh < height) {
-        dc->text_offset_y = (height - mh) / 2;
-    }
-
-    drawrect(dc, 0, 0, mw, height, True, normcol->BG);
+    //drawrect_modifier(dc, 0, 0, width, height, True, normcol->BG);
+    draw_rectangle(dc, 0, 0, width+2, height+2, True, normcol -> FG);
+    draw_rectangle(dc, BAR_BORDER, BAR_BORDER,
+                   width-2*BAR_BORDER, height-2*BAR_BORDER, True, normcol -> BG);
 
     itemlist * left = config_to_list(LEFT_ALIGN);
     itemlist * right = config_to_list(RIGHT_ALIGN);
@@ -287,16 +356,16 @@ void drawmenu(void) {
     int clen = total_list_length(center);
 
     draw_list(left);
-    dc -> x = mw-rlen;
+    dc -> x = width-rlen;
     draw_list(right);
-    dc -> x = (mw-clen)/2;
+    dc -> x = (width-clen)/2;
     draw_list(center);
 
     free_list(left);
     free_list(right);
     free_list(center);
 
-    mapdc(dc, win, mw, height);
+    mapdc(dc, win, width, height);
 }
 
 
@@ -393,36 +462,48 @@ void run(void) {
     }
 }
 
+// gets the vertical position of the bar, depending on margins and position
+int vertical_position(Bool bar_on_top, int display_height, int bar_height) {
+    if (bar_on_top) {
+        return BAR_MARGIN;
+    } else {
+        return display_height - (bar_height + BAR_MARGIN);
+    }
+}
+
+int horizontal_position() {
+    return BAR_MARGIN;
+}
+
+
 // TODO: clean this shit
 void setup(void) {
-    int x, y, screen;
+    dc -> border_width = BAR_BORDER;
+
+    int x, y;
     XSetWindowAttributes wa;
 
-    screen = DefaultScreen(dc->dpy);
+    int screen = DefaultScreen(dc->dpy);
     root = RootWindow(dc->dpy, screen);
-    utf8 = XInternAtom(dc->dpy, "UTF8_STRING", False);
 
     /* menu geometry */
-    bh = dc->font.height + 2;
-    lines = MAX(lines, 0);
-    mh = (MAX(MIN(lines + 1, itemcount), 1)) * bh;
+    height = get_bar_height(dc->font.height);
+    width  = get_bar_width(DisplayWidth(dc->dpy, screen));
 
-    if(height < mh) {
-        height = mh;
-    }
-    x = 0;
-    y = topbar ? 0 : DisplayHeight(dc->dpy, screen) - height;
-    mw = DisplayWidth(dc->dpy, screen);
+    x = horizontal_position();
+    y = vertical_position(topbar, DisplayHeight(dc->dpy, screen), height);
+
+
     /* menu window */
     wa.override_redirect = True;
     wa.background_pixmap = ParentRelative;
     wa.event_mask = ExposureMask | KeyPressMask | VisibilityChangeMask;
-    win = XCreateWindow(dc->dpy, root, x, y, mw, height, 0,
+    win = XCreateWindow(dc->dpy, root, x, y, width, height, 0,
             DefaultDepth(dc->dpy, screen), CopyFromParent,
             DefaultVisual(dc->dpy, screen),
             CWOverrideRedirect | CWBackPixmap | CWEventMask, &wa);
 
-    resizedc(dc, mw, height);
+    resizedc(dc, width, height);
     XMapRaised(dc->dpy, win);
 
     long pval = XInternAtom (dc->dpy, "_NET_WM_WINDOW_TYPE_DOCK", False);
@@ -435,11 +516,11 @@ void setup(void) {
     long ptyp = XInternAtom (dc->dpy, "CARDINAL", False);
     int16_t strut[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     if (topbar) {
-        strut[2] = height;
-        strut[9] = mw;
+        strut[2] = height+y;
+        strut[9] = width;
     } else {
         strut[3] = height;
-        strut[11] = mw;
+        strut[11] = width;
     }
     XChangeProperty (dc->dpy, win, prop, ptyp, 16, PropModeReplace, (unsigned char *) &strut[0], 12);
 

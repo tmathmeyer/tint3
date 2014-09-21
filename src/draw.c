@@ -36,19 +36,15 @@
 #define MAX_TITLE_LENGTH 50
 
 // draw a rectangle on the screen; either solid or bordered
-void drawrect(DC * dc, int x, int y, unint w, unint h, Bool fill, unlong color) {
-    //create rectangle and set foreground context color
-    XRectangle r = { dc->x + x, dc->y + y, w, h };
-    XSetForeground(dc->dpy, dc->gc, color);
+void drawrect_modifier(DC * dc, int x, int y, unint w, unint h, Bool fill, unlong color) {
+    draw_rectangle(dc, dc->x + x, dc->y +y, w, h, fill, color);
+}
 
-    // shrink size by one if it's a border
-    if(!fill) {
-        r.width -= 1;
-        r.height -= 1;
-    }
+void draw_rectangle(DC * dc, unint x, unint y, unint w, unint h, Bool fill, unlong color) {
+    XRectangle rect = {x, y, w, h};
+    XSetForeground(dc -> dpy, dc -> gc, color);
 
-    // draw on screen
-    (fill ? XFillRectangles : XDrawRectangles)(dc->dpy, dc->canvas, dc->gc, &r, 1);
+    (fill ? XFillRectangles : XDrawRectangles)(dc -> dpy, dc -> canvas, dc -> gc, &rect, 1);
 }
 
 // draw text
@@ -70,7 +66,9 @@ void drawtext(DC *dc, const char * text, ColorSet *col) {
     if(mn < n)
         for(n = MAX(mn-3, 0); n < mn; buf[n++] = '.');
 
-    drawrect(dc, 0, 0, dc->w, dc->h, True, col->BG);
+    drawrect_modifier(dc, dc->border_width, dc->border_width,
+                          dc->w-(2*dc->border_width), dc->h-(2*dc->border_width),
+                          True, col->BG);
     drawtextn(dc, buf, mn, col);
 }
 
