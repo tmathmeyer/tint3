@@ -18,9 +18,9 @@
 #define CLOCK_FOREGROUND "#AA8639"
 
 /* NETWORK COLORS */
-#define NET_UP_FOREGROUND "#777"
+#define NET_UP_FOREGROUND "#748DA6"
 #define NET_UP_BACKGROUND "#252117"
-#define NET_DOWN_FOREGROUND "#aaa"
+#define NET_DOWN_FOREGROUND "#D58D6B"
 #define NET_DOWN_BACKGROUND "#252117"
 
 /* MULTI-DESKTOP COLORS */
@@ -52,7 +52,7 @@
 #define NETIFACE "wlp2s0"
 
 /* MULTIDESKTOP QUERY */
-#define DESKTOP_CURRENT "◈" //◇◆◈○◉
+#define DESKTOP_CURRENT "◆" //◇◆◈○◉
 #define DESKTOP_DEFAULT "◇"
 
 /* FONT */
@@ -86,7 +86,7 @@
  *
  *
  */
-#define CLOCK_FORMAT "%T (%a.%d)"
+#define CLOCK_FORMAT "%a/%d %T"
 
 /* MPD INFO FORMAT STRING
  * Describes the format of the MPD info utility
