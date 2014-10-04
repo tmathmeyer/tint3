@@ -17,6 +17,8 @@
  *
  */
 
+#define _DEFAULT_SOURCE
+
 #include <stdlib.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>

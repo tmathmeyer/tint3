@@ -17,6 +17,8 @@
  *
  */
 
+#define _DEFAULT_SOURCE
+
 #include <locale.h>
 #include <stdarg.h>
 #include <stdio.h>

@@ -17,6 +17,8 @@
  *
  */
 
+#define _DEFAULT_SOURCE
+
 #include <ctype.h>
 #include <signal.h>
 #include <stdio.h>

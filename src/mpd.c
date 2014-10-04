@@ -21,6 +21,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define _DEFAULT_SOURCE
+
 #include "mpd.h"
 
 void mpd_info_str(const char fmt[], char* const dest, int len,
