@@ -342,7 +342,6 @@ void drawmenu(void) {
 
     dc->text_offset_y = 0;
 
-    //drawrect_modifier(dc, 0, 0, width, height, True, normcol->BG);
     draw_rectangle(dc, 0, 0, width+2, height+2, True, normcol -> FG);
     draw_rectangle(dc, BAR_BORDER, BAR_BORDER,
                    width-2*BAR_BORDER, height-2*BAR_BORDER, True, normcol -> BG);

@@ -23,3 +23,5 @@ install: tint3
 
 uninstall:
 	rm -f /usr/bin/tint3
+
+update: clean tint3
