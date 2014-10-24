@@ -42,14 +42,14 @@
 #define MPD_INFO_FOREGROUND "#00aaaa"
 
 /* Positioning information */
-#define BAR_BORDER 2
-#define BAR_MARGIN 20
+#define BAR_BORDER 1
+#define BAR_MARGIN 5
 #define BAR_PADDING 1
 
 
 /** UTILS **/
 /* NETWORK INTERFACE */
-#define NETIFACE "wlp2s0"
+#define NETIFACE "wlp3s0"
 
 /* MULTIDESKTOP QUERY */
 #define DESKTOP_CURRENT "◆" //◇◆◈○◉
@@ -59,7 +59,7 @@
 #define FONT "sakamoto-11"
 
 /* SOUND CARD ID */
-#define ALSA_DEVICE_ID "0"
+#define ALSA_DEVICE_ID "1"
 
 /* WEATHER LOCATION  */
 #define WEATHER_LOCATION "KORH" // worcester
