@@ -1,0 +1,98 @@
+[desktops]
+  id workspaces
+  forground #ccffcc
+  backgrund #000000
+
+[active]
+  id active
+  forground #ff000
+  background #000000
+
+[time]
+  id clock
+  forground #00ffff
+  background #000000
+
+[weather]
+  id scale
+  forground #aabbcc
+  background #ccbbaa
+  type temperature kelvin
+  source weather KBOS
+
+[download]
+  id graph
+  source network wlp3s0 down
+  forground #ff00ff
+  background #ddffaa
+
+[upload]
+  id graph
+  source network wlp3s0 up
+  forground #aaaaaa
+  background #000000
+
+[battery1]
+  id scale
+  forgound #012345
+  background #654321
+  type unknown
+  source battery 1
+
+[[bar]]
+  border 1 #ffffff
+  margin 5
+  background #000000
+  location top
+  left
+    desktops
+    active
+  center
+    clock
+  right
+    upload
+    download
+    battery1
+
+
+# single bracket blocks, like the following, denote individual named blocks on the bar
+#
+# [name]
+#   id (identifier)
+#   forground (hex value)
+#   background (hex value)
+#   (extra information)
+#
+# where an id can be any of the following:
+#  graph:
+#    standard bar graph, only works with sakamoto-font
+#    so far only works on networks
+#  scale:
+#    graduated background, slowly fading from forground
+#    to background based on a 0-100 scale. only supports
+#    raw number streame
+#
+# time:
+#   a clock, requires a format string
+#
+# workspaces:
+#  workspace tracker, requires color
+#  further configuration can be achieved
+#  through a recompilation of the bar
+#
+# text:
+#  raw text
+#
+#
+#forground and background are both required for ALL blocks, and must be given a 6 digit hex string
+#
+#some blocks have other information, such as source, type, and format strings
+#
+#
+#
+#
+#
+#
+#
+#
+#
