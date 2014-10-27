@@ -59,7 +59,7 @@
 #define FONT "sakamoto-11"
 
 /* SOUND CARD ID */
-#define ALSA_DEVICE_ID "1"
+#define ALSA_DEVICE_ID "0"
 
 /* WEATHER LOCATION  */
 #define WEATHER_LOCATION "KORH" // worcester

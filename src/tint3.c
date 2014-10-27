@@ -33,6 +33,7 @@
 #include "utils.h"
 #include "config.h"
 #include "defaults.h"
+#include "confparse.h"
 
 #ifdef _WITH_MPD
 #include "mpd.h"
@@ -59,6 +60,8 @@ static ColorSet *normcol;
 static Bool topbar = True;
 static DC *dc;
 static Window root, win;
+
+static bar_config * configuration;
 
 
 // get the height of the bar
@@ -100,7 +103,6 @@ baritem * battery_s() {
     snprintf(inf_as_str, 20, "%i %s", info -> percentage, info -> icon);
     baritem * result = malloc(sizeof(baritem));
     result -> string = inf_as_str;
-    result -> type = 'B';
     if (info -> percentage > BATTERY_CUTOF_HIGH) {
         result -> color = initcolor(dc, BATTERY_FOREGROUND_HIGH, BATTERY_BACKGROUND_HIGH);
     } else if (info -> percentage < BATTERY_CUTOF_LOW) {
@@ -117,7 +119,6 @@ baritem * spacer_s(char c) {
     result -> string = malloc(2);
     (result -> string)[0] = c;
     (result -> string)[1] = 0;
-    result -> type = ' ';
     result -> color = initcolor(dc, BAR_BACKGROUND, BAR_FOREGROUND);
     return result;
 }
@@ -140,7 +141,6 @@ baritem * wmname_s() {
     baritem * result = malloc(sizeof(baritem));
     result -> string = msg;
     result -> color = initcolor(dc, WMNAME_FOREGROUND, WMNAME_BACKGROUND);
-    result -> type = 'W';
     return result;
 }
 
@@ -162,7 +162,6 @@ baritem * timeclock_s() {
     baritem * result = malloc(sizeof(baritem));
     result -> string = msg;
     result -> color = initcolor(dc, CLOCK_FOREGROUND, CLOCK_BACKGROUND);
-    result -> type = 'T';
     return result;
 }
 
@@ -170,7 +169,6 @@ baritem * desktops_s() {
     baritem * result = malloc(sizeof(baritem));
     result -> string = get_desktops_info();
     result -> color = initcolor(dc, DESKTOP_FOREGROUND, DESKTOP_BACKGROUND);
-    result -> type = 'D';
     return result->string==NULL ? NULL : result;
 }
 
@@ -180,7 +178,6 @@ baritem * network_up_s() {
     baritem * result = malloc(sizeof(baritem));
     result -> string = graph_to_string(netstack -> up);
     result -> color = initcolor(dc, NET_UP_FOREGROUND, NET_UP_BACKGROUND);
-    result -> type = 'N';
     return result;
 }
 baritem * network_down_s() {
@@ -188,7 +185,6 @@ baritem * network_down_s() {
     baritem * result = malloc(sizeof(baritem));
     result -> string = graph_to_string(netstack -> down);
     result -> color = initcolor(dc, NET_DOWN_FOREGROUND, NET_DOWN_BACKGROUND);
-    result -> type = 'N';
     return result;
 }
 
@@ -221,7 +217,6 @@ baritem * weather_s() {
     baritem * result = malloc(sizeof(baritem));
     result -> color = initcolor(dc, color, WEATHER_BACKGROUND);
     result -> color -> FG = temp_for_color + ((255-temp_for_color) * 65536);
-    result -> type = 'W';
     free(color);
 
     char * text = malloc(16);
@@ -249,7 +244,6 @@ baritem * volume_s() {
     result -> string = malloc(4);
     snprintf(result -> string, 4, "%u", vol -> volume_level);
     result -> color = vol -> muted ? initcolor(dc, VOLUME_BACKGROUND, VOLUME_FOREGROUND) : initcolor(dc, NET_UP_FOREGROUND, NET_UP_BACKGROUND);
-    result -> type = 'V';
     return result;
 }
 
@@ -257,7 +251,6 @@ baritem * window_s() {
     baritem * result = malloc(sizeof(baritem));
     result -> string = get_active_window_name();
     result -> color = initcolor(dc, CURRENT_WINDOW_FOREGROUND, CURRENT_WINDOW_BACKGROUND);
-    result -> type = 'A';
     return result -> string == NULL ? NULL : result;
 }
 
@@ -271,7 +264,6 @@ baritem * mpd_s() {
         return NULL;
     }
     result -> color = initcolor(dc, MPD_INFO_FOREGROUND, MPD_INFO_BACKGROUND);
-    result -> type = 'E';
     return result;
 }
 #endif
@@ -290,6 +282,7 @@ baritem * mpd_s() {
 
 
 
+/* rework the modules */
 
 
 
@@ -330,10 +323,43 @@ baritem * mpd_s() {
 
 
 
+void update_nba(baritem * item) {
+    item -> string = (item -> update)(item);
+}
 
 
+itemlist * c2l(block_list * bid) {
+    itemlist * result = NULL;
+    while(bid) {
+        itemlist * cur = malloc(sizeof(itemlist));
+        cur -> item = NULL;
+        if (!strncmp(bid -> data -> id, "workspaces", 10)) {
+            cur -> item = desktops_s();
+        }
+        if (!strncmp(bid -> data -> id, "active", 6)) {
+            cur -> item = window_s();
+        }
+        if (!strncmp(bid -> data -> id, "clock", 5)) {
+            cur -> item = timeclock_s();
+        }
+        if (!strncmp(bid -> data -> id, "scale", 5)) {
+            cur -> item = weather_s();
+        }
+        if (!strncmp(bid -> data -> id, "graph", 5)) {
+            cur -> item = network_down_s();
+        }
 
-
+        if (cur -> item == NULL) {
+            free(cur);
+        }
+        else {
+            cur -> next = result;
+            result = cur;
+        }
+        bid = bid -> next;
+    }
+    return result;
+}
 
 
 void drawmenu(void) {
@@ -348,9 +374,9 @@ void drawmenu(void) {
     draw_rectangle(dc, BAR_BORDER, BAR_BORDER,
                    width-2*BAR_BORDER, height-2*BAR_BORDER, True, normcol -> BG);
 
-    itemlist * left = config_to_list(LEFT_ALIGN);
-    itemlist * right = config_to_list(RIGHT_ALIGN);
-    itemlist * center = config_to_list(CENTER_ALIGN);
+    itemlist * left = c2l(configuration -> left);
+    itemlist * right = c2l(configuration -> right);
+    itemlist * center = c2l(configuration -> center);
 
     total_list_length(left);
     int rlen = total_list_length(right);
@@ -372,53 +398,77 @@ void drawmenu(void) {
 
 
 
-itemlist * config_to_list (char * list) {
-    itemlist * head = NULL;
-    itemlist * tail = NULL; // add to tail
-    while (*(list) != 0) {
-        baritem * item = char_to_item(*(list++));
-        if (item != NULL) {
-            itemlist * next = malloc(sizeof(itemlist));
-            next -> item = item;
-            next -> next = NULL;
-            if (head == NULL) {
-                head = next;
-                tail = next;
-            } else {
-                tail -> next = next;
-                tail = tail -> next;
-            }
-        }
-    }
-    return head;
-}
 
-baritem * char_to_item(char c) {
-    switch(c) {
-        case 'B':
-            return battery_s(dc);
-        case 'T':
-            return timeclock_s(dc);
-        case 'D':
-            return desktops_s(dc);
-        case 'N':
-            return network_down_s();
-        case 'M':
-            return network_up_s();
-        case 'W':
-            return weather_s();
-        case 'A':
-            return window_s();
-        case 'V':
-            return volume_s();
-#ifdef _WITH_MPD
-        case 'E':
-            return mpd_s();
-#endif
-        default:
-            return spacer_s(c);
-    }
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void free_list(itemlist * list) {
     while(list != NULL) {
@@ -479,6 +529,7 @@ int horizontal_position() {
 
 // TODO: clean this shit
 void setup(void) {
+    configuration = readblock(fopen("test", "r"));
     dc -> border_width = BAR_BORDER;
 
     int x, y;

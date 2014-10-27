@@ -7,11 +7,6 @@
 
 #include "confparse.h"
 
-int main() {
-    FILE * fp = fopen("test", "r");
-    readblock(fp);
-}
-
 int starts_with(char * source, char * check) {
     int p = 0;
     for(; check[p] != 0; p++) {
@@ -202,7 +197,7 @@ bar_config * readblock (FILE * fp) {
         }
     }
 
-    close(fp);
+    fclose(fp);
 
     return result;
 }

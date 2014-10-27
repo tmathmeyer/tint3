@@ -33,17 +33,36 @@ typedef struct ColorSet{
     unsigned long BG;
 } ColorSet;
 
+
+
 typedef struct baritem{
     ColorSet * color;
-    char     * string;
-    char       type; // used to determine the freeing mechanism
-    unsigned int length; // length IN PIXELS
+    unsigned int length;
+    char * string;
+    char * format;
+    char * source;
+    char * (* update)(struct baritem *);
 } baritem;
 
 typedef struct itemlist {
     baritem * item;
     struct itemlist * next;
 } itemlist;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 typedef struct batt_info{
     char * icon;
