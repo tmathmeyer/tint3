@@ -24,6 +24,7 @@ block * lookup_block(block_list * from, char * name_query) {
         }
         from = from -> next;
     }
+    printf("cant find (%s)\n", name_query);
     return NULL;
 }
 
@@ -184,15 +185,21 @@ bar_config * readblock (FILE * fp) {
 
         if (starts_with(name, "  forground ")) {
             int c = 0;
+            (blocks -> data -> forground)[0] = '#';
+            (blocks -> data -> forground)[7] = 0;
+
             for(; c < 6; c++) {
-                (blocks -> data -> forground)[c] = name[c+14];
+                (blocks -> data -> forground)[c+1] = name[c+13];
             }
         }
 
         if (starts_with(name, "  background ")) {
             int c = 0;
+            (blocks -> data -> background)[0] = '#';
+            (blocks -> data -> background)[7] = 0;
+            
             for(; c < 6; c++) {
-                (blocks -> data -> background)[c] = name[c+14];
+                (blocks -> data -> background)[c+1] = name[c+14];
             }
         }
     }

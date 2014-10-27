@@ -1,15 +1,19 @@
-[desktops]
-  id workspaces
+[workspaces]
+  id radio
+  source workspaces
   forground #ccffcc
-  backgrund #000000
+  background #000000
 
 [active]
-  id active
-  forground #ff000
+  id text
+  source window_title
+  forground #ff0000
   background #000000
 
 [time]
-  id clock
+  id text
+  source clock
+  format %a/%d %T
   forground #00ffff
   background #000000
 
@@ -17,7 +21,7 @@
   id scale
   forground #aabbcc
   background #ccbbaa
-  type temperature kelvin
+  type temperature
   source weather KBOS
 
 [download]
@@ -34,7 +38,7 @@
 
 [battery1]
   id scale
-  forgound #012345
+  forground #012345
   background #654321
   type unknown
   source battery 1
@@ -45,7 +49,7 @@
   background #000000
   location top
   left 2
-    desktops
+    workspaces
     active
   center 1
     time

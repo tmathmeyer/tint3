@@ -118,6 +118,7 @@ char * get_desktops_info();
 volume_info * get_volume_info();
 char * get_active_window_name();
 int get_x11_property(Atom at, Atom type);
+char * get_time_format(baritem * item);
 
 
 

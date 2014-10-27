@@ -144,35 +144,6 @@ baritem * wmname_s() {
     return result;
 }
 
-
-baritem * timeclock_s() {
-    FILE * desc = popen("date +'" CLOCK_FORMAT "'", "r");
-    char * msg = malloc(20);
-    int msg_c = 0; char msg_s;
-    if (desc) {
-        while( (msg_s = fgetc(desc)) != '\n') {
-            msg[msg_c++] = msg_s;
-        }
-        if (msg_c < 20) {
-            msg[msg_c] = 0;
-        }
-        pclose(desc);
-    }
-
-    baritem * result = malloc(sizeof(baritem));
-    result -> string = msg;
-    result -> color = initcolor(dc, CLOCK_FOREGROUND, CLOCK_BACKGROUND);
-    return result;
-}
-
-baritem * desktops_s() {
-    baritem * result = malloc(sizeof(baritem));
-    result -> string = get_desktops_info();
-    result -> color = initcolor(dc, DESKTOP_FOREGROUND, DESKTOP_BACKGROUND);
-    return result->string==NULL ? NULL : result;
-}
-
-
 baritem * network_up_s() {
     net_info * netstack = get_net_info();
     baritem * result = malloc(sizeof(baritem));
@@ -282,49 +253,59 @@ baritem * mpd_s() {
 
 
 
+
+
+
+
+
+
+
 /* rework the modules */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 void update_nba(baritem * item) {
     item -> string = (item -> update)(item);
+}
+
+baritem * makeitem(block * config_info) {
+    baritem * result = malloc(sizeof(baritem));
+    result -> string = NULL;
+    result -> format = config_info -> format;
+    result -> source = config_info -> source;
+    result -> update = NULL;
+    result -> color = initcolor(dc, config_info -> forground, config_info -> background);
+    return result;
+}
+
+char * questions(baritem *meh) {
+    char * result = malloc(6);
+    result[0] = '?';
+    result[1] = '?';
+    result[2] = 0;
+    return result;
+}
+
+void infer_type(block * conf_inf, baritem * ipl) {
+    ipl -> update = &questions;
+
+    if (!(strncmp(conf_inf -> id, "radio", 5))) {
+        if (!strncmp(conf_inf -> source, "workspaces", 10)) {
+            ipl -> update = &get_desktops_info;
+        }
+    }
+
+    if (!(strncmp(conf_inf -> id, "text", 4))) {
+        if (!strncmp(conf_inf -> source, "clock", 5)) {
+            ipl -> update = &get_time_format;
+        }
+    }
+
+    if (!(strncmp(conf_inf -> id, "text", 4))) {
+        if (!strncmp(conf_inf -> source, "window_title", 12)) {
+            ipl -> update = &get_active_window_name;
+        }
+    }
+
+    update_nba(ipl);
 }
 
 
@@ -332,24 +313,10 @@ itemlist * c2l(block_list * bid) {
     itemlist * result = NULL;
     while(bid) {
         itemlist * cur = malloc(sizeof(itemlist));
-        cur -> item = NULL;
-        if (!strncmp(bid -> data -> id, "workspaces", 10)) {
-            cur -> item = desktops_s();
-        }
-        if (!strncmp(bid -> data -> id, "active", 6)) {
-            cur -> item = window_s();
-        }
-        if (!strncmp(bid -> data -> id, "clock", 5)) {
-            cur -> item = timeclock_s();
-        }
-        if (!strncmp(bid -> data -> id, "scale", 5)) {
-            cur -> item = weather_s();
-        }
-        if (!strncmp(bid -> data -> id, "graph", 5)) {
-            cur -> item = network_down_s();
-        }
+        cur -> item = makeitem(bid -> data);
+        infer_type(bid -> data, cur -> item);
 
-        if (cur -> item == NULL) {
+        if (cur -> item -> update == NULL) {
             free(cur);
         }
         else {

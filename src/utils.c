@@ -227,7 +227,39 @@ int get_current_desktop () {
 }
 
 
-char * get_desktops_info() {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// make this configurable with regex somehoe
+char * get_desktops_info(baritem * source) {
     int numdesk = get_number_of_desktops();
     int curdesk = get_current_desktop();
     int swap = 0;
@@ -247,11 +279,52 @@ char * get_desktops_info() {
     return result;
 }
 
-char * get_active_window_name() {
+
+
+char * get_active_window_name(baritem * source) {
     char * window_title = malloc(256); // max displayed window size
     get_title(window_title, 256);
     return window_title;
 }
+
+
+char * get_time_format(baritem * item) {
+    char exec[100] = {0};
+    snprintf(exec, sizeof exec, "date +'%s'", item -> format);
+    FILE * desc = popen(exec, "r");
+    char * msg = calloc(0, 20);
+    int msg_c = 0; char msg_s;
+    if (desc) {
+        while( (msg_s = fgetc(desc)) != '\n') {
+            msg[msg_c++] = msg_s;
+        }
+        if (msg_c < 20) {
+            msg[msg_c] = 0;
+        }
+        pclose(desc);
+    }
+    return msg;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

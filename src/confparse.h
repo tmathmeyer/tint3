@@ -9,8 +9,8 @@ typedef struct {
     char * type;
     char * format;
     char * source;
-    char forground [6];
-    char background [6];
+    char forground [8];
+    char background [8];
 } block;
 
 typedef struct l {
