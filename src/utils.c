@@ -30,9 +30,6 @@
 #include <time.h>
 #include <string.h>
 #include <xcb/xcb.h>
-
-#include "config.h"
-#include "defaults.h"
 #include "utils.h"
 #include "lwxt.h"
 #include "lwbi.h"
@@ -135,12 +132,12 @@ char * get_desktops_info(baritem * source) {
 
     for(swap=0; swap < dsktplen; swap++) {
         int sqp = swap%4;
-        result[swap] = sqp==3?' ':DESKTOP_DEFAULT[sqp];
+        result[swap] = sqp==3?' ':"◇"[sqp];
     }
 
-    result[curdesk*4 + 0] = DESKTOP_CURRENT[0];
-    result[curdesk*4 + 1] = DESKTOP_CURRENT[1];
-    result[curdesk*4 + 2] = DESKTOP_CURRENT[2];
+    result[curdesk*4 + 0] = "◆"[0];
+    result[curdesk*4 + 1] = "◆"[1];
+    result[curdesk*4 + 2] = "◆"[2];
 
     return result;
 }
@@ -180,7 +177,7 @@ char * get_weather(baritem * item) {
         int weather_parse_size = 1024;
         char * weather_s = malloc(weather_parse_size);
         char * host = "weather.noaa.gov";
-        char * url  = "/pub/data/observations/metar/decoded/" WEATHER_LOCATION ".TXT";
+        char * url  = "/pub/data/observations/metar/decoded/KORH.TXT";
 
         if (!url_to_memory(weather_s, weather_parse_size, url, host, "208.59.215.33")) {
             return NULL;

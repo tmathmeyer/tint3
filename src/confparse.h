@@ -42,6 +42,7 @@ typedef struct l {
 typedef struct {
     int border_size;
     int margin_size;
+    int padding_size;
     char * border_color;
     char * background_color;
     char * location;

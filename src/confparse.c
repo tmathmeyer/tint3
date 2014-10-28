@@ -35,6 +35,13 @@ int starts_with(char * source, char * check) {
     return 1;
 }
 
+void name_blocks(block_list * list) {
+    while(list) {
+        printf("found (%s)\n", list -> data -> name);
+        list = list -> next;
+    }
+}
+
 block * lookup_block(block_list * from, char * name_query) {
     while(from != NULL) {
         if (!strcmp(name_query, from -> data -> name)) {
@@ -64,33 +71,31 @@ void do_bar_read(FILE * from, bar_config * storage, block_list * modules) {
     while(fgets(name, 100, from)) {
         int length = strlen(name);
 
-        if (starts_with(name, "  border")) {
-            int c = 8;
-            int hash = 0;
-            storage -> border_color = malloc(6);
-            while(name[c++] != '\n') {
-                if (!hash && name[c] != ' ') {
-                    storage -> border_size *= 10;
-                    storage -> border_size += (name[c]-'0');
-                } else {
-                    (storage -> border_color)[hash++] = name[c];
-                }
-            }
+        if (starts_with(name, "  borderwidth")) {
+            sscanf(name, "  borderwidth %i", &(storage -> border_size));
         }
 
         if (starts_with(name, "  margin")) {
-            int c = 8;
-            while(name[c++] != '\n') {
-                storage -> margin_size *= 10;
-                storage -> margin_size += (name[c]-'0');
-            }
+            sscanf(name, "  margin %i", &(storage -> margin_size));
+        }
+
+        if (starts_with(name, "  padding")) {
+            sscanf(name, "  padding %i", &(storage -> padding_size));
         }
 
         if (starts_with(name, "  background")) {
-            int c = 13;
-            storage -> background_color = malloc(6);
+            int c = 12;
+            storage -> background_color = calloc(0, 8);
             while(name[c++] != '\n') {
-                (storage -> background_color)[c-14] = name[c];
+                (storage -> background_color)[c-14] = name[c-1];
+            }
+        }
+
+        if (starts_with(name, "  bordercolor")) {
+            int c = 13;
+            storage -> border_color = calloc(0, 8);
+            while(name[c++] != '\n') {
+                (storage -> border_color)[c-15] = name[c-1];
             }
         }
 
@@ -174,13 +179,17 @@ bar_config * readblock (FILE * fp) {
 
         if (starts_with(name, "[[bar]]")) {
             result = malloc(sizeof(bar_config));
+            result -> border_size = 0;
+            result -> margin_size = 0;
+            result -> padding_size = 0;
             do_bar_read(fp, result, blocks);
         }
         else if (name[0] == '[' && name[length-2] == ']') {
             block_list * first    = malloc(sizeof(block_list));
             first -> data         = malloc(sizeof(block));
-            first -> data -> name = malloc(length-3);
-            strncpy(first -> data -> name, name+1, length-3);
+            first -> data -> name = calloc(0,length);
+            name[length-2] = 0;
+            sscanf(name, "[%s]", first -> data -> name);
             first -> next = blocks;
             blocks = first;
         }

@@ -1,16 +1,16 @@
-[workspaces]
-  id radio
-  source workspaces
-  forground #ccffcc
-  background #000000
-
 [active]
   id text
   source window_title
   forground #ff0000
   background #000000
 
-[time]
+[desktops]
+  id radio
+  source workspaces
+  forground #ccffcc
+  background #000000
+
+[clock]
   id text
   source clock
   format %a/%d %T
@@ -22,7 +22,7 @@
   forground #aabbcc
   background #000000
   type temperature
-  source weather KBOS
+  source weather KORH
 
 [download]
   id graph
@@ -57,15 +57,17 @@
   background #000000
 
 [[bar]]
-  border 1 #ffffff
+  bordercolor #ffffff
+  borderwidth 1
+  padding 1
   margin 5
   background #000000
   location top
   left 2
-    workspaces
+    desktops
     active
   center 1
-    time
+    clock
   right 6
     upload
     download

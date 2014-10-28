@@ -31,8 +31,6 @@
 #include <X11/Xutil.h>
 #include "draw.h"
 #include "utils.h"
-#include "config.h"
-#include "defaults.h"
 #include "confparse.h"
 #include "lwbi.h"
 
@@ -43,7 +41,6 @@
 #define INRECT(x,y,rx,ry,rw,rh) ((x) >= (rx) && (x) < (rx)+(rw) && (y) >= (ry) && (y) < (ry)+(rh))
 #define MIN(a,b)                ((a) < (b) ? (a) : (b))
 #define MAX(a,b)                ((a) > (b) ? (a) : (b))
-#define DEFFONT "fixed"
 
 
 static void drawmenu(void);
@@ -55,7 +52,7 @@ static int height = 0;
 static int width  = 0;
 
 
-static const char *font = FONT;
+static const char *font = "sakamoto-11";
 static ColorSet *normcol;
 
 static Bool topbar = True;
@@ -67,12 +64,12 @@ static bar_config * configuration;
 
 // get the height of the bar
 int get_bar_height(int font_height) {
-    return font_height - 1 + 2 * (BAR_PADDING + BAR_BORDER);
+    return font_height - 1 + 2 * (configuration -> padding_size + configuration -> border_size);
 }
 
 // get the bar width
 int get_bar_width(int display_width) {
-    return display_width - 2 * BAR_MARGIN;
+    return display_width - 2 * configuration -> margin_size;
 }
 
 int scale_to(int from, int to, float by) {
@@ -81,10 +78,11 @@ int scale_to(int from, int to, float by) {
 }
 
 int main(int argc, char *argv[]) {
+
     dc = initdc();
-    initfont(dc, font ? font : DEFFONT);
-    normcol = initcolor(dc, BAR_BACKGROUND, BAR_FOREGROUND);
+    initfont(dc, font ? font : "fixed");
     setup();
+    normcol = initcolor(dc, configuration -> border_color, configuration -> background_color);
     run();
 
     return EXIT_FAILURE;
@@ -99,12 +97,12 @@ int main(int argc, char *argv[]) {
 baritem * mpd_s() {
     baritem * result = malloc(sizeof(baritem));
     result -> string = malloc(64);
-    if (!get_mpd_info(MPD_INFO_FORMAT_STRING, result -> string, 64)) {
+    if (!get_mpd_info("%t", result -> string, 64)) {
         free(result -> string);
         free(result);
         return NULL;
     }
-    result -> color = initcolor(dc, MPD_INFO_FOREGROUND, MPD_INFO_BACKGROUND);
+    result -> color = initcolor(dc, "#000000", "#000000");
     return result;
 }
 #endif
@@ -203,8 +201,9 @@ void drawmenu(void) {
     dc->text_offset_y = 0;
 
     draw_rectangle(dc, 0, 0, width+2, height+2, True, normcol -> FG);
-    draw_rectangle(dc, BAR_BORDER, BAR_BORDER,
-                   width-2*BAR_BORDER, height-2*BAR_BORDER, True, normcol -> BG);
+    draw_rectangle(dc, configuration -> border_size, configuration -> border_size,
+                   width-2*configuration -> border_size,
+                   height-2*configuration -> border_size, True, normcol -> BG);
 
     itemlist * left = c2l(configuration -> left);
     itemlist * right = c2l(configuration -> right);
@@ -299,28 +298,28 @@ void run(void) {
     drawmenu();
     while(!XNextEvent(dc->dpy, &xe)){
         drawmenu();
-        usleep(UPDATE_DELAY);
+        usleep(200000);
     }
 }
 
 // gets the vertical position of the bar, depending on margins and position
 int vertical_position(Bool bar_on_top, int display_height, int bar_height) {
     if (bar_on_top) {
-        return BAR_MARGIN;
+        return configuration -> margin_size;
     } else {
-        return display_height - (bar_height + BAR_MARGIN);
+        return display_height - (bar_height + configuration -> margin_size);
     }
 }
 
 int horizontal_position() {
-    return BAR_MARGIN;
+    return configuration -> margin_size;
 }
 
 
 // TODO: clean this shit
 void setup(void) {
     configuration = readblock(fopen("test", "r"));
-    dc -> border_width = BAR_BORDER;
+    dc -> border_width = configuration -> margin_size;
 
     int x, y;
     XSetWindowAttributes wa;
