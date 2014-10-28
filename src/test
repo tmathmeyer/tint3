@@ -20,7 +20,7 @@
 [weather]
   id scale
   forground #aabbcc
-  background #ccbbaa
+  background #000000
   type temperature
   source weather KBOS
 
@@ -36,12 +36,25 @@
   forground #aaaaaa
   background #000000
 
-[battery1]
+[batteryone]
   id scale
-  forground #012345
-  background #654321
+  forground #ffffff
+  background #000000
   type unknown
   source battery 1
+
+[batterytwo]
+  id scale
+  forground #ff0000
+  background #000000
+  type unknown
+  source battery 0
+
+[volume]
+  id scale
+  source alsa 0
+  forground #ffffff
+  background #000000
 
 [[bar]]
   border 1 #ffffff
@@ -53,10 +66,13 @@
     active
   center 1
     time
-  right 3
+  right 6
     upload
     download
-    battery1
+    weather
+    volume
+    batteryone
+    batterytwo
 
 
 # single bracket blocks, like the following, denote individual named blocks on the bar

@@ -34,6 +34,7 @@
 #include "config.h"
 #include "defaults.h"
 #include "confparse.h"
+#include "lwbi.h"
 
 #ifdef _WITH_MPD
 #include "mpd.h"
@@ -74,9 +75,6 @@ int get_bar_width(int display_width) {
     return display_width - 2 * BAR_MARGIN;
 }
 
-
-
-
 int scale_to(int from, int to, float by) {
     float f = (to-from) * by;
     return to-f;
@@ -92,138 +90,10 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
 }
 
-/* SPACE FOR MODULE FUNCTIONS */
-
-baritem * battery_s() {
-    batt_info * info = get_battery_information();
-    if (info == NULL) {
-        return NULL;
-    }
-    char * inf_as_str = malloc(20);
-    snprintf(inf_as_str, 20, "%i %s", info -> percentage, info -> icon);
-    baritem * result = malloc(sizeof(baritem));
-    result -> string = inf_as_str;
-    if (info -> percentage > BATTERY_CUTOF_HIGH) {
-        result -> color = initcolor(dc, BATTERY_FOREGROUND_HIGH, BATTERY_BACKGROUND_HIGH);
-    } else if (info -> percentage < BATTERY_CUTOF_LOW) {
-        result -> color = initcolor(dc, BATTERY_FOREGROUND_LOW, BATTERY_BACKGROUND_LOW);
-    } else {
-        result -> color = initcolor(dc, BATTERY_FOREGROUND_MED, BATTERY_BACKGROUND_MED);
-    }
-    free(info);
-    return result;
-}
-
-baritem * spacer_s(char c) {
-    baritem * result = malloc(sizeof(baritem));
-    result -> string = malloc(2);
-    (result -> string)[0] = c;
-    (result -> string)[1] = 0;
-    result -> color = initcolor(dc, BAR_BACKGROUND, BAR_FOREGROUND);
-    return result;
-}
 
 
-baritem * wmname_s() {
-    FILE * desc = popen("wmname", "r");
-    char * msg = malloc(20);
-    int msg_c = 0; char msg_s;
-    if (desc) {
-        while( (msg_s = fgetc(desc)) != '\n') {
-            msg[msg_c++] = msg_s;
-        }
-        if (msg_c < 20) {
-            msg[msg_c] = 0;
-        }
-        pclose(desc);
-    }
-
-    baritem * result = malloc(sizeof(baritem));
-    result -> string = msg;
-    result -> color = initcolor(dc, WMNAME_FOREGROUND, WMNAME_BACKGROUND);
-    return result;
-}
-
-baritem * network_up_s() {
-    net_info * netstack = get_net_info();
-    baritem * result = malloc(sizeof(baritem));
-    result -> string = graph_to_string(netstack -> up);
-    result -> color = initcolor(dc, NET_UP_FOREGROUND, NET_UP_BACKGROUND);
-    return result;
-}
-baritem * network_down_s() {
-    net_info * netstack = get_net_info();
-    baritem * result = malloc(sizeof(baritem));
-    result -> string = graph_to_string(netstack -> down);
-    result -> color = initcolor(dc, NET_DOWN_FOREGROUND, NET_DOWN_BACKGROUND);
-    return result;
-}
-
-baritem * weather_s() {
-    weather_info * winf = get_weather();
-    if (winf == NULL) {
-        return NULL;
-    }
-    int temp_for_color = winf -> temperature;
 
 
-    if (temp_for_color > 99) {
-        temp_for_color = 99;
-    }
-    if (temp_for_color < 0) {
-        temp_for_color = 0;
-    }
-    temp_for_color *= temp_for_color;
-    temp_for_color *= 255;
-    temp_for_color /= (99*99);
-
-    temp_for_color = 255 - ((255 - temp_for_color) * .9);
-
-    int r = scale_to(temp_for_color, 255, .7);
-    int b = scale_to(255-temp_for_color, 255, .7);
-    int g = scale_to(0, 255, .7);
-
-    char * color = malloc(8);
-    snprintf(color, 8, "#%x", b + g*256 + r*65536);
-    baritem * result = malloc(sizeof(baritem));
-    result -> color = initcolor(dc, color, WEATHER_BACKGROUND);
-    result -> color -> FG = temp_for_color + ((255-temp_for_color) * 65536);
-    free(color);
-
-    char * text = malloc(16);
-    memset(text, 0, 16);
-
-
-    char * icon = NULL;
-    if (winf -> temperature > 70) {
-        icon = "▉";
-    } else if (winf -> temperature < 32) {
-        icon = "▋";
-    } else {
-        icon = "▊";
-    }
-
-    snprintf(text, 16, "%i%s%i", winf -> temperature, icon, winf -> humidity);
-
-    result -> string = text;
-    return result;
-}
-
-baritem * volume_s() {
-    volume_info * vol = get_volume_info();
-    baritem * result = malloc(sizeof(baritem));
-    result -> string = malloc(4);
-    snprintf(result -> string, 4, "%u", vol -> volume_level);
-    result -> color = vol -> muted ? initcolor(dc, VOLUME_BACKGROUND, VOLUME_FOREGROUND) : initcolor(dc, NET_UP_FOREGROUND, NET_UP_BACKGROUND);
-    return result;
-}
-
-baritem * window_s() {
-    baritem * result = malloc(sizeof(baritem));
-    result -> string = get_active_window_name();
-    result -> color = initcolor(dc, CURRENT_WINDOW_FOREGROUND, CURRENT_WINDOW_BACKGROUND);
-    return result -> string == NULL ? NULL : result;
-}
 
 #ifdef _WITH_MPD
 baritem * mpd_s() {
@@ -240,19 +110,6 @@ baritem * mpd_s() {
 #endif
 
 
-/* END SPACE FOR MODULE FUNCTIONS */
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -263,6 +120,9 @@ baritem * mpd_s() {
 /* rework the modules */
 
 void update_nba(baritem * item) {
+    if (item -> string != NULL) {
+        free(item -> string);
+    }
     item -> string = (item -> update)(item);
 }
 
@@ -291,20 +151,25 @@ void infer_type(block * conf_inf, baritem * ipl) {
         if (!strncmp(conf_inf -> source, "workspaces", 10)) {
             ipl -> update = &get_desktops_info;
         }
-    }
-
-    if (!(strncmp(conf_inf -> id, "text", 4))) {
+    } else if (!(strncmp(conf_inf -> id, "text", 4))) {
         if (!strncmp(conf_inf -> source, "clock", 5)) {
             ipl -> update = &get_time_format;
-        }
-    }
-
-    if (!(strncmp(conf_inf -> id, "text", 4))) {
-        if (!strncmp(conf_inf -> source, "window_title", 12)) {
+        } else if (!strncmp(conf_inf -> source, "window_title", 12)) {
             ipl -> update = &get_active_window_name;
         }
+    } else if (!(strncmp(conf_inf -> id, "scale", 5))) {
+        if (starts_with(conf_inf -> source, "weather")) {
+            ipl -> update = &get_weather;
+        } else if (starts_with(conf_inf -> source, "battery")) {
+            ipl -> update = &get_battery;
+        } else if (starts_with(conf_inf -> source, "alsa")) {
+            ipl -> update = &get_volume_level;
+        }
+    } else if (!(strncmp(conf_inf -> id, "graph", 5))) {
+        ipl -> update = &get_net_graph;
     }
 
+    update_network("wlp3s0");
     update_nba(ipl);
 }
 
@@ -361,48 +226,6 @@ void drawmenu(void) {
 
     mapdc(dc, win, width, height);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

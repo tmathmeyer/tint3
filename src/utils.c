@@ -35,89 +35,45 @@
 #include "defaults.h"
 #include "utils.h"
 #include "lwxt.h"
-
-batt_info * get_battery_information() {
-    batt_info * bi = malloc(sizeof (batt_info));
-    bi -> icon = "X";
-    bi -> percentage = 0;
-
-    char * path = "/sys/class/power_supply/BAT0";
-    FILE * fp;
-    char battery_read[512];
-    char tmp[64];
-
-    int energy_now = 1;
-    int energy_full = 1;
-    int battery_charging = 0;
+#include "lwbi.h"
 
 
-    snprintf(battery_read, sizeof battery_read, "%s/%s", path, "energy_now");
-    fp = fopen(battery_read, "r");
-    if(fp != NULL) {
-        if (fgets(tmp, sizeof tmp, fp)) energy_now = atoi(tmp);
-        fclose(fp);
-    } else {
-        free(bi);
-        return NULL;
+
+
+
+
+typedef struct glist{
+    struct glist * next;
+    char * name;
+    graph * data;
+} glist;
+
+glist * graphs = NULL;
+
+graph * get_named_graph(char * name) {
+    glist * temp = graphs;
+    while(temp) {
+        if (!strncmp(name, temp -> name, strlen(name))) {
+            return temp -> data;
+        } temp = temp -> next;
     }
-
-    snprintf(battery_read, sizeof battery_read, "%s/%s", path, "energy_full");
-    fp = fopen(battery_read, "r");
-    if(fp != NULL) {
-        if (fgets(tmp, sizeof tmp, fp)) energy_full = atoi(tmp);
-        fclose(fp);
-    } else {
-        free(bi);
-        return NULL;
-    }
-
-    snprintf(battery_read, sizeof battery_read, "%s/%s", path, "status");
-    fp = fopen(battery_read, "r");
-    if(fp != NULL) {
-        if (fgets(tmp, sizeof tmp, fp)) {
-            battery_charging = (strncmp(tmp, "Discharging", 11) != 0);
-        }
-        fclose(fp);
-    } else {
-        return bi;
-    }
-
-    bi -> percentage = energy_now / (energy_full / 100);
-    if (bi -> percentage > 90) {
-        bi -> icon = "⮒";
-    } else if (bi -> percentage > 65) {
-        bi -> icon = "⮏";
-    } else if (bi -> percentage > 10) {
-        bi -> icon = "⮑";
-    } else if (bi -> percentage > 0) {
-        bi -> icon = "⮐";
-    } else {
-        bi -> icon = "?";
-    }
-    if (battery_charging) {
-        bi -> icon = "⮎";
-    }
-
-    return bi;
+    glist * addition = malloc(sizeof(glist));
+    addition -> name = name;
+    addition -> data = make_new_graph();
+    addition -> next = graphs;
+    graphs = addition;
+    return addition -> data;
 }
 
-
 unsigned long long old_down=0, old_up=0;
-net_info * net = NULL;
-net_info * get_net_info (void) {
-    if (net == NULL) {
-        net = malloc(sizeof(net_info));
-        net -> timeout = 0; // 2 seconds
-        net -> lastime = 0; // start over;
-        net -> up = make_new_graph();
-        net -> down = make_new_graph();
-    }
+unsigned long net_tick = 0;
+void update_network(char * interface) {
+    if (time(NULL)-net_tick > 2) {
+        time((time_t *)&net_tick);
 
-    if (time(NULL) - net -> lastime > net -> timeout) {
-        time((time_t*)&(net -> lastime));
         FILE * fp = fopen("/proc/net/dev", "r");
         if (fp == NULL) {
-            return net;
+            return;
         }
 
         char * buffer = malloc(4096), * bt = buffer, temp = 0;
@@ -125,97 +81,39 @@ net_info * get_net_info (void) {
             *(bt++) = temp;
         }
         fclose(fp);
-        bt = strstr(buffer, NETIFACE);
+        bt = strstr(buffer, interface);
         if (bt == 0) {
             free(buffer);
-            return net;
+            return;
         }
-        bt += (strlen(NETIFACE) + 2);
+        bt += (strlen(interface) + 2);
 
         unsigned long long up, down;
         sscanf(bt, "%llu %llu", &down, &up);
 
         int ud = up-old_up, dd = down-old_down;
 
+        char * netname = calloc(0, strlen(interface) + 4);
+        snprintf(netname, strlen(interface)+4, "%s up", interface);
+
         if (old_down != 0 && old_up != 0) {
-            add_to_graph(dd, net -> down);
-            add_to_graph(ud, net -> up);
+            add_to_graph(dd, get_named_graph(netname));
+            netname[strlen(interface)+1] = 'd';
+            netname[strlen(interface)+2] = 'o';
+            add_to_graph(ud, get_named_graph(netname));
         }
 
         old_down = down;
         old_up = up;
 
         free(buffer);
+        free(netname);
     }
-
-    return net;
 }
 
-
-weather_info * weather = NULL;
-weather_info * get_weather() {
-
-    if (weather == NULL) {
-        weather = malloc(sizeof(weather_info));
-        weather -> timeout = 1800; // 30 minutes
-        weather -> lastime = 0; // start over;
-        weather -> temperature = 0;
-        weather -> humidity = 0;
-        weather -> condition = NULL;
-    }
-
-    if (time(NULL) - weather -> lastime > weather -> timeout) {
-        time((time_t*)&(weather -> lastime));
-        int weather_parse_size = 1024;
-        char * weather_s = malloc(weather_parse_size);
-        char * host = "weather.noaa.gov";
-        char * url  = "/pub/data/observations/metar/decoded/" WEATHER_LOCATION ".TXT";
-
-        if (!url_to_memory(weather_s, weather_parse_size, url, host, "208.59.215.33")) {
-            return NULL;
-        }
-
-        char * temp = strstr(weather_s, "Temperature") + 13;
-        char * humd = strstr(weather_s, "Dew Point") + 11;
-
-        sscanf(temp, "%i", &(weather -> temperature));
-        sscanf(humd, "%i", &(weather -> humidity));
-
-        free(weather_s);
-    }
-
-
-    return weather;
-}
-
-volume_info * vol_inf = NULL;
-volume_info * get_volume_info() {
-    int warning_machine = 0;
-	if (vol_inf == NULL) {
-		vol_inf = malloc(sizeof(vol_inf));
-		vol_inf -> volume_size = 0; // config later
-	}
-
-	int temp = warning_machine;
-	FILE * fp = popen("amixer get -c "ALSA_DEVICE_ID " Master | tail -n 1 | cut -d '[' -f 2 | sed 's/\\%].*//g'", "r");
-	if (fp == NULL) {
-		vol_inf -> volume_size = -1;
-		vol_inf -> volume_level = 0;
-		return vol_inf;
-	}
-	warning_machine = fscanf(fp, "%i\n", &temp);
-	fclose(fp);
-	fp = popen("amixer get -c " ALSA_DEVICE_ID " Master | tail -n 1 | cut -d '[' -f 4 | sed 's/].*//g'", "r");
-	vol_inf -> volume_level = temp;
-  if (fp == NULL) {
-    vol_inf -> volume_size = -1;
-    vol_inf -> volume_level = 0;
-    return vol_inf;
-  }
-  warning_machine = fscanf(fp, "o%c\n", (unsigned char *)&temp);
-  fclose(fp);
-	vol_inf -> muted = temp/'n';
-	return vol_inf;
+int eot = 0;
+char * get_net_graph(baritem * item) {
+    return graph_to_string(get_named_graph((item -> source)+8));
 }
 
 int get_number_of_desktops () {
@@ -225,38 +123,6 @@ int get_number_of_desktops () {
 int get_current_desktop () {
     return get_x11_property(NET_CURRENT_DESKTOP, _CARDINAL_);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // make this configurable with regex somehoe
 char * get_desktops_info(baritem * source) {
@@ -279,14 +145,11 @@ char * get_desktops_info(baritem * source) {
     return result;
 }
 
-
-
 char * get_active_window_name(baritem * source) {
     char * window_title = malloc(256); // max displayed window size
     get_title(window_title, 256);
     return window_title;
 }
-
 
 char * get_time_format(baritem * item) {
     char exec[100] = {0};
@@ -307,36 +170,62 @@ char * get_time_format(baritem * item) {
 }
 
 
+unsigned long lastime = 0;
+char * weather = NULL;
+char * get_weather(baritem * item) {
+    if (time(NULL)-lastime > 1800) {
+        time((time_t *)&lastime);
 
+        time((time_t*)&lastime);
+        int weather_parse_size = 1024;
+        char * weather_s = malloc(weather_parse_size);
+        char * host = "weather.noaa.gov";
+        char * url  = "/pub/data/observations/metar/decoded/" WEATHER_LOCATION ".TXT";
 
+        if (!url_to_memory(weather_s, weather_parse_size, url, host, "208.59.215.33")) {
+            return NULL;
+        }
 
+        char * temp = strstr(weather_s, "Temperature") + 13;
+        char * humd = strstr(weather_s, "Dew Point") + 11;
 
+        int temperature, humidity;
+        sscanf(temp, "%i", &temperature);
+        sscanf(humd, "%i", &humidity);
 
+        if (weather != NULL) {
+            free(weather);
+        }
+        if (weather_s != NULL) {
+            free(weather_s);
+        }
+        weather = calloc(0, 8);
+        snprintf(weather, 8, "%i/%i", temperature, humidity);
+    }
 
+    int length = strlen(weather);
+    char * weather2 = malloc(length+1);
+    snprintf(weather2, length+1, "%s", weather);
+    return weather2;
+}
 
+char * get_battery(baritem * item) {
+    char batt[5] = "BAT0";
+    char c = (item -> source)[8];
+    batt[3] = c;
+    char * msg = calloc(0,11);
+    int battery_percent = get_battery_percent(batt);
+    snprintf(msg, 11, "batt%c:%i%%", c, battery_percent);
 
+    // change color here
+    return msg;
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+char * get_volume_level(baritem * item) {
+    char * result = malloc(8);
+    snprintf(result, 8, "<<VOL>>");
+    return result;
+}
 
 char * bar_map = "▁▂▃▄▅▆▇";
 
