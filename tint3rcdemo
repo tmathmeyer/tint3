@@ -1,0 +1,128 @@
+[active]
+  id text
+  source window_title
+  forground #ff0000
+  background #000000
+
+[desktops]
+  id radio
+  source workspaces
+  forground #ccffcc
+  background #000000
+
+[time]
+  id text
+  source clock
+  format %T
+  forground #5BC7B7
+  background #252117
+
+[date]
+  id text
+  source clock
+  format %a - %d
+  forground #ff0000
+  background #252117
+
+[weather]
+  id scale
+  forground #aabbcc
+  background #000000
+  type temperature
+  source weather KORH
+
+[download]
+  id graph
+  source network wlp3s0 down
+  forground #D58D6B
+  background #252117
+
+[upload]
+  id graph
+  source network wlp3s0 up
+  forground #748DA6
+  background #252117
+
+[batteryone]
+  id scale
+  forground #ffffff
+  background #000000
+  type unknown
+  source battery 1
+
+[batterytwo]
+  id scale
+  forground #ff0000
+  background #000000
+  type unknown
+  source battery 0
+
+[volume]
+  id scale
+  source alsa 0
+  forground #ffffff
+  background #000000
+
+[[bar]]
+  bordercolor #EE8822
+  borderwidth 1
+  padding 1
+  margin 5
+  background #252117
+  location top
+  left 2
+    desktops
+    active
+  center 2
+    date
+    time
+  right 6
+    upload
+    download
+    weather
+    volume
+    batteryone
+    batterytwo
+
+
+# single bracket blocks, like the following, denote individual named blocks on the bar
+#
+# [name]
+#   id (identifier)
+#   forground (hex value)
+#   background (hex value)
+#   (extra information)
+#
+# where an id can be any of the following:
+#  graph:
+#    standard bar graph, only works with sakamoto-font
+#    so far only works on networks
+#  scale:
+#    graduated background, slowly fading from forground
+#    to background based on a 0-100 scale. only supports
+#    raw number streame
+#
+# time:
+#   a clock, requires a format string
+#
+# workspaces:
+#  workspace tracker, requires color
+#  further configuration can be achieved
+#  through a recompilation of the bar
+#
+# text:
+#  raw text
+#
+#
+#forground and background are both required for ALL blocks, and must be given a 6 digit hex string
+#
+#some blocks have other information, such as source, type, and format strings
+#
+#
+#
+#
+#
+#
+#
+#
+#

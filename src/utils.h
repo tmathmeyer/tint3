@@ -33,11 +33,15 @@ typedef struct ColorSet{
     unsigned long BG;
 } ColorSet;
 
+
+
 typedef struct baritem{
     ColorSet * color;
-    char     * string;
-    char       type; // used to determine the freeing mechanism
-    unsigned int length; // length IN PIXELS
+    unsigned int length;
+    char * string;
+    char * format;
+    char * source;
+    char * (* update)(struct baritem *);
 } baritem;
 
 typedef struct itemlist {
@@ -45,24 +49,16 @@ typedef struct itemlist {
     struct itemlist * next;
 } itemlist;
 
-typedef struct batt_info{
-    char * icon;
-    int  percentage;
-} batt_info;
+
+
+
+
 
 typedef struct graph{
     int graph[GRAPHLENGTH*3+1];
     int start;
     int max;
 } graph;
-
-typedef struct weather_info {
-    unsigned int timeout;
-    unsigned long lastime;
-    int temperature;
-    int humidity;
-    char * condition;
-} weather_info;
 
 typedef struct {
     unsigned int timeout;
@@ -71,15 +67,7 @@ typedef struct {
     graph * down;
 } net_info;
 
-typedef struct {
-	unsigned char volume_level; // 0-100
-	char volume_size;
-  unsigned char muted; // 0 or 1
-} volume_info;
 
-
-
-batt_info * get_battery_information();
 itemlist * config_to_list (char * list);
 baritem * char_to_item(char c);
 baritem * weather_s();
@@ -95,14 +83,18 @@ void host_to_ip(char *ptr, char* address);
 int get_socket(int port_number, char* ip);
 char * generate_header(char * url, char * host);
 int url_to_memory(char * buffer, int buf_size, char * url, char * host, char * ip);
-char * get_desktops_info();
-volume_info * get_volume_info();
-char * get_active_window_name();
 int get_x11_property(Atom at, Atom type);
 
 
 
-weather_info * get_weather();
+char * get_time_format(baritem * item);
+char * get_weather(baritem * item);
+char * get_battery(baritem * item);
+char * get_volume_level(baritem * item);
+char * get_desktops_info(baritem * item);
+char * get_active_window_name(baritem * item);
+char * get_net_graph(baritem * item);
+char * get_plain_text(baritem * item);
 
 Atom NET_NUMBER_DESKTOPS,
      NET_CURRENT_DESKTOP;
