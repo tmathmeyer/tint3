@@ -180,24 +180,25 @@ char * get_weather(baritem * item) {
         char * url  = "/pub/data/observations/metar/decoded/KORH.TXT";
 
         if (!url_to_memory(weather_s, weather_parse_size, url, host, "208.59.215.33")) {
-            return NULL;
-        }
+            weather = malloc(8);
+            snprintf(weather, 8, "<<err>>");
+        } else {
+            char * temp = strstr(weather_s, "Temperature") + 13;
+            char * humd = strstr(weather_s, "Dew Point") + 11;
 
-        char * temp = strstr(weather_s, "Temperature") + 13;
-        char * humd = strstr(weather_s, "Dew Point") + 11;
+            int temperature, humidity;
+            sscanf(temp, "%i", &temperature);
+            sscanf(humd, "%i", &humidity);
 
-        int temperature, humidity;
-        sscanf(temp, "%i", &temperature);
-        sscanf(humd, "%i", &humidity);
-
-        if (weather != NULL) {
-            free(weather);
+            if (weather != NULL) {
+                free(weather);
+            }
+            if (weather_s != NULL) {
+                free(weather_s);
+            }
+            weather = calloc(0, 8);
+            snprintf(weather, 8, "%i/%i", temperature, humidity);
         }
-        if (weather_s != NULL) {
-            free(weather_s);
-        }
-        weather = calloc(0, 8);
-        snprintf(weather, 8, "%i/%i", temperature, humidity);
     }
 
     int length = strlen(weather);
@@ -218,11 +219,17 @@ char * get_battery(baritem * item) {
     return msg;
 }
 
+
+
 char * get_volume_level(baritem * item) {
     char * result = malloc(8);
     snprintf(result, 8, "<<VOL>>");
     return result;
 }
+
+
+
+
 
 char * bar_map = "▁▂▃▄▅▆▇";
 
