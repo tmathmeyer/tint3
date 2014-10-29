@@ -94,6 +94,7 @@ char * get_volume_level(baritem * item);
 char * get_desktops_info(baritem * item);
 char * get_active_window_name(baritem * item);
 char * get_net_graph(baritem * item);
+char * get_plain_text(baritem * item);
 
 Atom NET_NUMBER_DESKTOPS,
      NET_CURRENT_DESKTOP;

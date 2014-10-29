@@ -10,12 +10,19 @@
   forground #ccffcc
   background #000000
 
-[clock]
+[time]
   id text
   source clock
-  format %a/%d %T
-  forground #00ffff
-  background #000000
+  format %T
+  forground #5BC7B7
+  background #252117
+
+[date]
+  id text
+  source clock
+  format %a - %d
+  forground #ff0000
+  background #252117
 
 [weather]
   id scale
@@ -27,14 +34,14 @@
 [download]
   id graph
   source network wlp3s0 down
-  forground #ff00ff
-  background #ddffaa
+  forground #D58D6B
+  background #252117
 
 [upload]
   id graph
   source network wlp3s0 up
-  forground #aaaaaa
-  background #000000
+  forground #748DA6
+  background #252117
 
 [batteryone]
   id scale
@@ -57,17 +64,18 @@
   background #000000
 
 [[bar]]
-  bordercolor #ffffff
+  bordercolor #EE8822
   borderwidth 1
   padding 1
   margin 5
-  background #000000
+  background #252117
   location top
   left 2
     desktops
     active
-  center 1
-    clock
+  center 2
+    date
+    time
   right 6
     upload
     download

@@ -154,6 +154,8 @@ void infer_type(block * conf_inf, baritem * ipl) {
             ipl -> update = &get_time_format;
         } else if (!strncmp(conf_inf -> source, "window_title", 12)) {
             ipl -> update = &get_active_window_name;
+        } else {
+            ipl -> update = &get_plain_text;
         }
     } else if (!(strncmp(conf_inf -> id, "scale", 5))) {
         if (starts_with(conf_inf -> source, "weather")) {
@@ -167,7 +169,6 @@ void infer_type(block * conf_inf, baritem * ipl) {
         ipl -> update = &get_net_graph;
     }
 
-    update_network("wlp3s0");
     update_nba(ipl);
 }
 
@@ -318,7 +319,15 @@ int horizontal_position() {
 
 // TODO: clean this shit
 void setup(void) {
-    configuration = readblock(fopen("test", "r"));
+    FILE * fp = fopen("~/.config/tint3/tint3rc", "r");
+    if (!fp) {
+        fp = fopen("/etc/tint3/tint3rc", "r");
+    }
+    if (!fp) {
+        perror("can't find a config file!! put one in ~/.config/tint3/tint3rc");
+        exit(0);
+    }
+    configuration = readblock(fp);
     dc -> border_width = configuration -> margin_size;
 
     int x, y;

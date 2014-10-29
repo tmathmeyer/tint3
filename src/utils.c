@@ -110,6 +110,10 @@ void update_network(char * interface) {
 
 int eot = 0;
 char * get_net_graph(baritem * item) {
+    char source2[20] = {0};
+    snprintf(source2, 20, item -> source + 8);
+    strstr(source2, " ")[0] = 0;
+    update_network(source2);
     return graph_to_string(get_named_graph((item -> source)+8));
 }
 
@@ -222,8 +226,24 @@ char * get_battery(baritem * item) {
 
 
 char * get_volume_level(baritem * item) {
-    char * result = malloc(8);
-    snprintf(result, 8, "<<VOL>>");
+    char * pipe_format = "amixer get -c %s Master | tail -n 1 | cut -d '[' -f 2 | tr -d '%]'";
+    char pipe[72] = {0};
+    snprintf(pipe, 72, pipe_format, (item -> source)+5);
+    FILE * pf = popen(pipe, "r");
+    int i = 0;
+    if (pf) {
+        fscanf(pf, "%i", &i);
+        fclose(pf);
+    }
+    char * result = malloc(5);
+    snprintf(result, 5, "%i%%", i);
+    return result;
+}
+
+char * get_plain_text(baritem * item) {
+    int len = strlen(item -> source);
+    char * result = malloc(len+1);
+    snprintf(result, len+1, item -> source);
     return result;
 }
 
