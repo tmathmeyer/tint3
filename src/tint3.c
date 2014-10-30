@@ -29,6 +29,8 @@
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
+#include <sys/types.h>
+#include <pwd.h>
 #include "draw.h"
 #include "utils.h"
 #include "confparse.h"
@@ -319,12 +321,18 @@ int horizontal_position() {
 
 // TODO: clean this shit
 void setup(void) {
-    FILE * fp = fopen("~/.config/tint3/tint3rc", "r");
-    if (!fp) {
-        fp = fopen("/etc/tint3/tint3rc", "r");
+    char pwd[100] = {0};
+    snprintf(pwd, 100, "%s/.tint3rc", getpwuid(getuid())->pw_dir);
+    FILE * fp = fopen(pwd, "r");
+    if (fp == NULL) {
+        snprintf(pwd, 100, "%s/.tint3rc", getenv("HOME"));
+        if (fp == NULL) {
+            fp = fopen("/etc/tint3/tint3rc", "r");
+        }
     }
-    if (!fp) {
-        perror("can't find a config file!! put one in ~/.config/tint3/tint3rc");
+
+    if (fp == NULL) {
+        perror("can't find a config file!! put one in ~/.tint3rc");
         exit(0);
     }
     configuration = readblock(fp);
