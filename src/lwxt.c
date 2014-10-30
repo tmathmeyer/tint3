@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2014 Ted Meyer
+ *
+ * see LICENSING for details
+ *
+ */
+ 
 #define _DEFAULT_SOURCE
 
 #include <stdio.h>

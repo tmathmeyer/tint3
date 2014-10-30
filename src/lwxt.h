@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2014 Ted Meyer
+ *
+ * see LICENSING for details
+ *
+ */
+ 
 #ifndef _LWXT_H_
 #define _LWXT_H_
 
