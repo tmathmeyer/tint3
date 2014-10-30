@@ -17,9 +17,9 @@ XFTINC = /usr/include/freetype2
 XFTLIBS  = -lXft -lXrender -lfreetype -lz -lfontconfig
 
 # MPD depends on libmpdclient, comment if you don't want it
-MPDLIBS = -lmpdclient
-MPDDEPS = mpd.o
-MPDFLAGS= -D_WITH_MPD
+#MPDLIBS = -lmpdclient
+#MPDDEPS = mpd.o
+#MPDFLAGS= -D_WITH_MPD
 
 #lxcb libraries
 LXCBLIBS = -lxcb -lxcb-icccm -lxcb-ewmh
