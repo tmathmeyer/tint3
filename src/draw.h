@@ -11,9 +11,11 @@ typedef struct {
 	int x, y, w, h;
     int text_offset_y;
     int border_width;
+    XSetWindowAttributes wa;
 	Display *dpy;
 	GC gc;
 	Pixmap canvas;
+	Pixmap empty;
 	XftDraw *xftdraw;
 	struct {
 		int ascent;
@@ -37,7 +39,7 @@ ColorSet *initcolor(DC *dc, const char *foreground, const char *background);
 DC *initdc(void);
 void initfont(DC *dc, const char *fontstr);
 void mapdc(DC *dc, Window win, unsigned int w, unsigned int h);
-void resizedc(DC *dc, unsigned int w, unsigned int h);
+void resizedc(DC *dc, unsigned int w, unsigned int h, XVisualInfo * vinfo, XSetWindowAttributes * wa);
 int textnw(DC *dc, const char *text, size_t len);
 int textw(DC *dc, const char *text);
 

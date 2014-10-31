@@ -43,7 +43,8 @@ static int width  = 0;
 
 
 static const char *font = "sakamoto-11";
-static ColorSet *normcol;
+static unsigned long bg_bar = 0, draw_bg = 0;
+static unsigned long bo_bar = 0, draw_bo = 0;
 
 static Bool topbar = True;
 static DC *dc;
@@ -68,11 +69,16 @@ int scale_to(int from, int to, float by) {
 }
 
 int main(int argc, char *argv[]) {
-
-    dc = initdc();
-    initfont(dc, font ? font : "fixed");
     setup();
-    normcol = initcolor(dc, configuration -> border_color, configuration -> background_color);
+
+    if (configuration -> background_color != NULL) {
+        bg_bar = getcolor(dc, configuration -> background_color);
+        draw_bg = 1;
+    }
+    if (configuration -> border_color != NULL) {
+        bo_bar = getcolor(dc, configuration -> border_color);
+        draw_bo = 1;
+    }
     run();
 
     return EXIT_FAILURE;
@@ -191,10 +197,15 @@ void drawmenu(void) {
 
     dc->text_offset_y = 0;
 
-    draw_rectangle(dc, 0, 0, width+2, height+2, True, normcol -> FG);
-    draw_rectangle(dc, configuration -> border_size, configuration -> border_size,
+    if (draw_bo) {
+        draw_rectangle(dc, 0, 0, width+2, height+2, False, bo_bar);
+    }
+    if (draw_bg) {
+        draw_rectangle(dc, configuration -> border_size, configuration -> border_size,
                    width-2*configuration -> border_size,
-                   height-2*configuration -> border_size, True, normcol -> BG);
+                   height-2*configuration -> border_size, True, bg_bar);
+    }
+
 
     itemlist * left = c2l(configuration -> left);
     itemlist * right = c2l(configuration -> right);
@@ -323,11 +334,24 @@ void setup(void) {
         perror("can't find a config file!! put one in ~/.tint3rc");
         exit(0);
     }
+
     configuration = readblock(fp);
+
+    dc = initdc();
+    XVisualInfo vinfo;
+    XMatchVisualInfo(dc->dpy, DefaultScreen(dc->dpy), 32, TrueColor, &vinfo);
+    XSetWindowAttributes wa;
+    wa.colormap = XCreateColormap(dc->dpy, DefaultRootWindow(dc->dpy), vinfo.visual, AllocNone);
+    wa.border_pixel = 0;
+    wa.background_pixel = 0;
+    dc -> wa = wa;
+    initfont(dc, font ? font : "fixed");
+
+
     dc -> border_width = configuration -> margin_size;
 
     int x, y;
-    XSetWindowAttributes wa;
+    
 
     int screen = DefaultScreen(dc->dpy);
     root = RootWindow(dc->dpy, screen);
@@ -340,16 +364,19 @@ void setup(void) {
     y = vertical_position(topbar, DisplayHeight(dc->dpy, screen), height);
 
 
+
+
     /* menu window */
     wa.override_redirect = True;
-    wa.background_pixmap = ParentRelative;
+    //wa.background_pixmap = ParentRelative;
     wa.event_mask = ExposureMask | KeyPressMask | VisibilityChangeMask;
     win = XCreateWindow(dc->dpy, root, x, y, width, height, 0,
-            DefaultDepth(dc->dpy, screen), CopyFromParent,
-            DefaultVisual(dc->dpy, screen),
-            CWOverrideRedirect | CWBackPixmap | CWEventMask, &wa);
+            vinfo.depth, InputOutput,
+            vinfo.visual,
+            CWOverrideRedirect | CWEventMask | CWColormap | CWBorderPixel | CWBackPixel, &wa);
+    dc->gc = XCreateGC(dc->dpy, win, 0, NULL);
 
-    resizedc(dc, width, height);
+    resizedc(dc, width, height, &vinfo, &wa);
     XMapRaised(dc->dpy, win);
 
     long pval = XInternAtom (dc->dpy, "_NET_WM_WINDOW_TYPE_DOCK", False);

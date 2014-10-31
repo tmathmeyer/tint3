@@ -56,9 +56,9 @@ void drawtext(DC *dc, const char * text, ColorSet *col) {
     if(mn < n)
         for(n = MAX(mn-3, 0); n < mn; buf[n++] = '.');
 
-    drawrect_modifier(dc, dc->border_width, dc->border_width,
-                          dc->w-(2*dc->border_width), dc->h-(2*dc->border_width),
-                          True, col->BG);
+    //drawrect_modifier(dc, dc->border_width, dc->border_width,
+    //                      dc->w-(2*dc->border_width), dc->h-(2*dc->border_width),
+    //                      True, col->BG);
     drawtextn(dc, buf, mn, col);
 }
 
@@ -88,10 +88,9 @@ void drawtextn(DC * dc, const char * text, size_t n, ColorSet * col) {
 
 // get a color from a string, and save it into the context 
 unlong getcolor(DC * dc, const char * colstr) {
-    Colormap cmap = DefaultColormap(dc->dpy, DefaultScreen(dc->dpy));
     XColor color;
 
-    if(!XAllocNamedColor(dc->dpy, cmap, colstr, &color, &color)) {
+    if(!XAllocNamedColor(dc->dpy, dc->wa.colormap, colstr, &color, &color)) {
         printf("cannot allocate color '%s'\n", colstr);
     }
 
@@ -177,21 +176,23 @@ void initfont(DC * dc, const char * fontstr) {
 
 
 void mapdc(DC * dc, Window win, unsigned int w, unsigned int h) {
+    XClearArea(dc->dpy, win, 0, 0, w, h, 0);
     XCopyArea(dc->dpy, dc->canvas, win, dc->gc, 0, 0, w, h, 0, 0);
 }
 
 
-void resizedc(DC * dc, unsigned int w, unsigned int h) {
-    int screen = DefaultScreen(dc->dpy);
+void resizedc(DC * dc, unsigned int w, unsigned int h, XVisualInfo * vinfo, XSetWindowAttributes * wa) {
     if(dc->canvas)
         XFreePixmap(dc->dpy, dc->canvas);
     dc->canvas = XCreatePixmap(dc->dpy, DefaultRootWindow(dc->dpy), w, h,
-                               DefaultDepth(dc->dpy, screen));
+                               vinfo -> depth);
+    dc->empty = XCreatePixmap(dc->dpy, DefaultRootWindow(dc->dpy), w, h,
+                               vinfo -> depth);
     dc->x = dc->y = 0;
     dc->w = w;
     dc->h = h;
     if(dc->font.xft_font && !(dc->xftdraw)) {
-        dc->xftdraw = XftDrawCreate(dc->dpy, dc->canvas, DefaultVisual(dc->dpy,screen), DefaultColormap(dc->dpy,screen));
+        dc->xftdraw = XftDrawCreate(dc->dpy, dc->canvas, vinfo->visual, wa -> colormap);
         if(!(dc->xftdraw))
             printf("error, cannot create xft drawable\n");
     }
