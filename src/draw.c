@@ -56,9 +56,9 @@ void drawtext(DC *dc, const char * text, ColorSet *col) {
     if(mn < n)
         for(n = MAX(mn-3, 0); n < mn; buf[n++] = '.');
 
-    //drawrect_modifier(dc, dc->border_width, dc->border_width,
-    //                      dc->w-(2*dc->border_width), dc->h-(2*dc->border_width),
-    //                      True, col->BG);
+    drawrect_modifier(dc, dc->border_width, dc->border_width,
+                          dc->w-(2*dc->border_width), dc->h-(2*dc->border_width),
+                          True, col->BG);
     drawtextn(dc, buf, mn, col);
 }
 

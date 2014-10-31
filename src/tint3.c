@@ -198,7 +198,7 @@ void drawmenu(void) {
     dc->text_offset_y = 0;
 
     if (draw_bo) {
-        draw_rectangle(dc, 0, 0, width+2, height+2, False, bo_bar);
+        draw_rectangle(dc, 0, 0, width+2, height+2, True, bo_bar);
     }
     if (draw_bg) {
         draw_rectangle(dc, configuration -> border_size, configuration -> border_size,
