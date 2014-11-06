@@ -14,27 +14,6 @@ tint3 uses feature branches. If you would like to submit a PR, submit it on a fe
 - git.tmathmeyer.com
 
 
-
-Using tint3 without mpd (will be moved to feature branch soon)
-=======================
-tint3 now supports mpd. It depends on libmpdclient by default. If you want to
-build tint3 without support for mpd, open the file src/config.mk and find these
-three lines:
-
-    MPDLIBS = -lmpdclient
-    MPDDEPS = mpd.o
-    MPDFLAGS= -D_WITH_MPD
-
-Comment out these lines by inserting a '#' character at the beginning of each
-line. When you're done, it will look like this:
-
-    # MPDLIBS = -lmpdclient
-    # MPDDEPS = mpd.o
-    # MPDFLAGS= -D_WITH_MPD
-
-
-
-
 ##TODO:
  - [ ] have tint3 listen on a unix socket for runtime changes
  - [ ] make better defaults, as well as pre-package some themes

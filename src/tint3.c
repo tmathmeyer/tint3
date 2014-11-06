@@ -85,25 +85,6 @@ int main(int argc, char *argv[]) {
 
 
 
-#ifdef _WITH_MPD
-baritem * mpd_s() {
-    baritem * result = malloc(sizeof(baritem));
-    result -> string = malloc(64);
-    if (!get_mpd_info("%t", result -> string, 64)) {
-        free(result -> string);
-        free(result);
-        return NULL;
-    }
-    result -> color = initcolor(dc, "#000000", "#000000");
-    return result;
-}
-#endif
-
-
-
-
-
-
 
 
 
