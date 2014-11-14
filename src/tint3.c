@@ -31,7 +31,7 @@
 
 static void drawmenu(void);
 static void run(void);
-static void setup(void);
+static void setup(int debug);
 
 
 static int height = 0;
@@ -65,7 +65,12 @@ int scale_to(int from, int to, float by) {
 }
 
 int main(int argc, char *argv[]) {
-    setup();
+    int debug = 0;
+    if (argc > 1 && argv[1][0] == '-' && argv[1][1] == 'd') {
+        debug = 1;
+    }
+
+    setup(debug);
 
     if (configuration -> background_color != NULL) {
         bg_bar = getcolor(dc, configuration -> background_color);
@@ -296,7 +301,7 @@ int horizontal_position() {
 
 
 // TODO: clean this shit
-void setup(void) {
+void setup(int debug) {
     char pwd[100] = {0};
     snprintf(pwd, 100, "%s/.tint3rc", getpwuid(getuid())->pw_dir);
     FILE * fp = fopen(pwd, "r");
@@ -312,7 +317,11 @@ void setup(void) {
         exit(0);
     }
 
-    configuration = readblock(fp);
+    configuration = readblock(fp, debug);
+
+    if (debug) {
+        puts("configuration setup");
+    }
 
     dc = initdc();
     XVisualInfo vinfo;
@@ -391,6 +400,10 @@ void setup(void) {
     NET_CURRENT_DESKTOP = XInternAtom(dc -> dpy, "_NET_CURRENT_DESKTOP", 0);
     NET_NUMBER_DESKTOPS = XInternAtom(dc -> dpy, "_NET_NUMBER_OF_DESKTOPS", 0);
     _CARDINAL_ = XA_CARDINAL;
+
+    if (debug) {
+        puts("window set up");
+    }
 }
 
 
