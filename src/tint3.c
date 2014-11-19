@@ -31,11 +31,13 @@
 
 static void drawmenu(void);
 static void run(void);
-static void setup(int debug);
+static void setup(void);
 
 
 static int height = 0;
 static int width  = 0;
+
+static int debug = 0;
 
 
 static const char *font = "sakamoto-11";
@@ -65,12 +67,11 @@ int scale_to(int from, int to, float by) {
 }
 
 int main(int argc, char *argv[]) {
-    int debug = 0;
     if (argc > 1 && argv[1][0] == '-' && argv[1][1] == 'd') {
         debug = 1;
     }
 
-    setup(debug);
+    setup();
 
     if (configuration -> background_color != NULL) {
         bg_bar = getcolor(dc, configuration -> background_color);
@@ -277,7 +278,7 @@ void draw_list(itemlist * list) {
     }
 }
 
-void run(void) {
+void run() {
     XEvent xe;
     drawmenu();
     while(!XNextEvent(dc->dpy, &xe)){
@@ -301,7 +302,7 @@ int horizontal_position() {
 
 
 // TODO: clean this shit
-void setup(int debug) {
+void setup() {
     char pwd[100] = {0};
     snprintf(pwd, 100, "%s/.tint3rc", getpwuid(getuid())->pw_dir);
     FILE * fp = fopen(pwd, "r");

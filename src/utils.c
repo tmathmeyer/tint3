@@ -162,19 +162,20 @@ char * get_time_format(baritem * item) {
 unsigned long lastime = 0;
 char * weather = NULL;
 char * get_weather(baritem * item) {
+    char notfirstop = lastime;
     if (time(NULL)-lastime > 1800) {
         time((time_t *)&lastime);
 
         time((time_t*)&lastime);
-        int weather_parse_size = 1024;
+        int weather_parse_size = 4096;
         char * weather_s = malloc(weather_parse_size);
         char * host = "weather.noaa.gov";
         char * url  = "/pub/data/observations/metar/decoded/KORH.TXT";
 
-        if (!url_to_memory(weather_s, weather_parse_size, url, host, "208.59.215.33")) {
+        if (notfirstop && !url_to_memory(weather_s, weather_parse_size, url, host, "208.59.215.33")) {
             weather = malloc(8);
             snprintf(weather, 8, "<<err>>");
-        } else {
+        } else if (strstr(weather_s, "HTTP/1.1 200")) {
             char * temp = strstr(weather_s, "Temperature") + 13;
             char * humd = strstr(weather_s, "Dew Point") + 11;
 
@@ -190,6 +191,9 @@ char * get_weather(baritem * item) {
             }
             weather = calloc(0, 8);
             snprintf(weather, 8, "%i/%i", temperature, humidity);
+        } else {
+            weather = malloc(8);
+            snprintf(weather, 8, "<<err>>");
         }
     }
 
