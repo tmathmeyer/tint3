@@ -338,7 +338,6 @@ void setup() {
     dc -> border_width = configuration -> margin_size;
 
     int x, y;
-    
 
     int screen = DefaultScreen(dc->dpy);
     root = RootWindow(dc->dpy, screen);

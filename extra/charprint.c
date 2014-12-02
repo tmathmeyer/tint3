@@ -51,9 +51,13 @@ int main() {
 	char * v = malloc(4);
 	strncpy(v, "▁", 3);
 
+	v[2] = v[2] - 9;	
+
 	int i = 0;
 	for(; i< 27; i++) {
-		puts(v);
+		printf("%s",v);
+		printf("\n%x %x %x\n", v[0], v[1], v[2]);
 		v[2] = v[2] + 1;
 	}
+	
 }
