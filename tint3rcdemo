@@ -13,7 +13,7 @@
 [scrolling]
   id scrolling
   source I wish I was an Oscar Mayer Wiener, then everyone would be in love with me
-  format 30 fast
+  format 250
   forground #5BC7B7
   background #252117
 

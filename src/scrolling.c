@@ -47,7 +47,6 @@ int update_rotation(rotation * rotation) {
         swap(&(rotation -> swap), (char *)((rotation -> strfull) + (rotation -> start) + (rotation -> size)));
         rotation -> start = (rotation -> start + 1) % (rotation -> length);
         swap(&(rotation -> swap), (char *)((rotation -> strfull) + (rotation -> start) + (rotation -> size)));
-        printf("%i\n", rotation -> start);
         return 1;
     }
     return 0;
