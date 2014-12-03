@@ -10,6 +10,13 @@
   forground #ccffcc
   background #000000
 
+[scrolling]
+  id scrolling
+  source I wish I was an Oscar Mayer Wiener, then everyone would be in love with me
+  format 30 fast
+  forground #5BC7B7
+  background #252117
+
 [time]
   id text
   source clock
@@ -73,7 +80,8 @@
   left 2
     desktops
     active
-  center 2
+  center 3
+    scrolling
     date
     time
   right 6

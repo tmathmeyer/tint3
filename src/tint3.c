@@ -28,6 +28,8 @@
 #define MIN(a,b)                ((a) < (b) ? (a) : (b))
 #define MAX(a,b)                ((a) > (b) ? (a) : (b))
 
+#define IS_ID(x, a) (!(strncmp(x -> id, a, strlen(a))))
+
 
 static void drawmenu(void);
 static void run(void);
@@ -118,11 +120,11 @@ char * questions(baritem *meh) {
 void infer_type(block * conf_inf, baritem * ipl) {
     ipl -> update = &questions;
 
-    if (!(strncmp(conf_inf -> id, "radio", 5))) {
+    if (IS_ID(conf_inf, "radio", 5))) {
         if (!strncmp(conf_inf -> source, "workspaces", 10)) {
             ipl -> update = &get_desktops_info;
         }
-    } else if (!(strncmp(conf_inf -> id, "text", 4))) {
+    } else if (IS_ID(conf_inf, "text"))) {
         if (!strncmp(conf_inf -> source, "clock", 5)) {
             ipl -> update = &get_time_format;
         } else if (!strncmp(conf_inf -> source, "window_title", 12)) {
@@ -130,7 +132,7 @@ void infer_type(block * conf_inf, baritem * ipl) {
         } else {
             ipl -> update = &get_plain_text;
         }
-    } else if (!(strncmp(conf_inf -> id, "scale", 5))) {
+    } else if (IS_ID(conf_inf, "scale")) {
         if (starts_with(conf_inf -> source, "weather")) {
             ipl -> update = &get_weather;
         } else if (starts_with(conf_inf -> source, "battery")) {
@@ -138,8 +140,10 @@ void infer_type(block * conf_inf, baritem * ipl) {
         } else if (starts_with(conf_inf -> source, "alsa")) {
             ipl -> update = &get_volume_level;
         }
-    } else if (!(strncmp(conf_inf -> id, "graph", 5))) {
+    } else if (IS_ID(conf_inf, "graph")) {
         ipl -> update = &get_net_graph;
+    } else if (IS_ID(conf_inf, "scrolling")) {
+        ipl -> update = &get_scrolling_text;
     }
 
     update_nba(ipl);
@@ -297,11 +301,15 @@ int horizontal_position() {
 
 // TODO: clean this shit
 void setup(void) {
+    char cwd[100] = {0};
+    getcwd(cwd, 100);
+    puts(cwd);
     char pwd[100] = {0};
-    snprintf(pwd, 100, "%s/.tint3rc", getpwuid(getuid())->pw_dir);
+    snprintf(pwd, 100, "%s/tint3rc", cwd);
     FILE * fp = fopen(pwd, "r");
     if (fp == NULL) {
         snprintf(pwd, 100, "%s/.tint3rc", getenv("HOME"));
+        fp = fopen(pwd, "r");
         if (fp == NULL) {
             fp = fopen("/etc/tint3/tint3rc", "r");
         }

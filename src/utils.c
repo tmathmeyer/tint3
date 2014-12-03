@@ -18,9 +18,11 @@
 #include <time.h>
 #include <string.h>
 #include <xcb/xcb.h>
+
 #include "utils.h"
 #include "lwxt.h"
 #include "lwbi.h"
+#include "scrolling.h"
 
 
 
@@ -211,8 +213,6 @@ char * get_battery(baritem * item) {
     return msg;
 }
 
-
-
 char * get_volume_level(baritem * item) {
     char * pipe_format = "amixer get -c %s Master | tail -n 1 | cut -d '[' -f 2 | tr -d '%]'";
     char pipe[72] = {0};
@@ -233,6 +233,20 @@ char * get_plain_text(baritem * item) {
     char * result = malloc(len+1);
     snprintf(result, len+1, item -> source);
     return result;
+}
+
+rotation * ROT = NULL;
+char * get_scrolling_text(baritem * item) {
+    if (ROT == NULL) {
+        ROT = make_rotation(item -> source, 30);
+    }
+
+    char * res = malloc(ROT -> size);
+    strncpy(res, (ROT -> strfull + ROT -> start), ROT -> size);
+
+    update_rotation(ROT);
+
+    return res;
 }
 
 
