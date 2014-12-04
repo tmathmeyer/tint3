@@ -14,9 +14,9 @@ int main()
         %S = Sky Conditions
       */
 
-    char dest[10] = {0};
+    char dest[100] = {0};
 
-    printf("chars: %i\n", format_string(dest, "%%surprise"));
+    printf("chars: %i\n", format_string(dest, "the %H is bad"));
 
     puts(dest);
 }
@@ -26,7 +26,11 @@ char * get_source() {
 }
 
 int temperature(int start, char * source, char * dest) {
-    return start;
+    dest[start+0] = 'F';
+    dest[start+1] = 'U';
+    dest[start+2] = 'C';
+    dest[start+3] = 'K';
+    return start+4;
 }
 
 int dew_point(int start, char * source, char * dest) {
@@ -34,7 +38,8 @@ int dew_point(int start, char * source, char * dest) {
 }
 
 int humidity(int start, char * source, char * dest) {
-    return start;
+    snprintf(dest+start, strlen("humidity")+1, "humidity");
+    return start+8;
 }
 
 int rainfall(int start, char * source, char * dest) {
@@ -74,6 +79,7 @@ int format_string(char * dest, char * fmt) {
         if (fmt[i] == '%') {
             d = !d;
         } else if (d) {
+            d = !d;
             switch(fmt[i]) {
                 case 'T':
                     e = T(e, source, dest); break;
