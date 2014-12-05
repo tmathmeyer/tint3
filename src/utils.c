@@ -17,6 +17,7 @@
 #include "lwxt.h"
 #include "lwbi.h"
 #include "format.h"
+#include "json.h"
 
 
 
@@ -109,7 +110,6 @@ int get_current_desktop () {
     return get_x11_property(NET_CURRENT_DESKTOP, _CARDINAL_);
 }
 
-// make this configurable with regex somehoe
 char * get_desktops_info(baritem * source) {
     int numdesk = get_number_of_desktops();
     int curdesk = get_current_desktop();
@@ -174,54 +174,61 @@ format_map * fmtmp;
 
 
 
-
-
-
+void print_json(container * cont, char * name) {
+    puts(name);
+    switch(cont -> id) {
+        case 0:
+            printf("%s\n\n", cont -> string);
+            break;
+        case 1:
+            printf("%i\n\n", *(cont -> number));
+            break;
+        case 2:
+            printf("%s\n\n", (*(cont -> boolean)) ? "true" : "false");
+            break;
+        case 3:
+            printf("an object\n\n");
+    }
+}
 
 unsigned long lastime = 0;
 char * weather = NULL;
 char * get_weather(baritem * item) {
-
-    if (!fmtmp) {
-        fmtmp = malloc(sizeof(format_map));
-        fmtmp -> formatID = 'H';
-        fmtmp -> formatter = show_humidity;
-        fmtmp -> next = 0;
-    }
-
-    char out[100] = {0};
-    format_string(out, "the %H is high today", fmtmp);
-
     if (time(NULL)-lastime > 1800) {
         time((time_t *)&lastime);
 
         time((time_t*)&lastime);
         int weather_parse_size = 4096;
         char * weather_s = malloc(weather_parse_size);
-        char * host = "weather.noaa.gov";
-        char * url  = "/pub/data/observations/metar/decoded/KORH.TXT";
+        char * host = "api.openweathermap.org";
+        char * url  = "/data/2.5/weather?q=Worcester,usa";
 
-        if (!url_to_memory(weather_s, weather_parse_size, url, host, "208.59.215.33")) {
+        if (!url_to_memory(weather_s, weather_parse_size, url, host, "162.243.44.32")) {
             weather = malloc(8);
             snprintf(weather, 8, "<<err>>");
-            exit(0);
         } else if (strstr(weather_s, "HTTP/1.1 200")) {
-            puts(weather_s);
-            char * temp = strstr(weather_s, "Temperature") + 13;
-            char * humd = strstr(weather_s, "Dew Point") + 11;
+            char * JSON = strstr(weather_s, "{");
+            if (JSON) {
+                container * json = from_string(&JSON);
 
-            int temperature, humidity;
-            sscanf(temp, "%i", &temperature);
-            sscanf(humd, "%i", &humidity);
+                container * w_main = $(json, "main");
+                container * temperature = $(w_main, "temp");
+                int temp = *(temperature -> number);
 
-            if (weather != NULL) {
-                free(weather);
-            }
-            if (weather_s != NULL) {
+                container * w_weather = $(json, "weather");
+                container * first = _(w_weather, 0);
+                container * sky = $(first, "main");
+                char * sky_condition = sky -> string;
+
+
+                weather = calloc(0, 100);
+                snprintf(weather, 100, "%s, %i", sky_condition, temp);
+                
+                puts(weather);
+
+                free_container(json);
                 free(weather_s);
             }
-            weather = calloc(0, 8);
-            snprintf(weather, 8, "%i/%i", temperature, humidity);
         } else {
             weather = malloc(8);
             snprintf(weather, 8, "<<err>>");

@@ -117,12 +117,3 @@
 #forground and background are both required for ALL blocks, and must be given a 6 digit hex string
 #
 #some blocks have other information, such as source, type, and format strings
-#
-#
-#
-#
-#
-#
-#
-#
-#
