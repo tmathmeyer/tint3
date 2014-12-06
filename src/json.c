@@ -162,9 +162,7 @@ json_object * array_from_string(char ** string) {
     while(**string!=']') {
         update -> next = malloc(sizeof(named_field_list));
         update = update -> next;
-        update -> name = malloc(2);
-        (update -> name)[0] = '0';
-        (update -> name)[1] = 0;
+        update -> name = 0;
         update -> field = from_string(string);
         update -> next = result -> fields;
 

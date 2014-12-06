@@ -154,18 +154,6 @@ char * get_time_format(baritem * item) {
     return msg;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 int show_humidity(int start, char * dest) {
     snprintf(dest+start, strlen("humidity")+1, "humidity");
     return start+8;
@@ -241,32 +229,6 @@ char * get_weather(baritem * item) {
     return weather2;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 char * get_battery(baritem * item) {
     char batt[5] = "BAT0";
     char c = (item -> source)[8];
@@ -278,8 +240,6 @@ char * get_battery(baritem * item) {
     // change color here
     return msg;
 }
-
-
 
 char * get_volume_level(baritem * item) {
     char * pipe_format = "amixer get -c %s Master | tail -n 1 | cut -d '[' -f 2 | tr -d '%]'";
@@ -302,10 +262,6 @@ char * get_plain_text(baritem * item) {
     snprintf(result, len+1, item -> source);
     return result;
 }
-
-
-
-
 
 char * bar_map = "▁▂▃▄▅▆▇";
 
