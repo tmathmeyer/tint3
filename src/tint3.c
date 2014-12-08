@@ -211,39 +211,6 @@ void drawmenu(void) {
     mapdc(dc, win, width, height);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void free_list(itemlist * list) {
     while(list != NULL) {
         free_baritem(list -> item);
@@ -328,7 +295,10 @@ void setup() {
     XVisualInfo vinfo;
     XMatchVisualInfo(dc->dpy, DefaultScreen(dc->dpy), 32, TrueColor, &vinfo);
     XSetWindowAttributes wa;
-    wa.colormap = XCreateColormap(dc->dpy, DefaultRootWindow(dc->dpy), vinfo.visual, AllocNone);
+    wa.colormap = XCreateColormap(dc->dpy,
+                                  DefaultRootWindow(dc->dpy),
+                                  vinfo.visual,
+                                  AllocNone);
     wa.border_pixel = 0;
     wa.background_pixel = 0;
     dc -> wa = wa;
@@ -359,7 +329,8 @@ void setup() {
     win = XCreateWindow(dc->dpy, root, x, y, width, height, 0,
             vinfo.depth, InputOutput,
             vinfo.visual,
-            CWOverrideRedirect | CWEventMask | CWColormap | CWBorderPixel | CWBackPixel, &wa);
+            CWOverrideRedirect|CWEventMask|CWColormap|CWBorderPixel|CWBackPixel,
+            &wa);
     dc->gc = XCreateGC(dc->dpy, win, 0, NULL);
 
     resizedc(dc, width, height, &vinfo, &wa);
@@ -368,7 +339,14 @@ void setup() {
     long pval = XInternAtom (dc->dpy, "_NET_WM_WINDOW_TYPE_DOCK", False);
     long prop = XInternAtom (dc->dpy, "_NET_WM_WINDOW_TYPE", False);
 
-    XChangeProperty (dc->dpy, win, prop, XA_ATOM, 32, PropModeReplace, (unsigned char *) &pval, 1);
+    XChangeProperty (dc->dpy,
+                     win,
+                     prop,
+                     XA_ATOM,
+                     32,
+                     PropModeReplace,
+                     (unsigned char *) &pval,
+                     1);
 
     /* reserve space on the screen */
     prop = XInternAtom (dc->dpy, "_NET_WM_STRUT_PARTIAL", False);
@@ -381,7 +359,14 @@ void setup() {
         strut[3] = height;
         strut[11] = width;
     }
-    XChangeProperty (dc->dpy, win, prop, ptyp, 16, PropModeReplace, (unsigned char *) &strut[0], 12);
+    XChangeProperty (dc->dpy,
+                     win,
+                     prop,
+                     ptyp,
+                     16,
+                     PropModeReplace,
+                     (unsigned char *) &strut[0],
+                     12);
 
     /* This is for support with legacy WMs */
     prop = XInternAtom (dc->dpy, "_NET_WM_STRUT", False);
@@ -390,12 +375,14 @@ void setup() {
         strut_s[2] = height;
     else
         strut_s[3] = height;
-    XChangeProperty (dc->dpy, win, prop, ptyp, 32, PropModeReplace, (unsigned char *) &strut_s[0], 4);
+    XChangeProperty (dc->dpy, win, prop, ptyp, 32,
+                     PropModeReplace, (unsigned char *) &strut_s[0], 4);
 
     /* Appear on all desktops */
     prop = XInternAtom (dc->dpy, "_NET_WM_DESKTOP", False);
     long all_desktops = 0xffffffff;
-    XChangeProperty(dc->dpy, win, prop, ptyp, 32, PropModeReplace, (unsigned char *) &all_desktops, 1);
+    XChangeProperty(dc->dpy, win, prop, ptyp, 32,
+                    PropModeReplace, (unsigned char *) &all_desktops, 1);
 
     NET_CURRENT_DESKTOP = XInternAtom(dc -> dpy, "_NET_CURRENT_DESKTOP", 0);
     NET_NUMBER_DESKTOPS = XInternAtom(dc -> dpy, "_NET_NUMBER_OF_DESKTOPS", 0);
