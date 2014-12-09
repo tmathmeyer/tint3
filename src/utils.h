@@ -14,7 +14,6 @@
 
 #define UNUSED(x) (void)(x)
 
-
 typedef struct ColorSet{
     unsigned long FG;
     XftColor FG_xft;

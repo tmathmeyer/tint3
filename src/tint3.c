@@ -45,7 +45,6 @@ static unsigned long bg_bar = 0, draw_bg = 0;
 static unsigned long bo_bar = 0, draw_bo = 0;
 
 static Bool topbar = True;
-static DC *dc;
 static Window root, win;
 
 static bar_config * configuration;
@@ -85,14 +84,6 @@ int main(int argc, char *argv[]) {
 
     return EXIT_FAILURE;
 }
-
-
-
-
-
-
-
-
 
 /* rework the modules */
 

@@ -19,8 +19,6 @@ int get_battery_percent(char * forbattery) {
 
     int energy_now = 1;
     int energy_full = 1;
-    //int battery_charging = 0;
-
 
     snprintf(battery_read, sizeof battery_read, "%s/%s/%s", path, forbattery, "energy_now");
     fp = fopen(battery_read, "r");
@@ -40,19 +38,5 @@ int get_battery_percent(char * forbattery) {
     } else {
         return -2;
     }
-
-/*
-    snprintf(battery_read, sizeof battery_read, "%s/%s/%s", path, forbattery, "status");
-    fp = fopen(battery_read, "r");
-    if(fp != NULL) {
-        if (fgets(tmp, sizeof tmp, fp)) {
-            battery_charging = (strncmp(tmp, "Discharging", 11) != 0);
-        }
-        fclose(fp);
-    } else {
-        return -1;
-    }
-*/
-
     return energy_now / (energy_full / 100);
 }

@@ -18,9 +18,15 @@
 #include "lwbi.h"
 #include "format.h"
 #include "json.h"
+#include "draw.h"
 
 
-
+#define BATTERY_FOREGROUND_HIGH "#0f0"
+#define BATTERY_BACKGROUND_HIGH "#282"
+#define BATTERY_FOREGROUND_MED "#ff0"
+#define BATTERY_BACKGROUND_MED "#886"
+#define BATTERY_FOREGROUND_LOW "#f00"
+#define BATTERY_BACKGROUND_LOW "#222222"
 
 
 
@@ -233,10 +239,20 @@ char * get_battery(baritem * item) {
     char batt[5] = "BAT0";
     char c = (item -> source)[8];
     batt[3] = c;
-    char * msg = calloc(0,11);
+    char * msg = calloc(0,9);
     int battery_percent = get_battery_percent(batt);
-    snprintf(msg, 11, "batt%c:%i%%", c, battery_percent);
+    char * query = (c-'0') ? "╻:%i%%" : "╺:%i%%";
+    snprintf(msg, 9, query, battery_percent);
 
+    if (battery_percent > 80) {
+        item -> color = initcolor(dc, "#000000", BATTERY_FOREGROUND_HIGH);
+    } else if (battery_percent > 20) {
+        item -> color = initcolor(dc, "#000000", BATTERY_FOREGROUND_MED);
+    } else {
+        item -> color = initcolor(dc, "#000000", BATTERY_FOREGROUND_LOW);
+    }
+
+    //
     // change color here
     return msg;
 }

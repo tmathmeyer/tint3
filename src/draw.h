@@ -28,6 +28,9 @@ typedef struct {
 } DC;  /* draw context */
 
 
+DC *dc;
+
+
 unsigned long getcolor(DC *dc, const char *colstr);
 void drawrect_modifier(DC *dc, int x, int y, unsigned int w, unsigned int h, Bool fill, unsigned long color);
 void draw_rectangle(DC * dc, unsigned int x, unsigned int y, unsigned int w, unsigned int h, Bool fill, unsigned long color);
