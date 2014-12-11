@@ -20,8 +20,6 @@ typedef struct ColorSet{
     unsigned long BG;
 } ColorSet;
 
-
-
 typedef struct baritem{
     ColorSet * color;
     unsigned int length;
@@ -36,10 +34,14 @@ typedef struct itemlist {
     struct itemlist * next;
 } itemlist;
 
-
-
-
-
+typedef struct bar_layout {
+    itemlist * left;
+    short leftlen;
+    itemlist * right;
+    short rightlen;
+    itemlist * center;
+    short centerlen;
+} bar_layout;
 
 typedef struct graph{
     int graph[GRAPHLENGTH*3+1];
@@ -82,6 +84,7 @@ char * get_desktops_info(baritem * item);
 char * get_active_window_name(baritem * item);
 char * get_net_graph(baritem * item);
 char * get_plain_text(baritem * item);
+char * get_scrolling_text(baritem * item);
 
 Atom NET_NUMBER_DESKTOPS,
      NET_CURRENT_DESKTOP;

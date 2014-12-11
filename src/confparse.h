@@ -39,7 +39,7 @@ typedef struct {
     block_list * right;
 } bar_config;
 
-bar_config * readblock(FILE * fp, int debug);
+bar_config * readblock(FILE * fp);
 int starts_with(char * source, char * check);
 
 #endif

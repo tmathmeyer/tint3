@@ -28,6 +28,8 @@
 #define MIN(a,b)                ((a) < (b) ? (a) : (b))
 #define MAX(a,b)                ((a) > (b) ? (a) : (b))
 
+#define IS_ID(x, a) (!(strncmp(x -> id, a, strlen(a))))
+
 
 static void drawmenu(void);
 static void run(void);
@@ -48,7 +50,7 @@ static Bool topbar = True;
 static Window root, win;
 
 static bar_config * configuration;
-
+static bar_layout * layout;
 
 // get the height of the bar
 int get_bar_height(int font_height) {
@@ -115,11 +117,11 @@ char * questions(baritem *meh) {
 void infer_type(block * conf_inf, baritem * ipl) {
     ipl -> update = &questions;
 
-    if (!(strncmp(conf_inf -> id, "radio", 5))) {
+    if (IS_ID(conf_inf, "radio")) {
         if (!strncmp(conf_inf -> source, "workspaces", 10)) {
             ipl -> update = &get_desktops_info;
         }
-    } else if (!(strncmp(conf_inf -> id, "text", 4))) {
+    } else if (IS_ID(conf_inf, "text")) {
         if (!strncmp(conf_inf -> source, "clock", 5)) {
             ipl -> update = &get_time_format;
         } else if (!strncmp(conf_inf -> source, "window_title", 12)) {
@@ -127,7 +129,7 @@ void infer_type(block * conf_inf, baritem * ipl) {
         } else {
             ipl -> update = &get_plain_text;
         }
-    } else if (!(strncmp(conf_inf -> id, "scale", 5))) {
+    } else if (IS_ID(conf_inf, "scale")) {
         if (starts_with(conf_inf -> source, "weather")) {
             ipl -> update = &get_weather;
         } else if (starts_with(conf_inf -> source, "battery")) {
@@ -135,8 +137,10 @@ void infer_type(block * conf_inf, baritem * ipl) {
         } else if (starts_with(conf_inf -> source, "alsa")) {
             ipl -> update = &get_volume_level;
         }
-    } else if (!(strncmp(conf_inf -> id, "graph", 5))) {
+    } else if (IS_ID(conf_inf, "graph")) {
         ipl -> update = &get_net_graph;
+    } else if (IS_ID(conf_inf, "scrolling")) {
+        ipl -> update = &get_scrolling_text;
     }
 
     update_nba(ipl);
@@ -163,6 +167,25 @@ itemlist * c2l(block_list * bid) {
 }
 
 
+
+void config_to_layout(bar_config * config) {
+    layout = malloc(sizeof(bar_layout));
+    layout -> left = c2l(configuration -> left);
+    layout -> right = c2l(configuration -> right);
+    layout -> center = c2l(configuration -> center);
+
+    layout -> leftlen = total_list_length(layout -> left);
+    layout -> rightlen = total_list_length(layout -> right);
+    layout -> centerlen = total_list_length(layout -> center);
+}
+
+void free_all() {
+    free_list(layout -> left);
+    free_list(layout -> right);
+    free_list(layout -> center);
+}
+
+
 void drawmenu(void) {
     dc->x = 0;
     dc->y = 0;
@@ -181,23 +204,15 @@ void drawmenu(void) {
     }
 
 
-    itemlist * left = c2l(configuration -> left);
-    itemlist * right = c2l(configuration -> right);
-    itemlist * center = c2l(configuration -> center);
+    config_to_layout(configuration);
+    
+    draw_list(layout -> left);
+    dc -> x = width-(layout -> rightlen);
+    draw_list(layout -> right);
+    dc -> x = (width-(layout -> centerlen))/2;
+    draw_list(layout -> center);
 
-    total_list_length(left);
-    int rlen = total_list_length(right);
-    int clen = total_list_length(center);
-
-    draw_list(left);
-    dc -> x = width-rlen;
-    draw_list(right);
-    dc -> x = (width-clen)/2;
-    draw_list(center);
-
-    free_list(left);
-    free_list(right);
-    free_list(center);
+    free_all();
 
     mapdc(dc, win, width, height);
 }
@@ -221,6 +236,10 @@ unsigned int total_list_length(itemlist * list) {
     unsigned int len = 0;
     while(list != NULL) {
         list -> item -> length = textw(dc, list -> item -> string);
+        if (list -> item -> update == &get_scrolling_text) {
+            list -> item -> length = atoi(list -> item -> format);
+            //printf("%i\n", list -> item -> length);
+        }
         len += list -> item -> length;
         list = list -> next;
     }
@@ -261,11 +280,14 @@ int horizontal_position() {
 
 // TODO: clean this shit
 void setup() {
+    char cwd[100] = {0};
+    getcwd(cwd, 100);
     char pwd[100] = {0};
-    snprintf(pwd, 100, "%s/.tint3rc", getpwuid(getuid())->pw_dir);
+    snprintf(pwd, 100, "%s/tint3rc", cwd);
     FILE * fp = fopen(pwd, "r");
     if (fp == NULL) {
         snprintf(pwd, 100, "%s/.tint3rc", getenv("HOME"));
+        fp = fopen(pwd, "r");
         if (fp == NULL) {
             fp = fopen("/etc/tint3/tint3rc", "r");
         }
@@ -276,12 +298,8 @@ void setup() {
         exit(0);
     }
 
-    configuration = readblock(fp, debug);
-
-    if (debug) {
-        puts("configuration setup");
-    }
-
+    configuration = readblock(fp);
+    
     dc = initdc();
     XVisualInfo vinfo;
     XMatchVisualInfo(dc->dpy, DefaultScreen(dc->dpy), 32, TrueColor, &vinfo);
