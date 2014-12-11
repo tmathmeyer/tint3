@@ -217,8 +217,6 @@ char * get_weather(baritem * item) {
 
                 weather = calloc(0, 100);
                 snprintf(weather, 100, "%s, %i", sky_condition, temp);
-                
-                puts(weather);
 
                 free_container(json);
                 free(weather_s);

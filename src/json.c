@@ -145,10 +145,9 @@ char * string_from_string(char ** string) {
             length++;
         }
     }
-
     char * result = malloc(length+1);
     memcpy(result, *string, length);
-    result[length+1] = 0;
+    result[length] = 0;
     (*string)+=(length+1);
     return result;
 }
