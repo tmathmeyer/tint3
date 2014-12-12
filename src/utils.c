@@ -17,10 +17,9 @@
 #include "utils.h"
 #include "lwxt.h"
 #include "lwbi.h"
-#include "format.h"
-#include "json.h"
 #include "draw.h"
 #include "scrolling.h"
+#include "weather.h"
 
 
 #define BATTERY_FOREGROUND_HIGH "#0f0"
@@ -162,77 +161,8 @@ char * get_time_format(baritem * item) {
     return msg;
 }
 
-int show_humidity(int start, char * dest) {
-    snprintf(dest+start, strlen("humidity")+1, "humidity");
-    return start+8;
-}
-format_map * fmtmp;
-
-
-
-void print_json(container * cont, char * name) {
-    puts(name);
-    switch(cont -> id) {
-        case 0:
-            printf("%s\n\n", cont -> string);
-            break;
-        case 1:
-            printf("%i\n\n", *(cont -> number));
-            break;
-        case 2:
-            printf("%s\n\n", (*(cont -> boolean)) ? "true" : "false");
-            break;
-        case 3:
-            printf("an object\n\n");
-    }
-}
-
-unsigned long lastime = 0;
-char * weather = NULL;
 char * get_weather(baritem * item) {
-    if (time(NULL)-lastime > 1800) {
-        time((time_t *)&lastime);
-
-        time((time_t*)&lastime);
-        int weather_parse_size = 4096;
-        char * weather_s = malloc(weather_parse_size);
-        char * host = "api.openweathermap.org";
-        char * url  = "/data/2.5/weather?q=Worcester,usa";
-
-        if (!url_to_memory(weather_s, weather_parse_size, url, host, "162.243.44.32")) {
-            weather = malloc(8);
-            snprintf(weather, 8, "<<err>>");
-        } else if (strstr(weather_s, "HTTP/1.1 200")) {
-            char * JSON = strstr(weather_s, "{");
-            if (JSON) {
-                container * json = from_string(&JSON);
-
-                container * w_main = $(json, "main");
-                container * temperature = $(w_main, "temp");
-                int temp = *(temperature -> number);
-
-                container * w_weather = $(json, "weather");
-                container * first = _(w_weather, 0);
-                container * sky = $(first, "main");
-                char * sky_condition = sky -> string;
-
-
-                weather = calloc(0, 100);
-                snprintf(weather, 100, "%s, %i", sky_condition, temp);
-
-                free_container(json);
-                free(weather_s);
-            }
-        } else {
-            weather = malloc(8);
-            snprintf(weather, 8, "<<err>>");
-        }
-    }
-
-    int length = strlen(weather);
-    char * weather2 = malloc(length+1);
-    snprintf(weather2, length+1, "%s", weather);
-    return weather2;
+    return get_weather_string();
 }
 
 char * get_battery(baritem * item) {
