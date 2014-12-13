@@ -1,34 +1,33 @@
 [active]
   id text
   source window_title
-  forground #ff0000
+  forground #11ffff
   background #000000
 
 [desktops]
   id radio
   source workspaces
-  forground #ccffcc
-  background #000000
-
-[scrolling]
-  id scrolling
-  source I wish I was an Oscar Mayer Wiener, then everyone would be in love with me
-  format 250
-  forground #5BC7B7
+  forground #11ffff
   background #252117
 
 [time]
   id text
   source clock
   format %T
-  forground #5BC7B7
+  forground #ffffff
+  background #252117
+
+[symtest]
+  id text
+  source ╁╂╃╄╅╆╇╈╉╊╋╌╍╎╏═║╒╓╔╕╖╗╘╙╚╛▁▂▃▄▅▆▇█▉▊▋▌▍▎▏▐░▒▓▔▕▖▗▘▙▚▛ 
+  forground #ffffff
   background #252117
 
 [date]
   id text
   source clock
   format %a - %d
-  forground #ff0000
+  forground #ffffff
   background #252117
 
 [weather]
@@ -52,14 +51,14 @@
 
 [batteryone]
   id scale
-  forground #ffffff
+  forground #EEEE22
   background #000000
   type unknown
   source battery 1
 
 [batterytwo]
   id scale
-  forground #ff0000
+  forground #11EE11
   background #000000
   type unknown
   source battery 0
@@ -71,17 +70,17 @@
   background #000000
 
 [[bar]]
-  bordercolor #EE8822
+  bordercolor #22EE88
+  background #252117
   borderwidth 1
   padding 1
   margin 5
-  background #252117
-  location top
+  location bottom
   left 2
     desktops
     active
   center 3
-    scrolling
+    symtest
     date
     time
   right 6
@@ -125,3 +124,12 @@
 #forground and background are both required for ALL blocks, and must be given a 6 digit hex string
 #
 #some blocks have other information, such as source, type, and format strings
+#
+#
+#
+#
+#
+#
+#
+#
+#
