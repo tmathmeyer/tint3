@@ -162,7 +162,7 @@ char * get_time_format(baritem * item) {
 }
 
 char * get_weather(baritem * item) {
-    return get_weather_string();
+    return get_weather_string(item -> format, item -> source);
 }
 
 char * get_battery(baritem * item) {
@@ -174,6 +174,8 @@ char * get_battery(baritem * item) {
     char * query = (c-'0') ? "╻:%i%%" : "╺:%i%%";
     snprintf(msg, 9, query, battery_percent);
 
+    free(item -> color);
+
     if (battery_percent > 80) {
         item -> color = initcolor(dc, "#000000", BATTERY_FOREGROUND_HIGH);
     } else if (battery_percent > 20) {
@@ -181,9 +183,7 @@ char * get_battery(baritem * item) {
     } else {
         item -> color = initcolor(dc, "#000000", BATTERY_FOREGROUND_LOW);
     }
-
-    //
-    // change color here
+    
     return msg;
 }
 

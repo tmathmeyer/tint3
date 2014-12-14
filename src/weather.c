@@ -22,29 +22,112 @@ static format_map * formatmap = 0;
 static char * weather = 0;
 static time_t lastime = 0;
 
-int format(int place, char * string) {
-    char * addition = "INterest";
-    memcpy(string+place, addition, strlen(addition));
-    return place + strlen(addition);
+struct comb {
+    char formatID;
+    int (*formatter)(int, char *);
+};
+
+int _temperature() {
+    container * w_main = $(jsoncontext, "main");
+    container * temperature = $(w_main, "temp");
+    return *(temperature -> number);
+}
+
+int _pressure() {
+    container * w_main = $(jsoncontext, "main");
+    container * pressure = $(w_main, "pressure");
+    return *(pressure -> number);
+}
+
+int _humidity() {
+    container * w_main = $(jsoncontext, "main");
+    container * humidity = $(w_main, "humidity");
+    return *(humidity -> number);
+}
+
+int temperatureK(int place, char * string) {
+    return place + sprintf(string+place, "%i", _temperature());
+}
+
+int temperatureC(int place, char * string) {
+    int tempC = _temperature()-273;
+    return place + sprintf(string+place, "%i", tempC);
+}
+
+int temperatureF(int place, char * string) {
+    int tempC = _temperature()-273;
+    int tempF = ((tempC * 9) / 5) + 32;
+    return place + sprintf(string+place, "%i", tempF);
+}
+
+int pressureHg(int place, char * string) {
+    int pressureHg = _pressure();
+    return place + sprintf(string+place, "%i", pressureHg);
+}
+
+int pressureATM(int place, char * string) {
+    int pressureATM = _pressure() / 760;
+    return place + sprintf(string+place, "%i", pressureATM);
+}
+
+int humidityPC(int place, char * string) {
+    int humidity = _humidity();
+    return place + sprintf(string+place, "%i", humidity);
+}
+
+int dew_point(int place, char * string) {
+    int dewpoint = (_humidity() * _temperature()) / 100;
+    return place + sprintf(string+place, "%i", dewpoint);
+}
+
+int weather_conditions(int place, char * string) {
+    container * w_weather = $(jsoncontext, "weather");
+    container * first = _(w_weather, 0);
+    container * sky = $(first, "main");
+    char * sky_condition = sky -> string;
+    return place + sprintf(string+place, "%s", sky_condition);
+}
+
+void add_to_format(struct comb comb) {
+    format_map * next = malloc(sizeof(format_map));
+    next -> next = formatmap;
+    next -> formatID = comb.formatID;
+    next -> formatter = comb.formatter;
+    formatmap = next;
 }
 
 format_map * getformatmap() {
     if (formatmap) {
         return formatmap;
     }
-    //FILL IN HERE
-    formatmap = malloc(sizeof(format_map));
-    formatmap -> next = 0;
-    formatmap -> formatter = format;
-    formatmap -> formatID = 'T';
+
+    struct comb kelvin = {'K', &temperatureK};
+    struct comb farenheight = {'F', &temperatureF};
+    struct comb celsius = {'C', &temperatureC};
+    struct comb weather = {'W', &weather_conditions};
+    struct comb atmospheres = {'A', &pressureATM};
+    struct comb mmhg = {'P', &pressureHg};
+    struct comb humidity = {'H', &humidityPC};
+    struct comb dewpoint = {'D', &dew_point};
+
+    add_to_format(kelvin);
+    add_to_format(weather);
+    add_to_format(farenheight);
+    add_to_format(celsius);
+    add_to_format(atmospheres);
+    add_to_format(mmhg);
+    add_to_format(humidity);
+    add_to_format(dewpoint);
 
     return formatmap;
 }
 
 // TODO make the location configurable
-void update_json_context() {
+void update_json_context(char * location) {
+    char url[100] = {0};
+    snprintf(url, 100, "/data/2.5/weather?q=%s", location);
+
     char * host = "api.openweathermap.org";
-    char * url  = "/data/2.5/weather?q=Worcester,usa";
     char * weather_s = malloc(weather_parse_size);
 
     if (url_to_memory(weather_s, weather_parse_size, url, host, "162.243.44.32")) {
@@ -59,41 +142,31 @@ void update_json_context() {
     free(weather_s);
 }
 
-void update_weather_string() {
+void update_weather_string(char * weather_format) {
     if (!weather) {
         weather = malloc(128);
     }
     if (jsoncontext) {
-        container * w_main = $(jsoncontext, "main");
-        container * temperature = $(w_main, "temp");
-        int temp = *(temperature -> number);
-
-        container * w_weather = $(jsoncontext, "weather");
-        container * first = _(w_weather, 0);
-        container * sky = $(first, "main");
-        char * sky_condition = sky -> string;
-
-        
         memset(weather, 0, 128);
-        snprintf(weather, 128, "%s, %i", sky_condition, temp);
+        format_string(weather, weather_format, getformatmap());
     }
 }
 
-void attempt_update_weather() {
+void attempt_update_weather(char * weather_format, char * weather_location) {
     if (lastime == 0) {
         lastime = 1;
     } else if (time(NULL)-lastime > 1800) {
         time(&lastime);
-        update_json_context();
-        update_weather_string();
+        update_json_context(weather_location);
+        update_weather_string(weather_format);
     }
 }
 
 
 
 
-char * get_weather_string() {
-    attempt_update_weather();
+char * get_weather_string(char * weather_format, char * weather_location) {
+    attempt_update_weather(weather_format, weather_location);
     char * result;
 
     if (weather) {

@@ -129,10 +129,10 @@ void infer_type(block * conf_inf, baritem * ipl) {
         } else {
             ipl -> update = &get_plain_text;
         }
+    } else if (IS_ID(conf_inf, "weather")) {
+        ipl -> update = &get_weather;
     } else if (IS_ID(conf_inf, "scale")) {
-        if (starts_with(conf_inf -> source, "weather")) {
-            ipl -> update = &get_weather;
-        } else if (starts_with(conf_inf -> source, "battery")) {
+        if (starts_with(conf_inf -> source, "battery")) {
             ipl -> update = &get_battery;
         } else if (starts_with(conf_inf -> source, "alsa")) {
             ipl -> update = &get_volume_level;
@@ -183,6 +183,7 @@ void free_all() {
     free_list(layout -> left);
     free_list(layout -> right);
     free_list(layout -> center);
+    free(layout);
 }
 
 

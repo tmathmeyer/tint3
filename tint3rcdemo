@@ -17,12 +17,6 @@
   forground #ffffff
   background #252117
 
-[symtest]
-  id text
-  source ╁╂╃╄╅╆╇╈╉╊╋╌╍╎╏═║╒╓╔╕╖╗╘╙╚╛▁▂▃▄▅▆▇█▉▊▋▌▍▎▏▐░▒▓▔▕▖▗▘▙▚▛ 
-  forground #ffffff
-  background #252117
-
 [date]
   id text
   source clock
@@ -31,11 +25,12 @@
   background #252117
 
 [weather]
-  id scale
+  id weather
+  format %W, ▉%C 
   forground #aabbcc
   background #000000
   type temperature
-  source weather KORH
+  source Worcester,usa
 
 [download]
   id graph
@@ -75,12 +70,11 @@
   borderwidth 1
   padding 1
   margin 5
-  location bottom
+  location top
   left 2
     desktops
     active
-  center 3
-    symtest
+  center 2
     date
     time
   right 6

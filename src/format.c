@@ -14,10 +14,10 @@ int BAD(int start, char * dest) {
 
 typedef int (*textformatter)(int, char *);
 textformatter lookup(format_map * fmt, char id) {
-	if (fmt) {
-		return fmt -> formatter;
+	if (!fmt) {
+        return BAD;
 	} else if (id == fmt -> formatID) {
-		return BAD;
+		return fmt -> formatter;
 	}
 	return lookup(fmt -> next, id);
 }
