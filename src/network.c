@@ -42,26 +42,6 @@ int get_socket(int port_number, char* ip) {
     return sockfd;
 }
 
-void host_to_ip(char *ptr, char* address) {
-    char ** pptr;
-    char str[INET6_ADDRSTRLEN];
-    struct hostent * hptr;
-
-    if ( (hptr = gethostbyname(ptr)) == NULL) {
-        strcpy(address, "127.0.0.1"); // hit localhost
-        return;
-    }
-
-    pptr = hptr->h_addr_list;
-    for ( ; *pptr != NULL; pptr++) {
-        strcpy( address,  inet_ntop(hptr->h_addrtype,
-                       *pptr, str, sizeof(str)));
-        return;
-    }
-
-    strcpy(address, "127.0.0.1");
-}
-
 char * generate_header(char * url, char * host) {
     char * header =
         "GET %s "
@@ -92,6 +72,8 @@ int url_to_memory(char * buffer, int buf_size, char * url, char * host, char * i
     n = write(sockfd, header, strlen(header));
     if (n < 0) {
         perror("error, could not write to socket");
+        shutdown(sockfd, 0);
+        close(sockfd);
         return 0;
     }
 
@@ -102,6 +84,7 @@ int url_to_memory(char * buffer, int buf_size, char * url, char * host, char * i
     while ( n == buf_size );
 
     free(header);
-    shutdown(sockfd, 2);
+    shutdown(sockfd, 0);
+    close(sockfd);
     return 1;
 }
