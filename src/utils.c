@@ -21,6 +21,8 @@
 #include "scrolling.h"
 #include "weather.h"
 
+#define MAX_WINDOW_TITLE_LENGTH 256
+
 
 #define BATTERY_FOREGROUND_HIGH "#0f0"
 #define BATTERY_BACKGROUND_HIGH "#282"
@@ -118,6 +120,9 @@ int get_current_desktop () {
 }
 
 char * get_desktops_info(baritem * source) {
+    if (!source) {
+        return NULL;
+    }
     int numdesk = get_number_of_desktops();
     int curdesk = get_current_desktop();
     int swap = 0;
@@ -138,8 +143,11 @@ char * get_desktops_info(baritem * source) {
 }
 
 char * get_active_window_name(baritem * source) {
-    char * window_title = malloc(256); // max displayed window size
-    get_title(window_title, 256);
+    if (!source) {
+        return NULL;
+    }
+    char * window_title = malloc(MAX_WINDOW_TITLE_LENGTH);
+    get_title(window_title, MAX_WINDOW_TITLE_LENGTH);
     return window_title;
 }
 

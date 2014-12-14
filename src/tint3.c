@@ -107,6 +107,9 @@ baritem * makeitem(block * config_info) {
 }
 
 char * questions(baritem *meh) {
+    if (!meh) {
+        return NULL;
+    }
     char * result = malloc(6);
     result[0] = '?';
     result[1] = '?';
@@ -168,7 +171,7 @@ itemlist * c2l(block_list * bid) {
 
 
 
-void config_to_layout(bar_config * config) {
+void config_to_layout() {
     layout = malloc(sizeof(bar_layout));
     layout -> left = c2l(configuration -> left);
     layout -> right = c2l(configuration -> right);

@@ -6,9 +6,14 @@
  */
 
 #define _DEFAULT_SOURCE
+#define DEBUG_MODE 0
+#include <stdio.h>
 #include "format.h"
 
 int BAD(int start, char * dest) {
+    if (DEBUG_MODE) {
+        puts(dest);
+    }
     return start;
 }
 
