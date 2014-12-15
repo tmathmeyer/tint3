@@ -162,9 +162,6 @@ void attempt_update_weather(char * weather_format, char * weather_location) {
     }
 }
 
-
-
-
 char * get_weather_string(char * weather_format, char * weather_location) {
     attempt_update_weather(weather_format, weather_location);
     char * result;

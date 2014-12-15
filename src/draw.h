@@ -5,31 +5,32 @@
  *
  */
 
+#ifndef _DRAW_H_
+#define _DRAW_H_
+
 #include "utils.h"
 
 typedef struct {
-	int x, y, w, h;
+    int x, y, w, h;
     int text_offset_y;
     int border_width;
     XSetWindowAttributes wa;
-	Display *dpy;
-	GC gc;
-	Pixmap canvas;
-	Pixmap empty;
-	XftDraw *xftdraw;
-	struct {
-		int ascent;
-		int descent;
-		int height;
-		XFontSet set;
-		XFontStruct *xfont;
-		XftFont *xft_font;
-	} font;
+    Display *dpy;
+    GC gc;
+    Pixmap canvas;
+    Pixmap empty;
+    XftDraw *xftdraw;
+    struct {
+        int ascent;
+        int descent;
+        int height;
+        XFontSet set;
+        XFontStruct *xfont;
+        XftFont *xft_font;
+    } font;
 } DC;  /* draw context */
 
-
 DC *dc;
-
 
 unsigned long getcolor(DC *dc, const char *colstr);
 void drawrect_modifier(DC *dc, int x, int y, unsigned int w, unsigned int h, Bool fill, unsigned long color);
@@ -47,3 +48,5 @@ int textnw(DC *dc, const char *text, size_t len);
 int textw(DC *dc, const char *text);
 
 const char *progname;
+
+#endif

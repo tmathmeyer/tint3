@@ -12,8 +12,6 @@
 #include <stdlib.h>
 #include "json.h"
 
-
-
 container * get_by_name(named_field_list * nfl, char * name) {
     if (nfl) {
         if (strncmp(nfl -> name, name, strlen(nfl -> name))) {

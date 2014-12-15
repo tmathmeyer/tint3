@@ -19,12 +19,12 @@ int BAD(int start, char * dest) {
 
 typedef int (*textformatter)(int, char *);
 textformatter lookup(format_map * fmt, char id) {
-	if (!fmt) {
+    if (!fmt) {
         return BAD;
-	} else if (id == fmt -> formatID) {
-		return fmt -> formatter;
-	}
-	return lookup(fmt -> next, id);
+    } else if (id == fmt -> formatID) {
+        return fmt -> formatter;
+    }
+    return lookup(fmt -> next, id);
 }
 
 int format_string(char * dest, char * fmt, format_map * formatmap) {

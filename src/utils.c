@@ -191,7 +191,7 @@ char * get_battery(baritem * item) {
     } else {
         item -> color = initcolor(dc, "#000000", BATTERY_FOREGROUND_LOW);
     }
-    
+
     return msg;
 }
 

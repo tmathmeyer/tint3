@@ -48,7 +48,8 @@ char * generate_header(char * url, char * host) {
         "HTTP/1.1\r\n"
         "Host: %s\r\n"
         "Cache-Control: no-cache\r\n"
-        "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\r\n"
+        "Accept: text/html,application/xhtml+xml,"
+        "application/xml;q=0.9,image/webp,*/*;q=0.8\r\n"
         "Pragma: no-cache\r\n"
         "Accept-Encoding: gzip,deflate,sdch\r\n"
         "Accept-Language: en-US,en;q=0.8,ru;q=0.6,el;q=0.4\r\n\r\n";

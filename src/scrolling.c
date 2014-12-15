@@ -36,7 +36,8 @@ rotation * make_rotation(char * msg, int size) {
     (result -> strfull)[result -> length + size - 1] = 0;
     result -> creation = clock();
 
-    swap(&(result -> swap), (char *)((result -> strfull) + (result -> start) + (result -> size)));
+    swap(&(result -> swap), 
+            (char *)((result -> strfull)+(result -> start)+(result -> size)));
 
     return result;
 }
@@ -44,9 +45,15 @@ rotation * make_rotation(char * msg, int size) {
 int update_rotation(rotation * rotation) {
     if (clock()-(rotation->creation) > rotation -> speed) {
         rotation -> creation = clock();
-        swap(&(rotation -> swap), (char *)((rotation -> strfull) + (rotation -> start) + (rotation -> size)));
+        swap(&(rotation -> swap),
+                (char *)((rotation -> strfull)
+                        +(rotation -> start)
+                        +(rotation -> size)));
         rotation -> start = (rotation -> start + 1) % (rotation -> length);
-        swap(&(rotation -> swap), (char *)((rotation -> strfull) + (rotation -> start) + (rotation -> size)));
+        swap(&(rotation -> swap),
+                (char *)((rotation -> strfull)
+                        +(rotation -> start)
+                        +(rotation -> size)));
         return 1;
     }
     return 0;

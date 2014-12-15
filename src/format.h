@@ -9,9 +9,9 @@
 #define _FORMAT_H_
 
 typedef struct format_map {
-	char formatID;
-	int (*formatter)(int, char *);
-	struct format_map * next;
+    char formatID;
+    int (*formatter)(int, char *);
+    struct format_map * next;
 } format_map;
 
 int format_string(char * dest, char * fmt, format_map * formatmap);

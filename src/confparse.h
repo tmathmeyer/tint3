@@ -25,8 +25,6 @@ typedef struct l {
     block    * data;
 } block_list;
 
-
-
 typedef struct {
     int border_size;
     int margin_size;

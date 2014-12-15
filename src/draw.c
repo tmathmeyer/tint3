@@ -86,7 +86,7 @@ void drawtextn(DC * dc, const char * text, size_t n, ColorSet * col) {
     }
 }
 
-// get a color from a string, and save it into the context 
+// get a color from a string, and save it into the context
 unlong getcolor(DC * dc, const char * colstr) {
     XColor color;
 

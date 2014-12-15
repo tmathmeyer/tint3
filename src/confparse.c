@@ -208,7 +208,7 @@ bar_config * readblock (FILE * fp) {
             int c = 0;
             (blocks -> data -> background)[0] = '#';
             (blocks -> data -> background)[7] = 0;
-            
+
             for(; c < 6; c++) {
                 (blocks -> data -> background)[c+1] = name[c+14];
             }
