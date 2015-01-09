@@ -56,8 +56,8 @@ void drawtext(DC *dc, const char * text, ColorSet *col) {
     if(mn < n)
         for(n = MAX(mn-3, 0); n < mn; buf[n++] = '.');
 
-    drawrect_modifier(dc, dc->border_width-6, dc->border_width-4,
-                          dc->w, dc->h-2,
+    drawrect_modifier(dc, 0, dc->color_border_pixels,
+                          dc->w, dc->h-(2*dc->color_border_pixels),
                           True, col->BG);
     drawtextn(dc, buf, mn, col);
 }
@@ -65,7 +65,8 @@ void drawtext(DC *dc, const char * text, ColorSet *col) {
 // drawtext helper that actually draws the text
 void drawtextn(DC * dc, const char * text, size_t n, ColorSet * col) {
     int x = dc->x + dc->font.height/2;
-    int y = dc->y + dc->font.ascent+1 + dc->text_offset_y;
+    printf("%i\n", dc->text_offset_y + dc->color_border_pixels);
+    int y = dc->y + dc->font.ascent + (dc->text_offset_y + dc->color_border_pixels + 1) / 2;
 
     XSetForeground(dc->dpy, dc->gc, col->FG);
 

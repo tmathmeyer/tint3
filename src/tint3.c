@@ -196,8 +196,6 @@ void drawmenu(void) {
     dc->w = 0;
     dc->h = height;
 
-    dc->text_offset_y = 0;
-
     if (draw_bo) {
         draw_rectangle(dc, 0, 0, width+2, height+2, True, bo_bar);
     }
@@ -210,8 +208,9 @@ void drawmenu(void) {
 
     config_to_layout(configuration);
 
+    dc -> x = dc->color_border_pixels;
     draw_list(layout -> left);
-    dc -> x = width-(layout -> rightlen);
+    dc -> x = width-(layout -> rightlen)-dc->color_border_pixels;
     draw_list(layout -> right);
     dc -> x = (width-(layout -> centerlen))/2;
     draw_list(layout -> center);
@@ -319,6 +318,8 @@ void setup() {
 
 
     dc -> border_width = configuration -> margin_size;
+    dc -> color_border_pixels = configuration -> border_size;
+    dc -> text_offset_y = configuration -> padding_size; 
 
     int x, y;
 

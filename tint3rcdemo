@@ -1,34 +1,34 @@
 [active]
   id text
   source window_title
-  forground #11ffff
-  background #000000
+  forground #abcdcd
+  background #564545
 
 [desktops]
   id radio
   source workspaces
-  forground #11ffff
-  background #252117
+  forground #abcdcd
+  background #564545
 
 [time]
   id text
   source clock
   format %T
-  forground #ffffff
-  background #252117
+  forground #dddddd
+  background #564545
 
 [date]
   id text
   source clock
   format %a - %d
-  forground #ffffff
-  background #252117
+  forground #dddddd
+  background #564545
 
 [weather]
   id weather
-  format %W, ▉%C 
+  format %W, ▉%F (%H)
   forground #aabbcc
-  background #000000
+  background #564545
   type temperature
   source Worcester,usa
 
@@ -36,25 +36,25 @@
   id graph
   source network wlp3s0 down
   forground #D58D6B
-  background #252117
+  background #564545
 
 [upload]
   id graph
   source network wlp3s0 up
   forground #748DA6
-  background #252117
+  background #564545
 
 [batteryone]
   id scale
   forground #EEEE22
-  background #000000
+  background #564545
   type unknown
   source battery 1
 
 [batterytwo]
   id scale
   forground #11EE11
-  background #000000
+  background #564545
   type unknown
   source battery 0
 
@@ -62,13 +62,13 @@
   id scale
   source alsa 0
   forground #ffffff
-  background #000000
+  background #564545
 
 [[bar]]
   bordercolor #22EE88
-  background #252117
-  borderwidth 1
-  padding 1
+  background #564545
+  borderwidth 0
+  padding 2
   margin 5
   location top
   left 2

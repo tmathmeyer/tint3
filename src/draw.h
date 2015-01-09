@@ -13,6 +13,7 @@
 typedef struct {
     int x, y, w, h;
     int text_offset_y;
+    int color_border_pixels;
     int border_width;
     XSetWindowAttributes wa;
     Display *dpy;
