@@ -96,13 +96,23 @@ void update_nba(baritem * item) {
     item -> string = (item -> update)(item);
 }
 
+ColorSet * make_possible_color(char * fg, char * bg) {
+    if (fg[0] && bg[0]) {
+        return initcolor(dc, fg, bg);
+    }
+    ColorSet * result = malloc(sizeof(ColorSet));
+    result -> FG = fg[0]?getcolor(dc, fg):bo_bar;
+    result -> BG = bg[0]?getcolor(dc, bg):bg_bar;
+    return result;
+}
+
 baritem * makeitem(block * config_info) {
     baritem * result = malloc(sizeof(baritem));
     result -> string = NULL;
     result -> format = config_info -> format;
     result -> source = config_info -> source;
     result -> update = NULL;
-    result -> color = initcolor(dc, config_info -> forground, config_info -> background);
+    result -> color = make_possible_color(config_info -> forground, config_info -> background);
     return result;
 }
 
