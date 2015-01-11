@@ -194,7 +194,7 @@ bar_config * readblock (FILE * fp) {
             strncpy(blocks -> data -> source, name+9, length-9);
         }
 
-        if (starts_with(name, "  forground ")) {
+        if (starts_with(name, "  forground ") || starts_with(name, "  fontcolor ")) {
             int c = 0;
             (blocks -> data -> forground)[0] = '#';
             (blocks -> data -> forground)[7] = 0;

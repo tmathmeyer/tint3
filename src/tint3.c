@@ -100,9 +100,8 @@ ColorSet * make_possible_color(char * fg, char * bg) {
     if (fg[0] && bg[0]) {
         return initcolor(dc, fg, bg);
     }
-    ColorSet * result = malloc(sizeof(ColorSet));
-    result -> FG = fg[0]?getcolor(dc, fg):bo_bar;
-    result -> BG = bg[0]?getcolor(dc, bg):bg_bar;
+    ColorSet * result = initcolor(dc, fg, "#000000");
+    result -> BG = bg[0]?getcolor(dc, fg):bg_bar;
     return result;
 }
 

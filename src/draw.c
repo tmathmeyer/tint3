@@ -65,8 +65,7 @@ void drawtext(DC *dc, const char * text, ColorSet *col) {
 // drawtext helper that actually draws the text
 void drawtextn(DC * dc, const char * text, size_t n, ColorSet * col) {
     int x = dc->x + dc->font.height/2;
-    printf("%i\n", dc->text_offset_y + dc->color_border_pixels);
-    int y = dc->y + dc->font.ascent + (dc->text_offset_y + dc->color_border_pixels + 1) / 2;
+    int y = dc->y + dc->font.ascent + (dc->text_offset_y + dc->color_border_pixels + 2) / 2;
 
     XSetForeground(dc->dpy, dc->gc, col->FG);
 
@@ -102,19 +101,15 @@ unlong getcolor(DC * dc, const char * colstr) {
 ColorSet * initcolor(DC * dc, const char * foreground, const char * background) {
     ColorSet * col = (ColorSet *)malloc(sizeof(ColorSet));
 
-    if(!col) {
-        printf("error, cannot allocate memory for color set");
-    }
-
     col->BG = getcolor(dc, background);
     col->FG = getcolor(dc, foreground);
 
     if(dc->font.xft_font) {
         if(!XftColorAllocName(dc->dpy, DefaultVisual(dc->dpy, DefaultScreen(dc->dpy)),
             DefaultColormap(dc->dpy, DefaultScreen(dc->dpy)), foreground, &col->FG_xft)) {
-            printf("error, cannot allocate xft font color '%s'\n", foreground);
         }
     }
+
     return col;
 }
 
