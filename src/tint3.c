@@ -33,25 +33,24 @@
 
 
 static void drawmenu(void);
-static void *run(void *unused);
+static void run(void);
 static void setup(void);
-
+static void config_to_layout();
+static void infer_type(block *conf_inf, baritem *ipl);
 
 static int height = 0;
 static int width  = 0;
-
-static int debug = 0;
-
-
 static const char *font = "sakamoto-11";
+static char *quest = "???";
 static unsigned long bg_bar = 0, draw_bg = 0;
 static unsigned long bo_bar = 0, draw_bo = 0;
-
 static Bool topbar = True;
 static Window root, win;
-
 static bar_config * configuration;
 static bar_layout * layout;
+
+
+
 
 // get the height of the bar
 int get_bar_height(int font_height) {
@@ -68,11 +67,7 @@ int scale_to(int from, int to, float by) {
     return to-f;
 }
 
-int main(int argc, char *argv[]) {
-    if (argc > 1 && argv[1][0] == '-' && argv[1][1] == 'd') {
-        debug = 1;
-    }
-
+int main() {
     setup();
 
     if (configuration -> background_color != NULL) {
@@ -84,28 +79,23 @@ int main(int argc, char *argv[]) {
         draw_bo = 1;
     }
 
-    pthread_t master_thread;
-    int err = pthread_create(&master_thread, NULL, run, NULL);
-    if (err != 0) {
-        printf("\ncan't create thread :[%s]", strerror(err));
-    }
-    else {
-        printf("\n Thread created successfully\n");
-    }
-    pthread_join(master_thread, NULL);
+    config_to_layout();
+
+    run();
 
     return EXIT_FAILURE;
 }
 
-/* rework the modules */
 
+// update the item's string contents
 void update_nba(baritem * item) {
-    if (item -> string != NULL) {
+    if ((item->string != NULL) && (item->string != quest)) {
         free(item -> string);
     }
-    item -> string = (item -> update)(item);
+    item -> string = (item->update)(item);
 }
 
+// make a color if we can
 ColorSet * make_possible_color(char * fg, char * bg) {
     if (fg[0] && bg[0]) {
         return initcolor(dc, fg, bg);
@@ -115,27 +105,23 @@ ColorSet * make_possible_color(char * fg, char * bg) {
     return result;
 }
 
+// turn a single item from the config stream into a displayable item
 baritem * makeitem(block * config_info) {
     baritem * result = malloc(sizeof(baritem));
-    result -> string = NULL;
+    result -> color  = make_possible_color(config_info -> forground, config_info -> background);
     result -> format = config_info -> format;
     result -> source = config_info -> source;
-    result -> update = NULL;
-    result -> color = make_possible_color(config_info -> forground, config_info -> background);
+    result -> string = NULL;
+    infer_type(config_info, result);
     return result;
 }
 
-char * questions(baritem *meh) {
-    if (!meh) {
-        return NULL;
-    }
-    char * result = malloc(6);
-    result[0] = '?';
-    result[1] = '?';
-    result[2] = 0;
-    return result;
+// fallback, in case no other source can be found
+char *questions(baritem *meh) {
+    return meh?quest:NULL;
 }
 
+// set the function that creates information
 void infer_type(block * conf_inf, baritem * ipl) {
     ipl -> update = &questions;
 
@@ -164,12 +150,10 @@ void infer_type(block * conf_inf, baritem * ipl) {
     } else if (IS_ID(conf_inf, "scrolling")) {
         ipl -> update = &get_scrolling_text;
     }
-
-    update_nba(ipl);
 }
 
-
-itemlist *c2l(block_list * bid) {
+// convert a config to a drawable
+itemlist *config_to_drawable(block_list * bid) {
     block_list *ctrtmp = bid;
     itemlist *result = malloc(sizeof(itemlist));
     result->length = 0;
@@ -181,14 +165,8 @@ itemlist *c2l(block_list * bid) {
     result->buffer = malloc(sizeof(baritem*) * result->length);
     uint ctr = 0;
 
-    for(; ctr < result->length; ctr++) {
+    for(; ctr < result->length; ctr++ , bid=bid->next) {
         (result->buffer)[ctr] = makeitem(bid->data);
-        infer_type(bid->data, (result->buffer)[ctr]);
-        if ((result->buffer)[ctr]->update == NULL) {
-            free((result->buffer)[ctr]);
-            ctr --;
-        }
-        bid = bid->next;
     }
     return result;
 }
@@ -197,22 +175,28 @@ itemlist *c2l(block_list * bid) {
 
 void config_to_layout() {
     layout = malloc(sizeof(bar_layout));
-    layout -> left = c2l(configuration -> left);
-    layout -> right = c2l(configuration -> right);
-    layout -> center = c2l(configuration -> center);
+    layout -> left = config_to_drawable(configuration -> left);
+    layout -> right = config_to_drawable(configuration -> right);
+    layout -> center = config_to_drawable(configuration -> center);
+}
+
+
+void update_list_of_items(itemlist *list) {
+    uint ctr = 0;
+    for(; ctr < list->length; ctr++) {
+        update_nba(((list->buffer)[ctr]));
+    }
+}
+
+void update_with_lens() {
+    update_list_of_items(layout->left);
+    update_list_of_items(layout->right);
+    update_list_of_items(layout->center);
 
     layout -> leftlen = total_list_length(layout -> left);
     layout -> rightlen = total_list_length(layout -> right);
     layout -> centerlen = total_list_length(layout -> center);
 }
-
-void free_all() {
-    free_list(layout -> left);
-    free_list(layout -> right);
-    free_list(layout -> center);
-    free(layout);
-}
-
 
 
 
@@ -234,8 +218,8 @@ void drawmenu(void) {
                 height-2*configuration -> border_size, True, bg_bar);
     }
 
-
-    config_to_layout(configuration);
+    update_with_lens();
+    
 
     dc -> x = dc->color_border_pixels;
     draw_list(layout -> left);
@@ -244,32 +228,11 @@ void drawmenu(void) {
     dc -> x = (width-(layout -> centerlen))/2;
     draw_list(layout -> center);
 
-    free_all();
-
     mapdc(dc, win, width, height);
 }
 
 
 
-
-
-
-
-
-void free_list(itemlist * list) {
-    uint ctr = 0;
-    for(; ctr < list->length; ctr++) {
-        free_baritem((list->buffer)[ctr]);
-    }
-    free(list->buffer);
-    free(list);
-}
-
-void free_baritem(baritem * item) {
-    free(item -> string);
-    free(item -> color);
-    free(item);
-}
 
 unsigned int total_list_length(itemlist * list) {
     uint len = 0;
@@ -291,14 +254,13 @@ void draw_list(itemlist * list) {
     }
 }
 
-void *run(void *unused) {
+void run(void) {
     XEvent xe;
     drawmenu();
     while(!XNextEvent(dc->dpy, &xe)){
         drawmenu();
         usleep(200000);
     }
-    return NULL;
 }
 
 
@@ -316,6 +278,21 @@ int vertical_position(Bool bar_on_top, int display_height, int bar_height) {
 int horizontal_position() {
     return configuration -> margin_size;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // TODO: clean this shit
@@ -438,10 +415,6 @@ void setup() {
     NET_CURRENT_DESKTOP = XInternAtom(dc -> dpy, "_NET_CURRENT_DESKTOP", 0);
     NET_NUMBER_DESKTOPS = XInternAtom(dc -> dpy, "_NET_NUMBER_OF_DESKTOPS", 0);
     _CARDINAL_ = XA_CARDINAL;
-
-    if (debug) {
-        puts("window set up");
-    }
 }
 
 

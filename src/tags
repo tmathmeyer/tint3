@@ -1,0 +1,320 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+$	json.h	31;"	d
+BAD	format.c	/^int BAD(int start, char * dest) {$/;"	f
+BATTERY_BACKGROUND_HIGH	utils.c	28;"	d	file:
+BATTERY_BACKGROUND_LOW	utils.c	32;"	d	file:
+BATTERY_BACKGROUND_MED	utils.c	30;"	d	file:
+BATTERY_FOREGROUND_HIGH	utils.c	27;"	d	file:
+BATTERY_FOREGROUND_LOW	utils.c	31;"	d	file:
+BATTERY_FOREGROUND_MED	utils.c	29;"	d	file:
+BG	utils.h	/^    unsigned long BG;$/;"	m	struct:ColorSet
+CC	config.mk	/^CC = gcc$/;"	m
+CFLAGS	config.mk	/^CFLAGS   = -std=c11 -pedantic -Wextra -Wall -Os ${INCS} ${CPPFLAGS}$/;"	m
+CPPFLAGS	config.mk	/^CPPFLAGS = -D_BSD_SOURCE -DVERSION=\\"${VERSION}\\" ${XINERAMAFLAGS}$/;"	m
+ColorSet	utils.h	/^typedef struct ColorSet{$/;"	s
+ColorSet	utils.h	/^} ColorSet;$/;"	t	typeref:struct:ColorSet
+DC	draw.h	/^} DC;  \/* draw context *\/$/;"	t	typeref:struct:__anon5
+DEBUG_MODE	format.c	9;"	d	file:
+FG	utils.h	/^    unsigned long FG;$/;"	m	struct:ColorSet
+FG_xft	utils.h	/^    XftColor FG_xft;$/;"	m	struct:ColorSet
+GRAPHLENGTH	utils.h	13;"	d
+INCS	config.mk	/^INCS = -I${X11INC} -I${XFTINC}$/;"	m
+INRECT	tint3.c	27;"	d	file:
+IS_ID	tint3.c	31;"	d	file:
+LDFLAGS	config.mk	/^LDFLAGS  = -s ${LIBS}$/;"	m
+LIBS	config.mk	/^LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${XFTLIBS} ${LXCBLIBS}$/;"	m
+LXCBLIBS	config.mk	/^LXCBLIBS = -lxcb -lxcb-icccm -lxcb-ewmh$/;"	m
+MANPREFIX	config.mk	/^MANPREFIX = ${PREFIX}\/share\/man$/;"	m
+MAX	draw.c	20;"	d	file:
+MAX	tint3.c	29;"	d	file:
+MAXLEN	lwxt.h	17;"	d
+MAX_TITLE_LENGTH	draw.c	26;"	d	file:
+MAX_WINDOW_TITLE_LENGTH	utils.c	24;"	d	file:
+MIN	draw.c	21;"	d	file:
+MIN	lwxt.h	18;"	d
+MIN	tint3.c	28;"	d	file:
+NET_CURRENT_DESKTOP	utils.h	/^     NET_CURRENT_DESKTOP;$/;"	v
+NET_NUMBER_DESKTOPS	utils.h	/^Atom NET_NUMBER_DESKTOPS,$/;"	v
+PREFIX	config.mk	/^PREFIX = \/usr\/local$/;"	m
+ROT	utils.c	/^rotation * ROT = NULL;$/;"	v
+UNUSED	utils.h	15;"	d
+VERSION	config.mk	/^VERSION = 4.2.1$/;"	m
+X11INC	config.mk	/^X11INC = \/usr\/X11R6\/include$/;"	m
+X11LIB	config.mk	/^X11LIB = \/usr\/X11R6\/lib$/;"	m
+XFTINC	config.mk	/^XFTINC = \/usr\/include\/freetype2$/;"	m
+XFTLIBS	config.mk	/^XFTLIBS  = -lXft -lXrender -lfreetype -lz -lfontconfig$/;"	m
+XINERAMAFLAGS	config.mk	/^XINERAMAFLAGS = -DXINERAMA$/;"	m
+XINERAMALIBS	config.mk	/^XINERAMALIBS  = -lXinerama$/;"	m
+_	json.h	32;"	d
+_CARDINAL_	utils.h	/^Atom _CARDINAL_;$/;"	v
+_CONFPARSER_H_	confparse.h	11;"	d
+_DEFAULT_SOURCE	confparse.c	8;"	d	file:
+_DEFAULT_SOURCE	draw.c	8;"	d	file:
+_DEFAULT_SOURCE	format.c	8;"	d	file:
+_DEFAULT_SOURCE	json.c	8;"	d	file:
+_DEFAULT_SOURCE	lwbi.c	8;"	d	file:
+_DEFAULT_SOURCE	lwxt.c	8;"	d	file:
+_DEFAULT_SOURCE	network.c	8;"	d	file:
+_DEFAULT_SOURCE	scrolling.c	8;"	d	file:
+_DEFAULT_SOURCE	tint3.c	8;"	d	file:
+_DEFAULT_SOURCE	utils.c	8;"	d	file:
+_DEFAULT_SOURCE	weather.c	8;"	d	file:
+_DRAW_H_	draw.h	9;"	d
+_FORMAT_H_	format.h	9;"	d
+_JSON_H_	json.h	9;"	d
+_LWBI_H_	lwbi.h	9;"	d
+_LWXT_H_	lwxt.h	9;"	d
+_NETWORK_H_	network.h	9;"	d
+_SCROLLING_H_	scrolling.h	9;"	d
+_T3_SYS_	sys.h	5;"	d
+_WEATHER_H_	weather.h	9;"	d
+__UTILS__	utils.h	9;"	d
+_humidity	weather.c	/^int _humidity() {$/;"	f
+_pressure	weather.c	/^int _pressure() {$/;"	f
+_setup	lwxt.c	/^int _setup = 1;$/;"	v
+_temperature	weather.c	/^int _temperature() {$/;"	f
+add_to_format	weather.c	/^void add_to_format(struct comb comb) {$/;"	f
+add_to_graph	utils.c	/^void add_to_graph(int i, graph * gr) {$/;"	f
+array_from_string	json.c	/^json_object * array_from_string(char ** string) {$/;"	f
+as_hex_string	confparse.c	/^char * as_hex_string(unsigned int i) {$/;"	f
+ascent	draw.h	/^        int ascent;$/;"	m	struct:__anon5::__anon6
+attempt_update_weather	weather.c	/^void attempt_update_weather(char * weather_format, char * weather_location) {$/;"	f
+background	confparse.h	/^    char background [8];$/;"	m	struct:__anon2
+background_color	confparse.h	/^    char * background_color;$/;"	m	struct:__anon3
+bar_config	confparse.h	/^} bar_config;$/;"	t	typeref:struct:__anon3
+bar_layout	utils.h	/^typedef struct bar_layout {$/;"	s
+bar_layout	utils.h	/^} bar_layout;$/;"	t	typeref:struct:bar_layout
+bar_map	utils.c	/^char * bar_map = "▁▂▃▄▅▆▇";$/;"	v
+baritem	utils.h	/^typedef struct baritem{$/;"	s
+baritem	utils.h	/^} baritem;$/;"	t	typeref:struct:baritem
+bg_bar	tint3.c	/^static unsigned long bg_bar = 0, draw_bg = 0;$/;"	v	file:
+block	confparse.h	/^} block;$/;"	t	typeref:struct:__anon2
+block_list	confparse.h	/^} block_list;$/;"	t	typeref:struct:l
+bo_bar	tint3.c	/^static unsigned long bo_bar = 0, draw_bo = 0;$/;"	v	file:
+boolean	json.h	/^        int  * boolean;$/;"	m	union:container::__anon1
+border_color	confparse.h	/^    char * border_color;$/;"	m	struct:__anon3
+border_size	confparse.h	/^    int border_size;$/;"	m	struct:__anon3
+border_width	draw.h	/^    int border_width;$/;"	m	struct:__anon5
+c2l	tint3.c	/^itemlist * c2l(block_list * bid) {$/;"	f
+canvas	draw.h	/^    Pixmap canvas;$/;"	m	struct:__anon5
+center	confparse.h	/^    block_list * center;$/;"	m	struct:__anon3
+center	utils.h	/^    itemlist * center;$/;"	m	struct:bar_layout
+centerlen	utils.h	/^    short centerlen;$/;"	m	struct:bar_layout
+color	utils.h	/^    ColorSet * color;$/;"	m	struct:baritem
+color_border_pixels	draw.h	/^    int color_border_pixels;$/;"	m	struct:__anon5
+comb	weather.c	/^struct comb {$/;"	s	file:
+config_to_layout	tint3.c	/^void config_to_layout() {$/;"	f
+configuration	tint3.c	/^static bar_config * configuration;$/;"	v	file:
+container	json.h	/^typedef struct container {$/;"	s
+container	json.h	/^} container;$/;"	t	typeref:struct:container
+creation	scrolling.h	/^    clock_t creation;$/;"	m	struct:rotation
+data	confparse.h	/^    block    * data;$/;"	m	struct:l
+data	utils.c	/^    graph * data;$/;"	m	struct:glist	file:
+dc	draw.h	/^DC *dc;$/;"	v
+debug	tint3.c	/^static int debug = 0;$/;"	v	file:
+default_screen	lwxt.c	/^int default_screen;$/;"	v
+descent	draw.h	/^        int descent;$/;"	m	struct:__anon5::__anon6
+dew_point	weather.c	/^int dew_point(int place, char * string) {$/;"	f
+do_bar_read	confparse.c	/^void do_bar_read(FILE * from, bar_config * storage, block_list * modules) {$/;"	f
+down	utils.h	/^    graph * down;$/;"	m	struct:__anon4
+dpy	draw.h	/^    Display *dpy;$/;"	m	struct:__anon5
+dpy	lwxt.c	/^xcb_connection_t *dpy;$/;"	v
+draw_bg	tint3.c	/^static unsigned long bg_bar = 0, draw_bg = 0;$/;"	v	file:
+draw_bo	tint3.c	/^static unsigned long bo_bar = 0, draw_bo = 0;$/;"	v	file:
+draw_list	tint3.c	/^void draw_list(itemlist * list) {$/;"	f
+draw_rectangle	draw.c	/^void draw_rectangle(DC * dc, unint x, unint y, unint w, unint h, Bool fill, unlong color) {$/;"	f
+drawmenu	tint3.c	/^void drawmenu(void) {$/;"	f
+drawrect_modifier	draw.c	/^void drawrect_modifier(DC * dc, int x, int y, unint w, unint h, Bool fill, unlong color) {$/;"	f
+drawtext	draw.c	/^void drawtext(DC *dc, const char * text, ColorSet *col) {$/;"	f
+drawtextn	draw.c	/^void drawtextn(DC * dc, const char * text, size_t n, ColorSet * col) {$/;"	f
+empty	draw.h	/^    Pixmap empty;$/;"	m	struct:__anon5
+eot	utils.c	/^int eot = 0;$/;"	v
+ewmh	lwxt.c	/^xcb_ewmh_connection_t *ewmh;$/;"	v
+expand_escapes	lwxt.c	/^char * expand_escapes(const char *src) {$/;"	f
+field	json.h	/^    container * field;$/;"	m	struct:named_field_list
+fields	json.h	/^    struct named_field_list * fields;$/;"	m	struct:json_object	typeref:struct:json_object::named_field_list
+font	draw.h	/^    } font;$/;"	m	struct:__anon5	typeref:struct:__anon5::__anon6
+font	tint3.c	/^static const char *font = "sakamoto-11";$/;"	v	file:
+forEach	json.c	/^void forEach(void (*a)(container *, char *), json_object * json) {$/;"	f
+forLoop	json.c	/^void forLoop(void (*a)(container *), json_object * json) {$/;"	f
+forground	confparse.h	/^    char forground [8];$/;"	m	struct:__anon2
+format	confparse.h	/^    char * format;$/;"	m	struct:__anon2
+format	utils.h	/^    char * format;$/;"	m	struct:baritem
+formatID	format.h	/^    char formatID;$/;"	m	struct:format_map
+formatID	weather.c	/^    char formatID;$/;"	m	struct:comb	file:
+format_map	format.h	/^typedef struct format_map {$/;"	s
+format_map	format.h	/^} format_map;$/;"	t	typeref:struct:format_map
+format_string	format.c	/^int format_string(char * dest, char * fmt, format_map * formatmap) {$/;"	f
+formatmap	weather.c	/^static format_map * formatmap = 0;$/;"	v	file:
+formatter	format.h	/^    int (*formatter)(int, char *);$/;"	m	struct:format_map
+formatter	weather.c	/^    int (*formatter)(int, char *);$/;"	m	struct:comb	file:
+free_all	tint3.c	/^void free_all() {$/;"	f
+free_baritem	tint3.c	/^void free_baritem(baritem * item) {$/;"	f
+free_container	json.c	/^void free_container(container * container) {$/;"	f
+free_json_object	json.c	/^void free_json_object(json_object * json) {$/;"	f
+free_list	tint3.c	/^void free_list(itemlist * list) {$/;"	f
+free_nfl	json.c	/^void free_nfl(named_field_list * nfl) {$/;"	f
+from_string	json.c	/^container * from_string (char ** string) {$/;"	f
+gc	draw.h	/^    GC gc;$/;"	m	struct:__anon5
+generate_header	network.c	/^char * generate_header(char * url, char * host) {$/;"	f
+get	json.c	/^container * get(json_object * from, char * source) {$/;"	f
+get_active_window	lwxt.c	/^int get_active_window(xcb_window_t *win) {$/;"	f
+get_active_window_name	utils.c	/^char * get_active_window_name(baritem * source) {$/;"	f
+get_bar_height	tint3.c	/^int get_bar_height(int font_height) {$/;"	f
+get_bar_width	tint3.c	/^int get_bar_width(int display_width) {$/;"	f
+get_battery	utils.c	/^char * get_battery(baritem * item) {$/;"	f
+get_battery_percent	lwbi.c	/^int get_battery_percent(char * forbattery) {$/;"	f
+get_by_name	json.c	/^container * get_by_name(named_field_list * nfl, char * name) {$/;"	f
+get_current_desktop	utils.c	/^int get_current_desktop () {$/;"	f
+get_desktops_info	utils.c	/^char * get_desktops_info(baritem * source) {$/;"	f
+get_named_graph	utils.c	/^graph * get_named_graph(char * name) {$/;"	f
+get_net_graph	utils.c	/^char * get_net_graph(baritem * item) {$/;"	f
+get_number_of_desktops	utils.c	/^int get_number_of_desktops () {$/;"	f
+get_plain_text	utils.c	/^char * get_plain_text(baritem * item) {$/;"	f
+get_scrolling_text	utils.c	/^char * get_scrolling_text(baritem * item) {$/;"	f
+get_socket	network.c	/^int get_socket(int port_number, char* ip) {$/;"	f
+get_time_format	utils.c	/^char * get_time_format(baritem * item) {$/;"	f
+get_title	lwxt.c	/^void get_title(char * buffer, size_t buf_len) {$/;"	f
+get_volume_level	utils.c	/^char * get_volume_level(baritem * item) {$/;"	f
+get_weather	utils.c	/^char * get_weather(baritem * item) {$/;"	f
+get_weather_string	weather.c	/^char * get_weather_string(char * weather_format, char * weather_location) {$/;"	f
+get_window_title	lwxt.c	/^void get_window_title(xcb_window_t win, char *title, size_t len) {$/;"	f
+get_x11_property	tint3.c	/^int get_x11_property(Atom at, Atom type) {$/;"	f
+getcolor	draw.c	/^unlong getcolor(DC * dc, const char * colstr) {$/;"	f
+getformatmap	weather.c	/^format_map * getformatmap() {$/;"	f
+glist	utils.c	/^typedef struct glist{$/;"	s	file:
+glist	utils.c	/^} glist;$/;"	t	typeref:struct:glist	file:
+graph	utils.h	/^    int graph[GRAPHLENGTH*3+1];$/;"	m	struct:graph
+graph	utils.h	/^typedef struct graph{$/;"	s
+graph	utils.h	/^} graph;$/;"	t	typeref:struct:graph
+graph_to_string	utils.c	/^char * graph_to_string(graph * gr) {$/;"	f
+graphs	utils.c	/^glist * graphs = NULL;$/;"	v
+h	draw.h	/^    int x, y, w, h;$/;"	m	struct:__anon5
+height	draw.h	/^        int height;$/;"	m	struct:__anon5::__anon6
+height	tint3.c	/^static int height = 0;$/;"	v	file:
+horizontal_position	tint3.c	/^int horizontal_position() {$/;"	f
+humidityPC	weather.c	/^int humidityPC(int place, char * string) {$/;"	f
+id	confparse.h	/^    char * id;$/;"	m	struct:__anon2
+id	json.h	/^    int id;$/;"	m	struct:container
+infer_type	tint3.c	/^void infer_type(block * conf_inf, baritem * ipl) {$/;"	f
+initcolor	draw.c	/^ColorSet * initcolor(DC * dc, const char * foreground, const char * background) {$/;"	f
+initdc	draw.c	/^DC * initdc(void) {$/;"	f
+initfont	draw.c	/^void initfont(DC * dc, const char * fontstr) {$/;"	f
+item	utils.h	/^    baritem * item;$/;"	m	struct:itemlist
+itemlist	utils.h	/^typedef struct itemlist {$/;"	s
+itemlist	utils.h	/^} itemlist;$/;"	t	typeref:struct:itemlist
+jndex	json.c	/^container * jndex(named_field_list * nfl, int number) {$/;"	f
+json_object	json.h	/^typedef struct json_object {$/;"	s
+json_object	json.h	/^} json_object;$/;"	t	typeref:struct:json_object
+jsoncontext	weather.c	/^static container * jsoncontext = 0;$/;"	v	file:
+l	confparse.h	/^typedef struct l {$/;"	s
+lastime	utils.h	/^    unsigned long lastime;$/;"	m	struct:__anon4
+lastime	weather.c	/^static time_t lastime = 0;$/;"	v	file:
+layout	tint3.c	/^static bar_layout * layout;$/;"	v	file:
+left	confparse.h	/^    block_list * left;$/;"	m	struct:__anon3
+left	utils.h	/^    itemlist * left;$/;"	m	struct:bar_layout
+leftlen	utils.h	/^    short leftlen;$/;"	m	struct:bar_layout
+length	scrolling.h	/^    short length;$/;"	m	struct:rotation
+length	utils.h	/^    unsigned int length;$/;"	m	struct:baritem
+location	confparse.h	/^    char * location;$/;"	m	struct:__anon3
+lookup	format.c	/^textformatter lookup(format_map * fmt, char id) {$/;"	f
+lookup_block	confparse.c	/^block * lookup_block(block_list * from, char * name_query) {$/;"	f
+main	tint3.c	/^int main(int argc, char *argv[]) {$/;"	f
+make_new_graph	utils.c	/^graph * make_new_graph() {$/;"	f
+make_possible_color	tint3.c	/^ColorSet * make_possible_color(char * fg, char * bg) {$/;"	f
+make_rotation	scrolling.c	/^rotation * make_rotation(char * msg, int size) {$/;"	f
+makeitem	tint3.c	/^baritem * makeitem(block * config_info) {$/;"	f
+mapdc	draw.c	/^void mapdc(DC * dc, Window win, unsigned int w, unsigned int h) {$/;"	f
+margin_size	confparse.h	/^    int margin_size;$/;"	m	struct:__anon3
+max	utils.h	/^    int max;$/;"	m	struct:graph
+name	confparse.h	/^    char * name;$/;"	m	struct:__anon2
+name	json.h	/^    char * name;$/;"	m	struct:named_field_list
+name	utils.c	/^    char * name;$/;"	m	struct:glist	file:
+name_blocks	confparse.c	/^void name_blocks(block_list * list) {$/;"	f
+named_field_list	json.h	/^typedef struct named_field_list {$/;"	s
+named_field_list	json.h	/^} named_field_list;$/;"	t	typeref:struct:named_field_list
+net_info	utils.h	/^} net_info;$/;"	t	typeref:struct:__anon4
+net_tick	utils.c	/^unsigned long net_tick = 0;$/;"	v
+next	confparse.h	/^    struct l * next;$/;"	m	struct:l	typeref:struct:l::l
+next	format.h	/^    struct format_map * next;$/;"	m	struct:format_map	typeref:struct:format_map::format_map
+next	json.h	/^    struct named_field_list * next;$/;"	m	struct:named_field_list	typeref:struct:named_field_list::named_field_list
+next	utils.c	/^    struct glist * next;$/;"	m	struct:glist	typeref:struct:glist::glist	file:
+next	utils.h	/^    struct itemlist * next;$/;"	m	struct:itemlist	typeref:struct:itemlist::itemlist
+number	json.h	/^        int  * number;$/;"	m	union:container::__anon1
+number_from_string	json.c	/^int * number_from_string(char ** string, int isNeg) {$/;"	f
+obj_from_string	json.c	/^json_object * obj_from_string(char ** string) {$/;"	f
+object	json.h	/^        json_object * object;$/;"	m	union:container::__anon1
+old_down	utils.c	/^unsigned long long old_down=0, old_up=0;$/;"	v
+old_up	utils.c	/^unsigned long long old_down=0, old_up=0;$/;"	v
+padding_size	confparse.h	/^    int padding_size;$/;"	m	struct:__anon3
+pressureATM	weather.c	/^int pressureATM(int place, char * string) {$/;"	f
+pressureHg	weather.c	/^int pressureHg(int place, char * string) {$/;"	f
+progname	draw.h	/^const char *progname;$/;"	v
+questions	tint3.c	/^char * questions(baritem *meh) {$/;"	f
+readblock	confparse.c	/^bar_config * readblock (FILE * fp) {$/;"	f
+recalc_max	utils.c	/^void recalc_max(graph * gr) {$/;"	f
+resizedc	draw.c	/^void resizedc(DC * dc, unsigned int w, unsigned int h, XVisualInfo * vinfo, XSetWindowAttributes * wa) {$/;"	f
+right	confparse.h	/^    block_list * right;$/;"	m	struct:__anon3
+right	utils.h	/^    itemlist * right;$/;"	m	struct:bar_layout
+rightlen	utils.h	/^    short rightlen;$/;"	m	struct:bar_layout
+root	lwxt.c	/^xcb_window_t root;$/;"	v
+root	tint3.c	/^static Window root, win;$/;"	v	file:
+rotation	scrolling.h	/^typedef struct rotation {$/;"	s
+rotation	scrolling.h	/^} rotation;$/;"	t	typeref:struct:rotation
+run	tint3.c	/^void run() {$/;"	f
+scale_to	tint3.c	/^int scale_to(int from, int to, float by) {$/;"	f
+set	draw.h	/^        XFontSet set;$/;"	m	struct:__anon5::__anon6
+setup	lwxt.c	/^int setup(void) {$/;"	f
+setup	tint3.c	/^void setup() {$/;"	f
+size	scrolling.h	/^    short size;$/;"	m	struct:rotation
+source	confparse.h	/^    char * source;$/;"	m	struct:__anon2
+source	utils.h	/^    char * source;$/;"	m	struct:baritem
+speed	scrolling.h	/^    clock_t speed;$/;"	m	struct:rotation
+start	scrolling.h	/^    short start;$/;"	m	struct:rotation
+start	utils.h	/^    int start;$/;"	m	struct:graph
+starts_with	confparse.c	/^int starts_with(char * source, char * check) {$/;"	f
+strfull	scrolling.h	/^    char * strfull;$/;"	m	struct:rotation
+string	json.h	/^        char * string;$/;"	m	union:container::__anon1
+string	utils.h	/^    char * string;$/;"	m	struct:baritem
+string_from_string	json.c	/^char * string_from_string(char ** string) {$/;"	f
+swap	scrolling.c	/^void swap(char * A, char * B) {$/;"	f
+swap	scrolling.h	/^    char swap;$/;"	m	struct:rotation
+temperatureC	weather.c	/^int temperatureC(int place, char * string) {$/;"	f
+temperatureF	weather.c	/^int temperatureF(int place, char * string) {$/;"	f
+temperatureK	weather.c	/^int temperatureK(int place, char * string) {$/;"	f
+text_offset_y	draw.h	/^    int text_offset_y;$/;"	m	struct:__anon5
+textformatter	format.c	/^typedef int (*textformatter)(int, char *);$/;"	t	file:
+textnw	draw.c	/^int textnw(DC * dc, const char * text, size_t len) {$/;"	f
+textw	draw.c	/^int textw(DC * dc, const char * text) {$/;"	f
+timeout	utils.h	/^    unsigned int timeout;$/;"	m	struct:__anon4
+topbar	tint3.c	/^static Bool topbar = True;$/;"	v	file:
+total_list_length	tint3.c	/^unsigned int total_list_length(itemlist * list) {$/;"	f
+type	confparse.h	/^    char * type;$/;"	m	struct:__anon2
+unint	draw.c	22;"	d	file:
+unlong	draw.c	23;"	d	file:
+up	utils.h	/^    graph * up;$/;"	m	struct:__anon4
+update	utils.h	/^    char * (* update)(struct baritem *);$/;"	m	struct:baritem
+update_json_context	weather.c	/^void update_json_context(char * location) {$/;"	f
+update_nba	tint3.c	/^void update_nba(baritem * item) {$/;"	f
+update_network	utils.c	/^void update_network(char * interface) {$/;"	f
+update_rotation	scrolling.c	/^int update_rotation(rotation * rotation) {$/;"	f
+update_weather_string	weather.c	/^void update_weather_string(char * weather_format) {$/;"	f
+url_to_memory	network.c	/^int url_to_memory(char * buffer, int buf_size, char * url, char * host, char * ip) {$/;"	f
+vertical_position	tint3.c	/^int vertical_position(Bool bar_on_top, int display_height, int bar_height) {$/;"	f
+w	draw.h	/^    int x, y, w, h;$/;"	m	struct:__anon5
+wa	draw.h	/^    XSetWindowAttributes wa;$/;"	m	struct:__anon5
+weather	weather.c	/^static char * weather = 0;$/;"	v	file:
+weather_conditions	weather.c	/^int weather_conditions(int place, char * string) {$/;"	f
+weather_parse_size	weather.c	18;"	d	file:
+width	tint3.c	/^static int width  = 0;$/;"	v	file:
+win	tint3.c	/^static Window root, win;$/;"	v	file:
+x	draw.h	/^    int x, y, w, h;$/;"	m	struct:__anon5
+xfont	draw.h	/^        XFontStruct *xfont;$/;"	m	struct:__anon5::__anon6
+xft_font	draw.h	/^        XftFont *xft_font;$/;"	m	struct:__anon5::__anon6
+xftdraw	draw.h	/^    XftDraw *xftdraw;$/;"	m	struct:__anon5
+y	draw.h	/^    int x, y, w, h;$/;"	m	struct:__anon5
