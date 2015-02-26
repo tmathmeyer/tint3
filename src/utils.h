@@ -30,8 +30,8 @@ typedef struct baritem{
 } baritem;
 
 typedef struct itemlist {
-    baritem * item;
-    struct itemlist * next;
+    uint length;
+    baritem ** buffer;
 } itemlist;
 
 typedef struct bar_layout {

@@ -145,6 +145,18 @@ void do_bar_read(FILE * from, bar_config * storage, block_list * modules) {
     }
 }
 
+block_list *reverse(block_list *blocks) {
+    block_list *nres = NULL;
+    block_list *tmp;
+    while(blocks) {
+        tmp = blocks->next;
+        blocks->next= nres;
+        nres = blocks;
+        blocks = tmp;
+    }
+    return nres;
+}
+
 bar_config * readblock (FILE * fp) {
     block_list * blocks = NULL;
     bar_config * result = NULL;
@@ -216,6 +228,10 @@ bar_config * readblock (FILE * fp) {
     }
 
     fclose(fp);
+
+    result->center = reverse(result->center);
+    result->right = reverse(result->right);
+    result->left = reverse(result->left);
 
     return result;
 }

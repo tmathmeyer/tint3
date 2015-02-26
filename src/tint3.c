@@ -18,6 +18,7 @@
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
 #include <sys/types.h>
+#include <pthread.h>
 #include <pwd.h>
 #include "draw.h"
 #include "utils.h"
@@ -32,7 +33,7 @@
 
 
 static void drawmenu(void);
-static void run(void);
+static void *run(void *unused);
 static void setup(void);
 
 
@@ -82,7 +83,16 @@ int main(int argc, char *argv[]) {
         bo_bar = getcolor(dc, configuration -> border_color);
         draw_bo = 1;
     }
-    run();
+
+    pthread_t master_thread;
+    int err = pthread_create(&master_thread, NULL, run, NULL);
+    if (err != 0) {
+        printf("\ncan't create thread :[%s]", strerror(err));
+    }
+    else {
+        printf("\n Thread created successfully\n");
+    }
+    pthread_join(master_thread, NULL);
 
     return EXIT_FAILURE;
 }
@@ -159,21 +169,26 @@ void infer_type(block * conf_inf, baritem * ipl) {
 }
 
 
-itemlist * c2l(block_list * bid) {
-    itemlist * result = NULL;
-    while(bid) {
-        itemlist * cur = malloc(sizeof(itemlist));
-        cur -> item = makeitem(bid -> data);
-        infer_type(bid -> data, cur -> item);
+itemlist *c2l(block_list * bid) {
+    block_list *ctrtmp = bid;
+    itemlist *result = malloc(sizeof(itemlist));
+    result->length = 0;
+    while(ctrtmp) {
+        result->length++;
+        ctrtmp = ctrtmp->next;
+    }
 
-        if (cur -> item -> update == NULL) {
-            free(cur);
+    result->buffer = malloc(sizeof(baritem*) * result->length);
+    uint ctr = 0;
+
+    for(; ctr < result->length; ctr++) {
+        (result->buffer)[ctr] = makeitem(bid->data);
+        infer_type(bid->data, (result->buffer)[ctr]);
+        if ((result->buffer)[ctr]->update == NULL) {
+            free((result->buffer)[ctr]);
+            ctr --;
         }
-        else {
-            cur -> next = result;
-            result = cur;
-        }
-        bid = bid -> next;
+        bid = bid->next;
     }
     return result;
 }
@@ -197,6 +212,11 @@ void free_all() {
     free_list(layout -> center);
     free(layout);
 }
+
+
+
+
+
 
 
 void drawmenu(void) {
@@ -229,13 +249,20 @@ void drawmenu(void) {
     mapdc(dc, win, width, height);
 }
 
+
+
+
+
+
+
+
 void free_list(itemlist * list) {
-    while(list != NULL) {
-        free_baritem(list -> item);
-        itemlist * old = list;
-        list = list -> next;
-        free(old);
+    uint ctr = 0;
+    for(; ctr < list->length; ctr++) {
+        free_baritem((list->buffer)[ctr]);
     }
+    free(list->buffer);
+    free(list);
 }
 
 void free_baritem(baritem * item) {
@@ -245,36 +272,37 @@ void free_baritem(baritem * item) {
 }
 
 unsigned int total_list_length(itemlist * list) {
-    unsigned int len = 0;
-    while(list != NULL) {
-        list -> item -> length = textw(dc, list -> item -> string);
-        if (list -> item -> update == &get_scrolling_text) {
-            list -> item -> length = atoi(list -> item -> format);
-            //printf("%i\n", list -> item -> length);
-        }
-        len += list -> item -> length;
-        list = list -> next;
+    uint len = 0;
+    uint ctr = 0;
+    for(; ctr < list->length; ctr++) {
+        int tmp = (list->buffer)[ctr]->length
+                = textw(dc, (list->buffer)[ctr]->string);
+        len += tmp;
     }
     return len;
 }
 
 void draw_list(itemlist * list) {
-    while(list != NULL) {
-        dc -> w = list -> item -> length;
-        drawtext(dc, list -> item -> string, list -> item -> color);
-        dc -> x += dc -> w;
-        list = list -> next;
+    uint ctr = 0;
+    for(; ctr < list->length; ctr++) {
+        dc -> w = (list->buffer)[ctr]->length;
+        drawtext(dc, (list->buffer)[ctr]->string, (list->buffer)[ctr]->color);
+        dc->x += dc->w;
     }
 }
 
-void run() {
+void *run(void *unused) {
     XEvent xe;
     drawmenu();
     while(!XNextEvent(dc->dpy, &xe)){
         drawmenu();
         usleep(200000);
     }
+    return NULL;
 }
+
+
+
 
 // gets the vertical position of the bar, depending on margins and position
 int vertical_position(Bool bar_on_top, int display_height, int bar_height) {
