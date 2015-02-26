@@ -21,7 +21,7 @@ LXCBLIBS = -lxcb -lxcb-icccm -lxcb-ewmh
 
 # includes and libs
 INCS = -I${X11INC} -I${XFTINC}
-LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${XFTLIBS} ${LXCBLIBS} -lpthread
+LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${XFTLIBS} ${LXCBLIBS}
 
 # flags
 CPPFLAGS = -D_BSD_SOURCE -DVERSION=\"${VERSION}\" ${XINERAMAFLAGS}

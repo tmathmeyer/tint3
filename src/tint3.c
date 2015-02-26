@@ -18,7 +18,6 @@
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
 #include <sys/types.h>
-#include <pthread.h>
 #include <pwd.h>
 #include "draw.h"
 #include "utils.h"
