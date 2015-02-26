@@ -35,7 +35,8 @@
 static void drawmenu(void);
 static void run(void);
 static void setup(void);
-static void config_to_layout();
+static void config_to_layout(void);
+void update_nba(baritem * item);
 static void infer_type(block *conf_inf, baritem *ipl);
 
 static int height = 0;
@@ -48,6 +49,24 @@ static Bool topbar = True;
 static Window root, win;
 static bar_config * configuration;
 static bar_layout * layout;
+
+
+static pthread_mutex_t lock;
+
+void *update_function(void *data) {
+    baritem *item = (baritem *)data;
+
+    while(1) {
+        pthread_mutex_lock(&lock);
+        update_nba(item);
+        pthread_mutex_unlock(&lock);
+    }
+
+    return NULL;
+}
+
+
+
 
 
 
@@ -68,6 +87,8 @@ int scale_to(int from, int to, float by) {
 }
 
 int main() {
+    XInitThreads();
+    pthread_mutex_init(&lock, NULL);
     setup();
 
     if (configuration -> background_color != NULL) {
@@ -80,6 +101,8 @@ int main() {
     }
 
     config_to_layout();
+
+    sleep(2);
 
     run();
 
@@ -111,8 +134,10 @@ baritem * makeitem(block * config_info) {
     result -> color  = make_possible_color(config_info -> forground, config_info -> background);
     result -> format = config_info -> format;
     result -> source = config_info -> source;
-    result -> string = NULL;
     infer_type(config_info, result);
+    result -> string = NULL;
+    update_nba(result);
+    pthread_create(&(result->thread_id), NULL, update_function, (void *)result);
     return result;
 }
 
@@ -189,9 +214,9 @@ void update_list_of_items(itemlist *list) {
 }
 
 void update_with_lens() {
-    update_list_of_items(layout->left);
-    update_list_of_items(layout->right);
-    update_list_of_items(layout->center);
+    //update_list_of_items(layout->left);
+    //update_list_of_items(layout->right);
+    //update_list_of_items(layout->center);
 
     layout -> leftlen = total_list_length(layout -> left);
     layout -> rightlen = total_list_length(layout -> right);
@@ -258,7 +283,9 @@ void run(void) {
     XEvent xe;
     drawmenu();
     while(!XNextEvent(dc->dpy, &xe)){
+        pthread_mutex_lock(&lock);
         drawmenu();
+        pthread_mutex_unlock(&lock);
         usleep(200000);
     }
 }

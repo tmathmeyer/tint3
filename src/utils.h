@@ -9,6 +9,7 @@
 #define __UTILS__
 
 #include <X11/Xft/Xft.h>
+#include <pthread.h>
 
 #define GRAPHLENGTH 15
 
@@ -21,6 +22,7 @@ typedef struct ColorSet{
 } ColorSet;
 
 typedef struct baritem{
+    pthread_t thread_id;
     ColorSet * color;
     unsigned int length;
     char * string;
