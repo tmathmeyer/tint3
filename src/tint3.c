@@ -9,8 +9,8 @@
 
 #include <ctype.h>
 #include <signal.h>
-#include <stdio.h>
 #include <string.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
@@ -34,7 +34,8 @@
 static void drawmenu(void);
 static void run(void);
 static void setup(void);
-static void config_to_layout();
+static void config_to_layout(void);
+void update_nba(baritem * item);
 static void infer_type(block *conf_inf, baritem *ipl);
 
 static int height = 0;
@@ -48,6 +49,30 @@ static Window root, win;
 static bar_config * configuration;
 static bar_layout * layout;
 
+
+static pthread_mutex_t lock;
+static pthread_t vdesk_ltnr;
+
+
+
+
+void *vdesk_listen(void *DATA)
+{
+    baritem * ipl = DATA;
+    Display* dsp = XOpenDisplay(NULL);
+    XSelectInput(dsp, root, ButtonPressMask | FocusChangeMask) ;
+    XEvent xe;
+    while(1)
+    {
+        XNextEvent(dsp, &xe);
+        if (xe.type==9 || xe.type==10) {
+            ipl -> string = get_desktops_info(ipl);
+            drawmenu();
+        }
+    }
+
+    return NULL;
+}
 
 
 
@@ -67,6 +92,7 @@ int scale_to(int from, int to, float by) {
 }
 
 int main() {
+    pthread_mutex_init(&lock, NULL);
     setup();
 
     if (configuration -> background_color != NULL) {
@@ -88,10 +114,12 @@ int main() {
 
 // update the item's string contents
 void update_nba(baritem * item) {
-    if ((item->string != NULL) && (item->string != quest)) {
-        free(item -> string);
+    if (item->update) {
+        if ((item->string != NULL) && (item->string != quest)) {
+            free(item -> string);
+        }
+        item -> string = (item->update)(item);
     }
-    item -> string = (item->update)(item);
 }
 
 // make a color if we can
@@ -110,8 +138,9 @@ baritem * makeitem(block * config_info) {
     result -> color  = make_possible_color(config_info -> forground, config_info -> background);
     result -> format = config_info -> format;
     result -> source = config_info -> source;
-    result -> string = NULL;
+    result -> string = quest;
     infer_type(config_info, result);
+    update_nba(result);
     return result;
 }
 
@@ -126,7 +155,9 @@ void infer_type(block * conf_inf, baritem * ipl) {
 
     if (IS_ID(conf_inf, "radio")) {
         if (!strncmp(conf_inf -> source, "workspaces", 10)) {
-            ipl -> update = &get_desktops_info;
+            pthread_create(&vdesk_ltnr, NULL, vdesk_listen, ipl);
+            ipl -> update = NULL;
+            ipl -> string = get_desktops_info(ipl);
         }
     } else if (IS_ID(conf_inf, "text")) {
         if (!strncmp(conf_inf -> source, "clock", 5)) {
@@ -203,6 +234,7 @@ void update_with_lens() {
 
 
 void drawmenu(void) {
+    pthread_mutex_lock(&lock);
     dc->x = 0;
     dc->y = 0;
     dc->w = 0;
@@ -226,6 +258,7 @@ void drawmenu(void) {
     draw_list(layout -> center);
 
     mapdc(dc, win, width, height);
+    pthread_mutex_unlock(&lock);
 }
 
 
@@ -253,10 +286,13 @@ void draw_list(itemlist * list) {
 
 void run(void) {
     XEvent xe;
-    drawmenu();
-    while(!XNextEvent(dc->dpy, &xe)){
+    while(1){
         drawmenu();
-        usleep(200000);
+        while(QLength(dc->dpy)) {
+            XNextEvent(dc->dpy, &xe);
+        }
+
+        usleep(900000);
     }
 }
 
