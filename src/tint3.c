@@ -18,6 +18,7 @@
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
 #include <sys/types.h>
+#include <pthread.h>
 #include <pwd.h>
 #include "draw.h"
 #include "utils.h"
@@ -243,9 +244,11 @@ void drawmenu(void) {
     if (draw_bo) {
         draw_rectangle(dc, 0, 0, width+2, height+2, True, bo_bar);
     }
-    draw_rectangle(dc, configuration -> border_size, configuration -> border_size,
-            width-2*configuration -> border_size,
-            height-2*configuration -> border_size, True, bg_bar);
+    if (draw_bg) {
+        draw_rectangle(dc, configuration -> border_size, configuration -> border_size,
+                width-2*configuration -> border_size,
+                height-2*configuration -> border_size, True, bg_bar);
+    }
 
     update_with_lens();
     
