@@ -22,7 +22,6 @@ typedef struct ColorSet{
 } ColorSet;
 
 typedef struct baritem{
-    pthread_t thread_id;
     ColorSet * color;
     unsigned int length;
     char * string;
