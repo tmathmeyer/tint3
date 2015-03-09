@@ -106,3 +106,4 @@ void get_window_title(xcb_window_t win, char *title, size_t len) {
         xcb_icccm_get_text_property_reply_wipe(&icccm_txt_prop);
     }
 }
+

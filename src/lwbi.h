@@ -11,3 +11,4 @@
 int get_battery_percent(char * forbattery);
 
 #endif
+

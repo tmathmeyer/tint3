@@ -13,3 +13,4 @@ int temperatureK(int place, char * string);
 int weather_conditions(int place, char * string);
 
 #endif
+

@@ -93,6 +93,7 @@ int scale_to(int from, int to, float by) {
 }
 
 int main() {
+    XInitThreads();
     pthread_mutex_init(&lock, NULL);
     setup();
 
@@ -473,3 +474,4 @@ int get_x11_property(Atom at, Atom type) {
 
     return data;
 }
+

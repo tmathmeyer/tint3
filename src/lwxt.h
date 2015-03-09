@@ -18,3 +18,4 @@ void get_title(char * buffer, size_t buf_len);
 #define MIN(A, B)         ((A) < (B) ? (A) : (B))
 
 #endif
+

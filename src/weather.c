@@ -174,3 +174,4 @@ char * get_weather_string(char * weather_format, char * weather_location) {
 
     return result;
 }
+
