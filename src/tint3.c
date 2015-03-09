@@ -61,7 +61,7 @@ void *vdesk_listen(void *DATA)
 {
     baritem * ipl = DATA;
     Display* dsp = XOpenDisplay(NULL);
-    XSelectInput(dsp, root, ButtonPressMask | FocusChangeMask) ;
+    XSelectInput(dsp, root, FocusChangeMask) ;
     XEvent xe;
     while(1)
     {
