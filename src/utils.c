@@ -119,12 +119,71 @@ int get_current_desktop () {
     return get_x11_property(NET_CURRENT_DESKTOP, _CARDINAL_);
 }
 
+
+
+
+uint16_t strcons(char *dest, const char *src, uint16_t ctr) {
+    uint res = ctr;
+    while(ctr --> 0) {
+            dest[ctr] = src[ctr];
+    }
+    return res;
+}
+
 char * get_desktops_info(baritem * source) {
     if (!source) {
         return NULL;
     }
+    if (!(source -> format)) {
+        perror("It seems you've not included a format string for the virtual desktop information.");
+        perror("Please read the changes to configuration.md, github.com/tmathmeyer/tint3.");
+        return NULL; // may change this later
+    }
+    char default_desktop[10] = {0};
+    char selected_desktop[10] = {0};
+    uint8_t sel = 0;
+    uint8_t wpos = 0;
+    uint8_t rpos = 0;
+    uint8_t flength = 0;
+    while((source->format)[rpos]) {
+        if ((source->format)[rpos] == ' ') {
+            sel = 1;
+            flength = wpos;
+            wpos = 0;
+            rpos++;
+            continue;
+        }
+        (sel?selected_desktop:default_desktop)[wpos++] = (source->format)[rpos++];
+    }
+
     int numdesk = get_number_of_desktops();
     int curdesk = get_current_desktop();
+
+
+    char tmp_bfr[32] = {0};
+    char *tmp_tmp = tmp_bfr;
+
+
+    uint8_t ctr = 0;
+    while(ctr ++< numdesk) {
+        printf("ctr: %d nd: %d\n", ctr, numdesk);
+        if (ctr == curdesk) {
+            tmp_tmp += strcons(tmp_tmp, selected_desktop, wpos);
+        } else {
+            tmp_tmp += strcons(tmp_tmp, default_desktop, flength);
+        }
+        tmp_tmp += strcons(tmp_tmp, " ", 1);
+    }
+
+    puts(tmp_bfr);
+
+
+
+
+    if (!source) {
+        return NULL;
+    }
+    
     int swap = 0;
 
     int dsktplen = numdesk * 4 - 1;

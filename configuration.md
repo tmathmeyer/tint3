@@ -70,7 +70,8 @@ If I were on virtual desktop 2 of 6 for example, this would show "I ◆ III IV V
 being on desktop 5 of 6 would show "I II III IV ◆ VI"
 
 the general format is the default character/formatter [space] selected character/formatter,
-so the string "◇ %R" on desktop 5 of 6 would look like "◇ ◇ ◇ ◇ V ◇"
+so the string "◇ %R" on desktop 5 of 6 would look like "◇ ◇ ◇ ◇ V ◇".
+Note: this DOES work with unicode (3 byte) characters.
 
 -----
 
