@@ -30,7 +30,7 @@ An example is shown below (the ▉ will show up as a thermometer in the bar.)
     * network [interface] [type] where [interface] is the network interface (for my laptop it is wlp3s0) and [state] is either up or down, for upload and download.
     * battery X, where X is the numerical ID of the battery, found in /sys/class/power_supply/BATTX
     * alsa X, where X is the id of the sound card. this can be found easily using alsamixer.
-    * Boston,usa : the source string that I personally use for weather information. (see http://openweathermap.org/ for other locations)
+    * Boston,usa : the source string that I personally use for weather information. (see http://openweathermap.org/ for other locations. They can be tricky to find sometimes)
 
 ####IDs:
 * text - plain text
