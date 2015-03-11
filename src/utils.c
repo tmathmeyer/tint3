@@ -20,6 +20,7 @@
 #include "draw.h"
 #include "scrolling.h"
 #include "weather.h"
+#include "format.h"
 
 #define MAX_WINDOW_TITLE_LENGTH 256
 
@@ -122,12 +123,25 @@ int get_current_desktop () {
 
 
 
+
+static int current_desktop = 0;
+static fmt_map *formatmap = 0;
+static char *romans[10] = {"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
+static int roman_le[10] = {1, 2, 3, 2, 1, 2, 3, 4, 2, 1};
 uint16_t strcons(char *dest, const char *src, uint16_t ctr) {
     uint res = ctr;
     while(ctr --> 0) {
             dest[ctr] = src[ctr];
     }
     return res;
+}
+
+int _arabic_numerals(int place, char * string) {
+    return place + sprintf(string+place, "%i", current_desktop);
+}
+
+int _roman_numerals(int place, char * string) {
+    return place + strcons(string+place, romans[current_desktop-1], roman_le[current_desktop-1]);
 }
 
 char * get_desktops_info(baritem * source) {
@@ -139,67 +153,49 @@ char * get_desktops_info(baritem * source) {
         perror("Please read the changes to configuration.md, github.com/tmathmeyer/tint3.");
         return NULL; // may change this later
     }
+    if (!formatmap) {
+        formatmap = initmap(8);
+        fmt_map_put(formatmap, 'N', &_arabic_numerals);
+        fmt_map_put(formatmap, 'R', &_roman_numerals);
+    }
+
+    current_desktop = 1;
     char default_desktop[10] = {0};
     char selected_desktop[10] = {0};
     uint8_t sel = 0;
     uint8_t wpos = 0;
     uint8_t rpos = 0;
-    uint8_t flength = 0;
+    int numdesk = get_number_of_desktops();
+    int curdesk = get_current_desktop();
+    char tmp_bfr[32] = {0};
+    uint8_t ctr = 0;
+    uint16_t offset = 0;
     while((source->format)[rpos]) {
         if ((source->format)[rpos] == ' ') {
             sel = 1;
-            flength = wpos;
             wpos = 0;
             rpos++;
             continue;
         }
         (sel?selected_desktop:default_desktop)[wpos++] = (source->format)[rpos++];
     }
-
-    int numdesk = get_number_of_desktops();
-    int curdesk = get_current_desktop();
-
-
-    char tmp_bfr[32] = {0};
-    char *tmp_tmp = tmp_bfr;
-
-
-    uint8_t ctr = 0;
-    while(ctr ++< numdesk) {
-        printf("ctr: %d nd: %d\n", ctr, numdesk);
-        if (ctr == curdesk) {
-            tmp_tmp += strcons(tmp_tmp, selected_desktop, wpos);
-        } else {
-            tmp_tmp += strcons(tmp_tmp, default_desktop, flength);
-        }
-        tmp_tmp += strcons(tmp_tmp, " ", 1);
-    }
-
-    puts(tmp_bfr);
-
-
-
-
-    if (!source) {
-        return NULL;
-    }
     
-    int swap = 0;
-
-    int dsktplen = numdesk * 4 - 1;
-    char * result = malloc(dsktplen);
-
-    for(swap=0; swap < dsktplen; swap++) {
-        int sqp = swap%4;
-        result[swap] = sqp==3?' ':"◇"[sqp];
+    while(ctr < numdesk) {
+        if (ctr == curdesk) {
+            offset += format_string(tmp_bfr+offset, selected_desktop, formatmap);
+        } else {
+            offset += format_string(tmp_bfr+offset, default_desktop, formatmap);
+        }
+        offset += strcons(tmp_bfr+offset, " ", 1);
+        current_desktop++;
+        ctr++;
     }
 
-    result[curdesk*4 + 0] = "◆"[0];
-    result[curdesk*4 + 1] = "◆"[1];
-    result[curdesk*4 + 2] = "◆"[2];
-
+    char *result = calloc(offset+1, sizeof(char));
+    memcpy(result, tmp_bfr, offset);
     return result;
 }
+
 
 char * get_active_window_name(baritem * source) {
     if (!source) {

@@ -10,12 +10,6 @@
 
 #include <stdint.h>
 
-typedef struct format_map {
-    char formatID;
-    int (*formatter)(int, char *);
-    struct format_map * next;
-} format_map;
-
 typedef struct fmt_map {
 	char *fmt_ids;
 	int (**formatter)(int, char *);
@@ -23,16 +17,9 @@ typedef struct fmt_map {
 	uint16_t max_size;
 } fmt_map;
 
-
-
 fmt_map *initmap(uint16_t size);
 void delmap(fmt_map *map);
 void fmt_map_put(fmt_map *map, char fmtid, int (*fmt_fn)(int, char *));
-
-
-
-
-
-int format_string(char * dest, char * fmt, format_map * formatmap);
+int format_string(char * dest, char * fmt, fmt_map * formatmap);
 
 #endif
