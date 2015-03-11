@@ -20,4 +20,4 @@ tint3 uses feature branches. If you would like to submit a PR, submit it on a fe
  - [ ] write a man-page!!!
  - [ ] add support for pianobar (pandora internet radio)
  - [ ] mouse and notification support
- - [ ] api for adding modules
+ - [ ] abi for adding modules

@@ -18,7 +18,7 @@
 #define weather_parse_size 4096
 
 static container * jsoncontext = 0;
-static format_map * formatmap = 0;
+static fmt_map *formatmap = 0;
 static char * weather = 0;
 static time_t lastime = 0;
 
@@ -88,37 +88,19 @@ int weather_conditions(int place, char * string) {
     return place + sprintf(string+place, "%s", sky_condition);
 }
 
-void add_to_format(struct comb comb) {
-    format_map * next = malloc(sizeof(format_map));
-    next -> next = formatmap;
-    next -> formatID = comb.formatID;
-    next -> formatter = comb.formatter;
-    formatmap = next;
-}
-
-format_map * getformatmap() {
-    if (formatmap) {
-        return formatmap;
+fmt_map * getformatmap() {
+    if (!formatmap) {
+        formatmap = initmap(10);
+        fmt_map_put(formatmap, 'K', &temperatureK);
+        fmt_map_put(formatmap, 'F', &temperatureF);
+        fmt_map_put(formatmap, 'C', &temperatureC);
+        fmt_map_put(formatmap, 'W', &weather_conditions);
+        fmt_map_put(formatmap, 'A', &pressureATM);
+        fmt_map_put(formatmap, 'P', &pressureHg);
+        fmt_map_put(formatmap, 'H', &humidityPC);
+        fmt_map_put(formatmap, 'D', &dew_point);
     }
-
-    struct comb kelvin = {'K', &temperatureK};
-    struct comb farenheight = {'F', &temperatureF};
-    struct comb celsius = {'C', &temperatureC};
-    struct comb weather = {'W', &weather_conditions};
-    struct comb atmospheres = {'A', &pressureATM};
-    struct comb mmhg = {'P', &pressureHg};
-    struct comb humidity = {'H', &humidityPC};
-    struct comb dewpoint = {'D', &dew_point};
-
-    add_to_format(kelvin);
-    add_to_format(weather);
-    add_to_format(farenheight);
-    add_to_format(celsius);
-    add_to_format(atmospheres);
-    add_to_format(mmhg);
-    add_to_format(humidity);
-    add_to_format(dewpoint);
-
+    
     return formatmap;
 }
 
