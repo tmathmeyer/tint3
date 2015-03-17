@@ -111,10 +111,7 @@ char *get_desktops_info(baritem *source) {
         return NULL;
     }
     if (!(source -> format)) {
-        perror("It seems you've not included a format string for the virtual desktop information.");
-        perror("Please read the changes to configuration.md, github.com/tmathmeyer/tint3.");
-        exit(0);
-        return NULL;
+        source -> format = "◆ ◇";
     }
     if (!formatmap) {
         formatmap = initmap(8);
