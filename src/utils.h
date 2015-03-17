@@ -78,10 +78,8 @@ int get_x11_property(Atom at, Atom type);
 
 
 char * get_time_format(baritem * item);
-char * get_weather(baritem * item);
 char * get_battery(baritem * item);
 char * get_volume_level(baritem * item);
-char * get_desktops_info(baritem * item);
 char * get_active_window_name(baritem * item);
 char * get_net_graph(baritem * item);
 char * get_plain_text(baritem * item);
@@ -91,21 +89,6 @@ Atom NET_NUMBER_DESKTOPS,
      NET_CURRENT_DESKTOP;
 
 Atom _CARDINAL_;
-
-
-
-
-/* SPECIAL CHARACTERS */
-//⮎
-//⮒
-//⮏
-//⮑
-//⮐
-//▉ <- full thermometer
-//▊ <- medium thermometer
-//▋ <- low thermometer
-//▌ <- humidity symbol <- lol what the fuck
-
 
 
 #endif

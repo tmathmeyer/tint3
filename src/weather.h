@@ -8,9 +8,12 @@
 #ifndef _WEATHER_H_
 #define _WEATHER_H_
 
-char * get_weather_string(char * weather_format, char * weather_location);
-int temperatureK(int place, char * string);
-int weather_conditions(int place, char * string);
+#include "utils.h"
+
+char *get_weather(baritem * item);
+char *get_weather_string(char *weather_format, char *weather_location);
+int temperatureK(int place, char *string);
+int weather_conditions(int place, char *string);
 
 #endif
 

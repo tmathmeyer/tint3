@@ -11,9 +11,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include "weather.h"
 #include "format.h"
 #include "json.h"
 #include "network.h"
+#include "utils.h"
 
 #define weather_parse_size 4096
 
@@ -21,6 +23,10 @@ static container * jsoncontext = 0;
 static fmt_map *formatmap = 0;
 static char * weather = 0;
 static time_t lastime = 0;
+
+char *get_weather(baritem* item) {
+    return get_weather_string(item -> format, item -> source);
+}
 
 struct comb {
     char formatID;

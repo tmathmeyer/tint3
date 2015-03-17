@@ -9,7 +9,8 @@
 #include <stdlib.h>
 #include "format.h"
 
-int BAD(int start, char * dest) {
+int BAD(int start, char *dest) {
+    (void) dest;
     return start;
 }
 
