@@ -77,6 +77,7 @@ int _roman_numerals(int place, char *string) {
     return place + roman_numeral(string+place, current_desktop);
 }
 
+// obviously this need to be fixed
 int _japanese_numerals(int place, char *string) {
     return place + sprintf(string+place, "四");
 }
