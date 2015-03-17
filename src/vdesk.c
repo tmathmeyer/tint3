@@ -1,9 +1,33 @@
 #define _DEFAULT_SOURCE
+#include <pthread.h>
 #include "vdesk.h"
 #include "format.h"
+#include "tint3.h"
 
 static int current_desktop = 0;
 static fmt_map *formatmap = 0;
+static pthread_t vdesk_ltnr;
+
+
+void spawn_vdesk_thread(baritem *ipl) {
+    pthread_create(&vdesk_ltnr, NULL, vdesk_listen, ipl);
+}
+
+void *vdesk_listen(void *DATA) {
+    baritem * ipl = DATA;
+    Display* dsp = XOpenDisplay(NULL);
+    XSelectInput(dsp, root, FocusChangeMask) ;
+    XEvent xe;
+    while(1) {
+        XNextEvent(dsp, &xe);
+        if (xe.type==9 || xe.type==10) {
+            ipl -> string = get_desktops_info(ipl);
+            drawmenu();
+        }
+    }
+
+    return NULL;
+}
 
 // roman numerals up to 3000
 uint roman_numeral(char *buffer, uint num) {

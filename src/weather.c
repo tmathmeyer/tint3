@@ -11,11 +11,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <unistd.h>
+#include <pthread.h>
 #include "weather.h"
 #include "format.h"
 #include "json.h"
 #include "network.h"
 #include "utils.h"
+#include "tint3.h"
 
 #define weather_parse_size 4096
 
@@ -23,6 +26,24 @@ static container * jsoncontext = 0;
 static fmt_map *formatmap = 0;
 static char * weather = 0;
 static time_t lastime = 0;
+static pthread_t weather_ltnr;
+
+
+
+
+void *weather_listen(void *DATA) {
+    baritem * ipl = DATA;
+    while(1) {
+        ipl -> string = get_weather(ipl);
+        drawmenu();
+        sleep(30*60);
+    }
+    return NULL;
+}
+
+void spawn_weather_thread(baritem *ipl) {
+    pthread_create(&weather_ltnr, NULL, weather_listen, ipl);
+}
 
 char *get_weather(baritem* item) {
     return get_weather_string(item -> format, item -> source);

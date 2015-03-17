@@ -4,5 +4,7 @@
 #include "utils.h"
 
 char *get_desktops_info(baritem *item);
+void *vdesk_listen(void *DATA);
+void spawn_vdesk_thread(baritem *ipl);
 
 #endif
