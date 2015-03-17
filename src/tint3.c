@@ -25,6 +25,7 @@
 #include "confparse.h"
 #include "lwbi.h"
 #include "vdesk.h"
+#include "weather.h"
 
 #define INRECT(x,y,rx,ry,rw,rh) ((x) >= (rx) && (x) < (rx)+(rw) && (y) >= (ry) && (y) < (ry)+(rh))
 #define MIN(a,b)                ((a) < (b) ? (a) : (b))
@@ -58,14 +59,12 @@ static pthread_t vdesk_ltnr;
 
 
 
-void *vdesk_listen(void *DATA)
-{
+void *vdesk_listen(void *DATA) {
     baritem * ipl = DATA;
     Display* dsp = XOpenDisplay(NULL);
     XSelectInput(dsp, root, FocusChangeMask) ;
     XEvent xe;
-    while(1)
-    {
+    while(1) {
         XNextEvent(dsp, &xe);
         if (xe.type==9 || xe.type==10) {
             ipl -> string = get_desktops_info(ipl);

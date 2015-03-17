@@ -19,7 +19,6 @@
 #include "lwbi.h"
 #include "draw.h"
 #include "scrolling.h"
-#include "weather.h"
 #include "format.h"
 
 #define MAX_WINDOW_TITLE_LENGTH 256
@@ -138,10 +137,6 @@ char * get_time_format(baritem * item) {
         pclose(desc);
     }
     return msg;
-}
-
-char * get_weather(baritem * item) {
-    return get_weather_string(item -> format, item -> source);
 }
 
 char * get_battery(baritem * item) {

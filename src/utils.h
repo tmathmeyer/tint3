@@ -78,7 +78,6 @@ int get_x11_property(Atom at, Atom type);
 
 
 char * get_time_format(baritem * item);
-char * get_weather(baritem * item);
 char * get_battery(baritem * item);
 char * get_volume_level(baritem * item);
 char * get_active_window_name(baritem * item);
