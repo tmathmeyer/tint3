@@ -77,6 +77,10 @@ int _roman_numerals(int place, char *string) {
     return place + roman_numeral(string+place, current_desktop);
 }
 
+int _japanese_numerals(int place, char *string) {
+    return place + sprintf(string+place, "四");
+}
+
 char *get_desktops_info(baritem *source) {
     if (!source) {
         return NULL;
@@ -91,6 +95,7 @@ char *get_desktops_info(baritem *source) {
         formatmap = initmap(8);
         fmt_map_put(formatmap, 'N', &_arabic_numerals);
         fmt_map_put(formatmap, 'R', &_roman_numerals);
+        fmt_map_put(formatmap, 'J', &_japanese_numerals);
     }
 
     current_desktop = 1;
