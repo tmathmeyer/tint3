@@ -4,7 +4,7 @@ include config.mk
 
 all: tint3
 
-tint3: tint3.o draw.o utils.o lwxt.o confparse.o lwbi.o scrolling.o format.o network.o weather.o json.o
+tint3: tint3.o vdesk.o draw.o utils.o lwxt.o confparse.o lwbi.o format.o network.o weather.o json.o
 
 .c.o: config.mk
 	@echo CC -c $<

@@ -10,17 +10,48 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
+#include <unistd.h>
+#include <pthread.h>
+#include "weather.h"
 #include "format.h"
 #include "json.h"
 #include "network.h"
+#include "utils.h"
+#include "tint3.h"
 
 #define weather_parse_size 4096
 
 static container * jsoncontext = 0;
 static fmt_map *formatmap = 0;
 static char * weather = 0;
-static time_t lastime = 0;
+static pthread_t weather_ltnr;
+static int _INIT_ = 1;
+
+
+
+
+void *weather_listen(void *DATA) {
+    baritem * ipl = DATA;
+    sleep(1);
+    while(1) {
+        ipl -> string = get_weather(ipl);
+        drawmenu();
+        sleep(30*60);
+    }
+    return NULL;
+}
+
+void spawn_weather_thread(baritem *ipl) {
+    pthread_create(&weather_ltnr, NULL, weather_listen, ipl);
+}
+
+char *get_weather(baritem* item) {
+    if (_INIT_) {
+        _INIT_ = 0;
+        return strdup("~connecting~");
+    }
+    return get_weather_string(item -> format, item -> source);
+}
 
 struct comb {
     char formatID;
@@ -104,7 +135,7 @@ fmt_map * getformatmap() {
     return formatmap;
 }
 
-// TODO make the location configurable
+
 void update_json_context(char * location) {
     char url[100] = {0};
     snprintf(url, 100, "/data/2.5/weather?q=%s", location);
@@ -124,31 +155,23 @@ void update_json_context(char * location) {
     free(weather_s);
 }
 
-void update_weather_string(char * weather_format) {
+int update_weather_string(char *weather_format) {
     if (!weather) {
         weather = malloc(128);
     }
     if (jsoncontext) {
         memset(weather, 0, 128);
         format_string(weather, weather_format, getformatmap());
+        return 1;
     }
+    return 0;
 }
 
-void attempt_update_weather(char * weather_format, char * weather_location) {
-    if (lastime == 0) {
-        lastime = 1;
-    } else if (time(NULL)-lastime > 1800) {
-        time(&lastime);
-        update_json_context(weather_location);
-        update_weather_string(weather_format);
-    }
-}
+char * get_weather_string(char *weather_format, char *weather_location) {
+    update_json_context(weather_location);
+    char *result;
 
-char * get_weather_string(char * weather_format, char * weather_location) {
-    attempt_update_weather(weather_format, weather_location);
-    char * result;
-
-    if (weather) {
+    if (update_weather_string(weather_format)) {
         result = strdup(weather);
     } else {
         result = strndup("<<err>>", 8);

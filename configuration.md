@@ -17,7 +17,7 @@ An example is shown below (the ▉ will show up as a thermometer in the bar.)
 
 ####Required Keywords:
 - the name of the block; it appears in the []'s
-- the id of the block, which can be any of {text, radio, weather, scale, graph, scrolling}
+- the id of the block, which can be any of {text, radio, weather, scale, graph}
 - the forground and background, which are #s (octothorpes) followed by 6 digit RGB hexadecimal representations
 
 ####Optional keywords:

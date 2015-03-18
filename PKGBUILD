@@ -2,7 +2,7 @@
 
 _pkgname=tint3
 pkgname=${_pkgname}-git
-pkgver=3
+pkgver=4
 pkgrel=0
 pkgdesc='An independant status bar for X11 (works best with bspwm)'
 arch=('x86_64')

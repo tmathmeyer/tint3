@@ -24,6 +24,9 @@
 #include "utils.h"
 #include "confparse.h"
 #include "lwbi.h"
+#include "vdesk.h"
+#include "weather.h"
+#include "tint3.h"
 
 #define INRECT(x,y,rx,ry,rw,rh) ((x) >= (rx) && (x) < (rx)+(rw) && (y) >= (ry) && (y) < (ry)+(rh))
 #define MIN(a,b)                ((a) < (b) ? (a) : (b))
@@ -32,7 +35,6 @@
 #define IS_ID(x, a) (!(strncmp(x -> id, a, strlen(a))))
 
 
-static void drawmenu(void);
 static void run(void);
 static void setup(void);
 static void config_to_layout(void);
@@ -41,40 +43,21 @@ static void infer_type(block *conf_inf, baritem *ipl);
 
 static int height = 0;
 static int width  = 0;
-static const char *font = "sakamoto-11";
+
 static char *quest = "???";
 static unsigned long bg_bar = 0, draw_bg = 0;
 static unsigned long bo_bar = 0, draw_bo = 0;
-static Bool topbar = True;
-static Window root, win;
+
+static Window win;
 static bar_config * configuration;
 static bar_layout * layout;
 
 
 static pthread_mutex_t lock;
-static pthread_t vdesk_ltnr;
 
 
-
-
-void *vdesk_listen(void *DATA)
-{
-    baritem * ipl = DATA;
-    Display* dsp = XOpenDisplay(NULL);
-    XSelectInput(dsp, root, FocusChangeMask) ;
-    XEvent xe;
-    while(1)
-    {
-        XNextEvent(dsp, &xe);
-        if (xe.type==9 || xe.type==10) {
-            ipl -> string = get_desktops_info(ipl);
-            drawmenu();
-        }
-    }
-
-    return NULL;
-}
-
+const char *font = "sakamoto-11";
+int topbar = 1;
 
 
 // get the height of the bar
@@ -93,6 +76,7 @@ int scale_to(int from, int to, float by) {
 }
 
 int main() {
+
     XInitThreads();
     pthread_mutex_init(&lock, NULL);
     setup();
@@ -152,12 +136,12 @@ char *questions(baritem *meh) {
 }
 
 // set the function that creates information
-void infer_type(block * conf_inf, baritem * ipl) {
+void infer_type(block * conf_inf, baritem *ipl) {
     ipl -> update = &questions;
 
     if (IS_ID(conf_inf, "radio")) {
         if (!strncmp(conf_inf -> source, "workspaces", 10)) {
-            pthread_create(&vdesk_ltnr, NULL, vdesk_listen, ipl);
+            spawn_vdesk_thread(ipl);
             ipl -> update = NULL;
             ipl -> string = get_desktops_info(ipl);
         }
@@ -170,7 +154,9 @@ void infer_type(block * conf_inf, baritem * ipl) {
             ipl -> update = &get_plain_text;
         }
     } else if (IS_ID(conf_inf, "weather")) {
-        ipl -> update = &get_weather;
+            spawn_weather_thread(ipl);
+            ipl -> update = NULL;
+            ipl -> string = get_weather(ipl);
     } else if (IS_ID(conf_inf, "scale")) {
         if (starts_with(conf_inf -> source, "battery")) {
             ipl -> update = &get_battery;
@@ -179,8 +165,6 @@ void infer_type(block * conf_inf, baritem * ipl) {
         }
     } else if (IS_ID(conf_inf, "graph")) {
         ipl -> update = &get_net_graph;
-    } else if (IS_ID(conf_inf, "scrolling")) {
-        ipl -> update = &get_scrolling_text;
     }
 }
 
