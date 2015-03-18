@@ -7,6 +7,7 @@
 static int current_desktop = 0;
 static fmt_map *formatmap = 0;
 static pthread_t vdesk_ltnr;
+static char *japanese_numerals[10] = {"一", "二", "三", "四", "五", "六", "七", "八", "九", "十"};
 
 
 void spawn_vdesk_thread(baritem *ipl) {
@@ -103,7 +104,7 @@ int _roman_numerals(int place, char *string) {
 
 // obviously this need to be fixed
 int _japanese_numerals(int place, char *string) {
-    return place + sprintf(string+place, "四");
+    return place + sprintf(string+place, japanese_numerals[current_desktop]);
 }
 
 char *get_desktops_info(baritem *source) {
