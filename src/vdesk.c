@@ -104,7 +104,7 @@ int _roman_numerals(int place, char *string) {
 
 // obviously this need to be fixed
 int _japanese_numerals(int place, char *string) {
-    return place + sprintf(string+place, japanese_numerals[current_desktop]);
+    return place + sprintf(string+place, current_desktop>10?"<E>":japanese_numerals[current_desktop-1]);
 }
 
 char *get_desktops_info(baritem *source) {
