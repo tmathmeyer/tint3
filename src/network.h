@@ -9,5 +9,6 @@
 #define _NETWORK_H_
 
 int url_to_memory(char * buffer, int buf_size, char * url, char * host, char * ip);
+int hostname_to_ip(char * hostname , char* ip);
 
 #endif

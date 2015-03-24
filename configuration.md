@@ -53,9 +53,9 @@ currently, there are three modules that use the format strings, {id:text, source
   * D: dew point
 
 The format parameters used in the radio module are as follows:
-  * N: the number of the radio button (0-indexed)
-  * M: the number of the radio button (1-indexed)
-  * R: the number of the radio button (0-indexed, roman numeral)
+  * N: the number of the radio button 
+  * J: the number of the radio button, japanese (chinese) numerals
+  * R: the number of the radio button, roman numerals
   * I: inverted
  
 An example of the radio configutation for desktops might be:

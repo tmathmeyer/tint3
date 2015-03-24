@@ -142,15 +142,19 @@ void update_json_context(char * location) {
 
     char * host = "api.openweathermap.org";
     char * weather_s = malloc(weather_parse_size);
-
-    if (url_to_memory(weather_s, weather_parse_size, url, host, "162.243.44.32")) {
-        if (strstr(weather_s, "HTTP/1.1 200")) {
-            char * JSON = strstr(weather_s, "{");
-            if (jsoncontext) {
-                free_container(jsoncontext);
+    char ip[16] = {0};
+    if (hostname_to_ip(host, ip)) {
+        if (url_to_memory(weather_s, weather_parse_size, url, host, ip)) {
+            if (strstr(weather_s, "HTTP/1.1 200")) {
+                char * JSON = strstr(weather_s, "{");
+                if (jsoncontext) {
+                    free_container(jsoncontext);
+                }
+                jsoncontext = from_string(&JSON);
             }
-            jsoncontext = from_string(&JSON);
         }
+    } else {
+        perror("can't get ip of api.openweathermap.org");
     }
     free(weather_s);
 }

@@ -35,8 +35,8 @@ int get_socket(int port_number, char* ip) {
     }
 
     if (connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
-       perror("Error : Connect Failed");
-       return -1;
+        perror("Error : Connect Failed");
+        return -1;
     }
 
     return sockfd;
@@ -58,6 +58,27 @@ char * generate_header(char * url, char * host) {
     snprintf(filled_header, 2048, header, url, host);
     return filled_header;
 }
+
+int hostname_to_ip(char * hostname , char* ip) {
+    struct hostent *he;
+    struct in_addr **addr_list;
+    int i;
+
+    if ( (he = gethostbyname( hostname ) ) == NULL) {
+        herror("gethostbyname");
+        return 0;
+    }
+
+    addr_list = (struct in_addr **) he->h_addr_list;
+
+    for(i = 0; addr_list[i] != NULL; i++) {
+        strcpy(ip , inet_ntoa(*addr_list[i]) );
+        return 1;
+    }
+
+    return 0;
+}
+
 
 int url_to_memory(char * buffer, int buf_size, char * url, char * host, char * ip) {
     int n = 0;
