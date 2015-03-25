@@ -17,13 +17,15 @@ void spawn_vdesk_thread(baritem *ipl) {
 void *vdesk_listen(void *DATA) {
     baritem * ipl = DATA;
     Display* dsp = XOpenDisplay(NULL);
-    XSelectInput(dsp, root, FocusChangeMask) ;
+    XSelectInput(dsp, root, PropertyChangeMask) ;
     XEvent xe;
     while(1) {
         XNextEvent(dsp, &xe);
-        if (xe.type==9 || xe.type==10) {
-            ipl -> string = get_desktops_info(ipl);
-            drawmenu();
+        switch(xe.type) {
+            case PropertyNotify:
+               ipl -> string = get_desktops_info(ipl);
+               drawmenu();
+               break;
         }
     }
 
