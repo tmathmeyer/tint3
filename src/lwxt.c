@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Ted Meyer
+ * Copyright (C) 2015 Ted Meyer
  *
  * see LICENSING for details
  *
