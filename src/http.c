@@ -16,7 +16,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "network.h"
+#include "http.h"
 
 int get_socket(int port_number, char* ip) {
     int sockfd = 0;

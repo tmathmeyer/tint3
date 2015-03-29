@@ -15,7 +15,7 @@
 #include "weather.h"
 #include "format.h"
 #include "json.h"
-#include "network.h"
+#include "http.h"
 #include "utils.h"
 #include "tint3.h"
 

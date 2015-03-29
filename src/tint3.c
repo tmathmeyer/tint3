@@ -27,6 +27,7 @@
 #include "vdesk.h"
 #include "weather.h"
 #include "tint3.h"
+#include "netinfo.h"
 
 #define INRECT(x,y,rx,ry,rw,rh) ((x) >= (rx) && (x) < (rx)+(rw) && (y) >= (ry) && (y) < (ry)+(rh))
 #define MIN(a,b)                ((a) < (b) ? (a) : (b))
