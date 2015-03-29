@@ -14,7 +14,8 @@
 #include <string.h>
 #include <xcb/xcb.h>
 
-#include "utils.h"
+#include "tint3.h"
+#include "system.h"
 #include "lwxt.h"
 #include "lwbi.h"
 #include "draw.h"

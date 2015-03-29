@@ -21,7 +21,7 @@
 #include <pthread.h>
 #include <pwd.h>
 #include "draw.h"
-#include "utils.h"
+#include "system.h"
 #include "confparse.h"
 #include "lwbi.h"
 #include "vdesk.h"

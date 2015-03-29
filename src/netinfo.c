@@ -7,6 +7,7 @@
 
 #define _DEFAULT_SOURCE
 
+#include <time.h>
 #include "graph.h"
 #include "netinfo.h"
 

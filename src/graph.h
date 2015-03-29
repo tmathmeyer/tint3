@@ -8,7 +8,7 @@
 #ifndef _T3_GRAPH_H_
 #define _T3_GRAPH_H_
 
-#include "utils.h"
+#include "tint3.h"
 
 #define GRAPHLENGTH 15
 

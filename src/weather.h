@@ -8,7 +8,7 @@
 #ifndef _WEATHER_H_
 #define _WEATHER_H_
 
-#include "utils.h"
+#include "tint3.h"
 
 char *get_weather(baritem * item);
 char *get_weather_string(char *weather_format, char *weather_location);

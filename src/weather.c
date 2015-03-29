@@ -16,7 +16,6 @@
 #include "format.h"
 #include "json.h"
 #include "http.h"
-#include "utils.h"
 #include "tint3.h"
 
 #define weather_parse_size 4096
