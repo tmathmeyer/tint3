@@ -19,7 +19,6 @@
 #include "lwbi.h"
 #include "draw.h"
 #include "format.h"
-#include "graph.h"
 
 #define MAX_WINDOW_TITLE_LENGTH 256
 

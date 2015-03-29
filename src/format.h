@@ -11,10 +11,10 @@
 #include <stdint.h>
 
 typedef struct fmt_map {
-	char *fmt_ids;
-	int (**formatter)(int, char *);
-	uint16_t rl_size;
-	uint16_t max_size;
+    char *fmt_ids;
+    int (**formatter)(int, char *);
+    uint16_t rl_size;
+    uint16_t max_size;
 } fmt_map;
 
 fmt_map *initmap(uint16_t size);
