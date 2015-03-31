@@ -13,7 +13,7 @@
 
 #include "confparse.h"
 
-int starts_with(char * source, char * check) {
+int starts_with(char *source, char *check) {
     int p = 0;
     for(; check[p] != 0; p++) {
         if (check[p] != source[p]) {
@@ -21,6 +21,13 @@ int starts_with(char * source, char * check) {
         }
     }
     return 1;
+}
+
+int match_with_padding(char *source, char *check) {
+    while(*source==' ') {
+        source++;
+    }
+    return starts_with(source, check);
 }
 
 void name_blocks(block_list * list) {
@@ -49,26 +56,83 @@ char * as_hex_string(unsigned int i) {
     return result;
 }
 
+char **parse_options(char *line) {
+    while(*line == ' ') {
+        line++;
+    }
+    line += 8;
+
+    int cc = 0;
+    int ccc = 0;
+    while(line[ccc]) {
+        if (line[ccc] == ',') {
+            cc++;
+        }
+        ccc++;
+    }
+    if (!cc) {
+        return NULL;
+    }
+    char **result = malloc(cc * sizeof(char *));
+    char **res = result;
+    ccc = 0;
+    while(line[ccc]) {
+        puts(line);
+        if (line[ccc] == ',') {
+            *res = calloc(ccc+1, sizeof(char));
+            memcpy(*res, line, ccc);
+            line += (ccc + 1);
+            while(*line == ' ') {
+                line++;
+            }
+            ccc = 0;
+        }
+        ccc++;
+    }
+
+
+
+    puts(line);
+    return res;
+}
+
+int has_options(char *opt, bar_config *conf) {
+    if(conf -> options) {
+        int ctr = 0;
+        while((conf->options)[ctr]) {
+            if(match_with_padding(opt, (conf->options)[ctr])) {
+                return 1;
+            }
+            ctr ++;
+        }
+    }
+    return 0;
+}
+
 void do_bar_read(FILE * from, bar_config * storage, block_list * modules) {
     char * name = malloc(100);
     while(fgets(name, 100, from)) {
         int length = strlen(name);
 
-        if (starts_with(name, "  borderwidth")) {
+        if (match_with_padding(name, "borderwidth")) {
             sscanf(name, "  borderwidth %i", &(storage -> border_size));
         }
 
-        if (starts_with(name, "  margin")) {
+        if (match_with_padding(name, "margin")) {
             sscanf(name, "  margin %i", &(storage -> margin_size));
         }
 
-        if (starts_with(name, "  padding")) {
+        if (match_with_padding(name, "padding")) {
             sscanf(name, "  padding %i", &(storage -> padding_size));
         }
 
-        if (starts_with(name, "  background")) {
+        if (match_with_padding(name, "options")) {
+            storage -> options = parse_options(name);
+        }
+
+        if (match_with_padding(name, "background")) {
             int c = 12;
-            storage -> background_color = calloc(0, 8);
+            storage -> background_color = calloc(1, 8);
             while(name[c++] != '\n') {
                 (storage -> background_color)[c-14] = name[c-1];
             }
@@ -76,7 +140,7 @@ void do_bar_read(FILE * from, bar_config * storage, block_list * modules) {
 
         if (starts_with(name, "  bordercolor")) {
             int c = 13;
-            storage -> border_color = calloc(0, 8);
+            storage -> border_color = calloc(1, 8);
             while(name[c++] != '\n') {
                 (storage -> border_color)[c-15] = name[c-1];
             }
@@ -174,6 +238,7 @@ bar_config * readblock (FILE * fp) {
 
         if (starts_with(name, "[[bar]]")) {
             result = malloc(sizeof(bar_config));
+            result -> options = NULL;
             result -> border_size = 0;
             result -> margin_size = 0;
             result -> padding_size = 0;
@@ -182,7 +247,7 @@ bar_config * readblock (FILE * fp) {
         else if (name[0] == '[' && name[length-2] == ']') {
             block_list * first    = malloc(sizeof(block_list));
             first -> data         = malloc(sizeof(block));
-            first -> data -> name = calloc(0,length);
+            first -> data -> name = calloc(1,length);
             name[length-2] = 0;
             sscanf(name, "[%s]", first -> data -> name);
             first -> next = blocks;

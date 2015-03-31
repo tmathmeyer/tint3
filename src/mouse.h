@@ -12,7 +12,6 @@
 
 void *mouse_thread(void *data);
 void init_mouse();
-baritem *item_by_coord(unsigned int x);
 
 
 #endif

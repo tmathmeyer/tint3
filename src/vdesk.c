@@ -132,7 +132,7 @@ char *get_desktops_info(baritem *source) {
     uint8_t rpos = 0;
     int numdesk = get_number_of_desktops();
     int curdesk = get_current_desktop();
-    char tmp_bfr[32] = {0};
+    char *tmp_bfr = calloc(numdesk * 4, sizeof(char));
     uint8_t ctr = 0;
     uint16_t offset = 0;
     while((source->format)[rpos]) {

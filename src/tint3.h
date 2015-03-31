@@ -15,7 +15,10 @@ typedef struct ColorSet{
 
 typedef struct baritem{
     ColorSet * color;
+    ColorSet * invert;
     unsigned int length;
+    unsigned int xstart;
+    unsigned char inverted;
     char * string;
     char * format;
     char * source;
@@ -73,6 +76,9 @@ extern int topbar;
 // the root window of the system
 extern Window root;
 
+// the window that the bar occupies
+extern Window win;
+
 
 
 
@@ -85,6 +91,9 @@ void drawmenu(void);
 
 // get a property 
 int get_x11_property(Atom at, Atom type);
+
+// get an item by X
+baritem *item_by_coord(unsigned int x);
 
 
 
