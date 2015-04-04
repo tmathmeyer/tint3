@@ -10,8 +10,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include "confparse.h"
+#define case(in, text) if (match_with_padding((in), (text)))
 
 int starts_with(char *source, char *check) {
     int p = 0;
@@ -77,7 +77,6 @@ char **parse_options(char *line) {
     char **res = result;
     ccc = 0;
     while(line[ccc]) {
-        puts(line);
         if (line[ccc] == ',') {
             *res = calloc(ccc+1, sizeof(char));
             memcpy(*res, line, ccc);
@@ -90,9 +89,6 @@ char **parse_options(char *line) {
         ccc++;
     }
 
-
-
-    puts(line);
     return res;
 }
 
@@ -109,28 +105,30 @@ int has_options(char *opt, bar_config *conf) {
     return 0;
 }
 
+
+
 void do_bar_read(FILE * from, bar_config * storage, block_list * modules) {
     char * name = malloc(100);
     while(fgets(name, 100, from)) {
         int length = strlen(name);
 
-        if (match_with_padding(name, "borderwidth")) {
+        case(name, "borderwidth") {
             sscanf(name, "  borderwidth %i", &(storage -> border_size));
         }
 
-        if (match_with_padding(name, "margin")) {
+        case(name, "margin") {
             sscanf(name, "  margin %i", &(storage -> margin_size));
         }
 
-        if (match_with_padding(name, "padding")) {
+        case(name, "padding") {
             sscanf(name, "  padding %i", &(storage -> padding_size));
         }
 
-        if (match_with_padding(name, "options")) {
+        case(name, "options") {
             storage -> options = parse_options(name);
         }
 
-        if (match_with_padding(name, "background")) {
+        case(name, "background") {
             int c = 12;
             storage -> background_color = calloc(1, 8);
             while(name[c++] != '\n') {
@@ -138,7 +136,7 @@ void do_bar_read(FILE * from, bar_config * storage, block_list * modules) {
             }
         }
 
-        if (starts_with(name, "  bordercolor")) {
+        case(name, "bordercolor") {
             int c = 13;
             storage -> border_color = calloc(1, 8);
             while(name[c++] != '\n') {
@@ -146,12 +144,12 @@ void do_bar_read(FILE * from, bar_config * storage, block_list * modules) {
             }
         }
 
-        if (starts_with(name, "  location")) {
+        case(name, "location") {
             storage -> location = malloc(10);
             strncpy(storage -> location, name+11, length>10?10:length);
         }
 
-        if (starts_with(name, "  left")) {
+        case(name, "left") {
             int count;
             sscanf(name, "  left %i", &count);
 
@@ -168,7 +166,7 @@ void do_bar_read(FILE * from, bar_config * storage, block_list * modules) {
             }
         }
 
-        if (starts_with(name, "  center")) {
+        case(name, "center") {
             int count;
             sscanf(name, "  center %i", &count);
 
@@ -185,7 +183,7 @@ void do_bar_read(FILE * from, bar_config * storage, block_list * modules) {
             }
         }
 
-        if (starts_with(name, "  right")) {
+        case(name, "right") {
             int count;
             sscanf(name, "  right %i", &count);
 
