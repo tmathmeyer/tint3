@@ -158,5 +158,6 @@ char *get_desktops_info(baritem *source) {
 
     char *result = calloc(offset+1, sizeof(char));
     memcpy(result, tmp_bfr, offset);
+    free(tmp_bfr);
     return result;
 }
