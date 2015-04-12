@@ -326,13 +326,14 @@ void run(void) {
     XEvent xe;
     int xlib_debug = has_options("xldb", configuration);
     while(1){
-        drawmenu();
         while(QLength(dc->dpy)) {
             if (xlib_debug) printf("%i\n", QLength(dc->dpy));
             XNextEvent(dc->dpy, &xe);
             if (xlib_debug)printf("%i\n", xe.type);
         }
 
+
+        drawmenu();
         usleep(900000);
     }
 }

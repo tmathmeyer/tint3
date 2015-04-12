@@ -174,6 +174,7 @@ void initfont(DC * dc, const char * fontstr) {
 void mapdc(DC * dc, Window win, unsigned int w, unsigned int h) {
     XClearArea(dc->dpy, win, 0, 0, w, h, 0);
     XCopyArea(dc->dpy, dc->canvas, win, dc->gc, 0, 0, w, h, 0, 0);
+    XFlush(dc->dpy);
 }
 
 
