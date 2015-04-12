@@ -26,6 +26,7 @@ unsigned int total_list_length(dlist *list);
 char * get_time_format(baritem * item);
 char * get_battery(baritem * item);
 char * get_volume_level(baritem * item);
+void   toggle_mute(baritem * item);
 char * get_active_window_name(baritem * item);
 char * get_plain_text(baritem * item);
 

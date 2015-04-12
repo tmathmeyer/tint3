@@ -140,6 +140,7 @@ baritem * makeitem(block *block) {
     result->color  = make_possible_color(block->forground, block->background);
     result->format = block->format;
     result->source = block->source;
+    result->click = NULL;
     result->string = quest;
     result->inverted = 0;
     result->xstart = 0;
@@ -181,6 +182,7 @@ void infer_type(block * conf_inf, baritem *ipl) {
             ipl -> update = &get_battery;
         } else if (!strncmp(conf_inf -> source, "alsa", 4)) {
             ipl -> update = &get_volume_level;
+            ipl -> click = &toggle_mute;
         }
     } else if (IS_ID(conf_inf, "graph")) {
         ipl -> update = &get_net_graph;
@@ -321,13 +323,14 @@ void run(void) {
     XEvent xe;
     int xlib_debug = has_options("xldb", configuration);
     while(1){
-        drawmenu();
         while(QLength(dc->dpy)) {
             if (xlib_debug) printf("%i\n", QLength(dc->dpy));
             XNextEvent(dc->dpy, &xe);
             if (xlib_debug)printf("%i\n", xe.type);
         }
 
+
+        drawmenu();
         usleep(900000);
     }
 }
