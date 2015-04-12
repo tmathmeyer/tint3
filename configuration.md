@@ -2,8 +2,8 @@
 
 ##Blocks
 ###overview
-Blocks are simple units that describe each module in the bar. They start with a title in []'s followed by any number of lines indented with TWO spaces.
-After the two spaces follows one of the following keywords: {id, source, forground, background, format, type}, which in turn is followed by a second and more descriptive identifier.
+Blocks are simple units that describe each module in the bar. They start with a title in []'s followed by any number of lines, until the next header of a bar is encountered. 
+The first word in any line are keywords. There are several built in keywords: {id, source, forground, background, format, type}, though anything can be used, so long as it does not start with a "[". After the keyword comes any text, followed by a newline. The text may contain spaces and any non-zero/non-newline character. 
 An example is shown below (the ▉ will show up as a thermometer in the bar.)
 ````
 [weather]
@@ -18,7 +18,7 @@ An example is shown below (the ▉ will show up as a thermometer in the bar.)
 ####Required Keywords:
 - the name of the block; it appears in the []'s
 - the id of the block, which can be any of {text, radio, weather, scale, graph}
-- the forground and background, which are #s (octothorpes) followed by 6 digit RGB hexadecimal representations
+- forground and background are preferred, however if left out they will defualt to the forground or background of the bar as a whole. 
 
 ####Optional keywords:
 * format: some modules require a format string, like the clock module. These will be covered in more detail later
@@ -76,7 +76,7 @@ Note: this DOES work with unicode (3 byte) characters.
 -----
 
 ## Bar Config
- The main config section for tint3, this block brings together all the named blocks. it must come AFTER all blocks have been declared. A basic example is:
+Each configuration file MUST include a "bar" block, which is denoted by double brackets around the word "bar". This is required for the bar to start. A basic example of a configuration is shown:
 ````
 [[bar]]
   bordercolor #22EE88
@@ -85,13 +85,13 @@ Note: this DOES work with unicode (3 byte) characters.
   padding 1
   margin 5
   location bottom
-  left 2
+  left
     desktops
     active
-  center 2
+  center
     date
     time
-  right 6
+  right
     upload
     download
     weather
@@ -99,18 +99,18 @@ Note: this DOES work with unicode (3 byte) characters.
     batteryone
     batterytwo
 ````
-
-####Required:
+There are a few required keywords in the bar block, including: 
 * border color : # symbol followed by six digit RGB hexadecimal
 * background :  # symbol followed by six digit RGB hexadecimal
 * borderwidth : the width of the border of the bar, in pixels
 * margin : the margins of the bar (how far away from the edges is the border), in pixels
 * padding : the padding, or space between top and bottom of the letters / characters and the border, in pixels
 * location, top or bottom (bottom doesn't work yet)
-* left / right / center
-    * followed by a number, representing the number of blocks  in that section
-    * followed by N block names, where N is the number following left / right / center
+* left
+* right
+* center
 
+The left, center, and right keywords are special however. Following them is any number of names, which correspond to the names of the blocks you have defined. These determine the order and location of the elements you have defined. For this reason, blocks cannot be named any of the default keywords in the bar block. 
 ----
 
 ##Things to Remember:

@@ -3,3 +3,4 @@ tint3
 *.out
 a.out
 BUILD/
+*.swp

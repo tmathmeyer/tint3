@@ -6,18 +6,13 @@ tint3
  - easily configurable, and ready for the AUR [configuration.md](https://github.com/tmathmeyer/tint3/blob/master/configuration.md)
 
 ####Contributions
-tint3 uses feature branches. If you would like to submit a PR, submit it on a feature branch. all external PR's to master will be closed. The braches that exemplify the unix way and don't rely on external libraries may be merged into master. The most important things to remember are:
-- make as few syscalls as possible
-- avoid dependancies, especially non-common libraries
-
-#### Mirrors
-- git.tmathmeyer.com
+Contributions are welcome! If you would like to see a feature implemented, go for it, and there is a good chance it will get merged. The only things to remember are no minimize calls to system(), fopen(), and popen(). Sometimes they are inevitable, but we prefer to keep them out. Also, Don't try to include massive libraries (Cairo, for example).
 
 
 ##TODO:
- - [ ] have tint3 listen on a unix socket for runtime changes
- - [ ] make better defaults, as well as pre-package some themes
- - [ ] write a man-page!!!
+ - [ ] make a defualt configuration generator
  - [ ] add support for pianobar (pandora internet radio)
+ - [ ] use pulseaudio libraries instead of alsa
+ - [ ] clean up xlib calls
  - [ ] mouse and notification support
  - [ ] abi for adding modules
