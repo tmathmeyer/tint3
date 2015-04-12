@@ -89,7 +89,6 @@ char * get_volume_level(baritem * item) {
     if (pf) {
         fscanf(pf, "%i%%] [o%c", &i, &muted);
         item -> inverted = muted == 'f' ? 0 : 1;
-        printf("Inverted? %c\n", item->inverted);
         fclose(pf);
     }
     char * result = malloc(5);
