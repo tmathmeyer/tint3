@@ -329,7 +329,6 @@ void run(void) {
             if (xlib_debug)printf("%i\n", xe.type);
         }
 
-
         drawmenu();
         usleep(900000);
     }

@@ -76,6 +76,26 @@ int first_space(char *str) {
     return ctr;
 }
 
+entry *get_map_entry(char *line) {
+    int space=0, ctr=0;
+    while(line[ctr]) {
+        if (!space && line[ctr] == ' ') {
+            space = ctr;
+        }
+    }
+    char *key = calloc(space+1, 1);
+    char *value = calloc(ctr-space-1, 1);
+
+    memcpy(key, line, space);
+    memcpy(value, line+space+1, ctr-space-2);
+
+    entry *result = malloc(sizeof(entry));
+    result->key = key;
+    result->value =value;
+
+    return result;
+}
+
 block *as_block(dlist *chunk) {
     block *res = malloc(sizeof(block));
     res->id = NULL;
@@ -117,6 +137,7 @@ block *as_block(dlist *chunk) {
             } else if(starts_with(line, "background")) {
                 write_to = &(res->background);
             } else {
+                dlist_add(res->map, get_map_entry(line));
                 write_to = 0;
             }
         }

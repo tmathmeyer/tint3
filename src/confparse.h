@@ -27,6 +27,11 @@ typedef struct {
     dlist *map;
 } block;
 
+typedef struct map_entry {
+    char *key;
+    void *value;
+} entry;
+
 typedef struct {
     int border_size;
     int margin_size;
