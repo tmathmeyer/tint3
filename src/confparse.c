@@ -35,13 +35,16 @@ dlist *intern_lines(FILE *filein) {
     char line[100] = {0};
     while(fgets(line, 100, filein)) {
         int size = strlen(line);
-        if (size > 1) {   
-            char *copy = malloc(size+1);
-            memcpy(copy, line, size+1);
-            memset(line, 0, size);
-            dlist_add(lines, copy);
+        if (size>1) {
+            if (line[0] != '#') {
+                char *copy = malloc(size+1);
+                memcpy(copy, line, size+1);
+                memset(line, 0, size);
+                dlist_add(lines, copy);
+            }
         }
     }
+
     return lines;
 }
 
@@ -304,6 +307,13 @@ bar_config *build_bar_config(FILE *rc) {
 
 int has_options(char *opt, bar_config *conf) {
     char *match;
+
+    if (!conf->options) {
+        return 0;
+    }
+    if (size(conf->options) == 0) {
+        return 0;
+    }
 
     each(conf->options, match) {
         if (!strcmp(opt, match)) {

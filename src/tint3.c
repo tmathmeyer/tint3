@@ -85,6 +85,7 @@ int main() {
     pthread_mutex_init(&lock, NULL);
     setup();
 
+    
     if (configuration -> background_color != NULL) {
         bg_bar = getcolor(dc, configuration -> background_color);
         draw_bg = 1;
@@ -417,7 +418,6 @@ void setup() {
 
     x = horizontal_position();
     y = vertical_position(topbar, DisplayHeight(dc->dpy, screen), height);
-
 
 
 

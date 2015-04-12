@@ -115,6 +115,6 @@ The left, center, and right keywords are special however. Following them is any 
 
 ##Things to Remember:
 * ### all hex strings must be 6 digits long and preceded with a '#'
-* ### block names and [[bar]] are padded with no spaces, their required descriptors are padded with two spaces, and the block lists in left / right / center are padded with four spaces. NO TABS
+* ### spaces at the beginning of line are ignored, but tab characters may (read: will) break things.
 * ### typos in the config file may result in segfaults (should fix this later, at least add warnings...)
 * ### all lines that start with "#" are comment lines
