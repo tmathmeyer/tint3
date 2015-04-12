@@ -62,7 +62,7 @@
 
 [volume]
   id scale
-  source alsa 0
+  source alsa 0 Master
   forground #ffffff
   background #564545
 

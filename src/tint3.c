@@ -134,6 +134,7 @@ baritem * makeitem(block * config_info) {
     result -> color  = make_possible_color(config_info -> forground, config_info -> background);
     result -> format = config_info -> format;
     result -> source = config_info -> source;
+    result -> click = NULL;
     result -> string = quest;
     result -> inverted = 0;
     result -> xstart = 0;
@@ -175,6 +176,7 @@ void infer_type(block * conf_inf, baritem *ipl) {
             ipl -> update = &get_battery;
         } else if (starts_with(conf_inf -> source, "alsa")) {
             ipl -> update = &get_volume_level;
+            ipl -> click = &toggle_mute;
         }
     } else if (IS_ID(conf_inf, "graph")) {
         ipl -> update = &get_net_graph;
