@@ -82,6 +82,7 @@ entry *get_map_entry(char *line) {
         if (!space && line[ctr] == ' ') {
             space = ctr;
         }
+        ctr++;
     }
     char *key = calloc(space+1, 1);
     char *value = calloc(ctr-space-1, 1);
