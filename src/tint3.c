@@ -324,10 +324,13 @@ void draw_list(itemlist * list) {
 
 void run(void) {
     XEvent xe;
+    int xlib_debug = has_options("xldb", configuration);
     while(1){
         drawmenu();
         while(QLength(dc->dpy)) {
+            if (xlib_debug) printf("%i\n", QLength(dc->dpy));
             XNextEvent(dc->dpy, &xe);
+            if (xlib_debug)printf("%i\n", xe.type);
         }
 
         usleep(900000);
@@ -486,6 +489,8 @@ void setup() {
     NET_CURRENT_DESKTOP = XInternAtom(dc -> dpy, "_NET_CURRENT_DESKTOP", 0);
     NET_NUMBER_DESKTOPS = XInternAtom(dc -> dpy, "_NET_NUMBER_OF_DESKTOPS", 0);
     _CARDINAL_ = XA_CARDINAL;
+
+    XSelectInput(dc->dpy, win, ExposureMask);
 }
 
 

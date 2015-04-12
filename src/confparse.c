@@ -62,34 +62,35 @@ char **parse_options(char *line) {
     }
     line += 8;
 
-    int cc = 0;
-    int ccc = 0;
-    while(line[ccc]) {
-        if (line[ccc] == ',') {
-            cc++;
+    int pos = 0;
+    int commas = 0;
+    while(line[pos]) {
+        if (line[pos] == ',') {
+            commas++;
         }
-        ccc++;
+        pos++;
     }
-    if (!cc) {
-        return NULL;
-    }
-    char **result = malloc(cc * sizeof(char *));
+    commas += 1;
+
+    char **result = malloc(commas * sizeof(char *));
     char **res = result;
-    ccc = 0;
-    while(line[ccc]) {
-        if (line[ccc] == ',') {
-            *res = calloc(ccc+1, sizeof(char));
-            memcpy(*res, line, ccc);
-            line += (ccc + 1);
+    pos = 0;
+
+    while(line[pos]) {
+        if (line[pos] == ',' || line[pos] == '\n') {
+            *res = calloc(pos+1, sizeof(char));
+            memcpy(*res, line, pos);
+            res++;
+            line += (pos + 1);
             while(*line == ' ') {
                 line++;
             }
-            ccc = 0;
+            pos = 0;
         }
-        ccc++;
+        pos++;
     }
 
-    return res;
+    return result;
 }
 
 int has_options(char *opt, bar_config *conf) {
