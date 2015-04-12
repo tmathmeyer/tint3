@@ -60,12 +60,10 @@ char * get_time_format(baritem * item) {
 }
 
 char * get_battery(baritem * item) {
-    char batt[5] = "BAT0";
-    char c = (item -> source)[8];
-    batt[3] = c;
+    char *batt = (item -> source)+8;
     char * msg = calloc(0,9);
     int battery_percent = get_battery_percent(batt);
-    char * query = (c-'0') ? "╻:%i%%" : "╺:%i%%";
+    char * query = (item->format)[0] - '1' ? "╻:%i%%" : "╺:%i%%";
     snprintf(msg, 9, query, battery_percent);
 
     free(item -> color);

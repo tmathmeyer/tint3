@@ -49,14 +49,16 @@
   forground #EEEE22
   background #564545
   type unknown
-  source battery 1
+  source battery BAT0
+  format 1
 
 [batterytwo]
   id scale
   forground #11EE11
   background #564545
   type unknown
-  source battery 0
+  source battery BAT1
+  format 2
 
 [volume]
   id scale
