@@ -16,19 +16,17 @@ XINERAMAFLAGS = -DXINERAMA
 XFTINC = /usr/include/freetype2
 XFTLIBS  = -lXft -lXrender -lfreetype -lz -lfontconfig
 
-# MPD depends on libmpdclient, comment if you don't want it
-MPDLIBS = -lmpdclient
-MPDDEPS = mpd.o
-MPDFLAGS= -D_WITH_MPD
+#lxcb libraries
+LXCBLIBS = -lxcb -lxcb-icccm -lxcb-ewmh
 
 # includes and libs
 INCS = -I${X11INC} -I${XFTINC}
-LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${XFTLIBS} ${MPDLIBS}
+LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${XFTLIBS} ${LXCBLIBS} -lpthread
 
 # flags
-CPPFLAGS = -D_BSD_SOURCE -DVERSION=\"${VERSION}\" ${XINERAMAFLAGS} ${MPDFLAGS}
-CFLAGS   = -std=c99 -pedantic -Wall -Os ${INCS} ${CPPFLAGS}
-LDFLAGS  = -s ${LIBS}
+CPPFLAGS = -D_BSD_SOURCE -DVERSION=\"${VERSION}\" ${XINERAMAFLAGS}
+CFLAGS   = -std=c11 -pedantic -Wextra -Wall ${INCS} ${CPPFLAGS} -g
+LDFLAGS  = ${LIBS}
 
 # compiler and linker
-CC = cc
+CC = gcc

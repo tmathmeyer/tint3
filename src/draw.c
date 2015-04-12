@@ -1,21 +1,11 @@
 /*
- * Copyright (C) 2014 Ted Meyer
+ * Copyright (C) 2015 Ted Meyer
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * see LICENSING for details
  *
  */
+
+#define _DEFAULT_SOURCE
 
 #include <locale.h>
 #include <stdarg.h>
@@ -36,19 +26,15 @@
 #define MAX_TITLE_LENGTH 50
 
 // draw a rectangle on the screen; either solid or bordered
-void drawrect(DC * dc, int x, int y, unint w, unint h, Bool fill, unlong color) {
-    //create rectangle and set foreground context color
-    XRectangle r = { dc->x + x, dc->y + y, w, h };
-    XSetForeground(dc->dpy, dc->gc, color);
+void drawrect_modifier(DC * dc, int x, int y, unint w, unint h, Bool fill, unlong color) {
+    draw_rectangle(dc, dc->x + x, dc->y +y, w, h, fill, color);
+}
 
-    // shrink size by one if it's a border
-    if(!fill) {
-        r.width -= 1;
-        r.height -= 1;
-    }
+void draw_rectangle(DC * dc, unint x, unint y, unint w, unint h, Bool fill, unlong color) {
+    XRectangle rect = {x, y, w, h};
+    XSetForeground(dc -> dpy, dc -> gc, color);
 
-    // draw on screen
-    (fill ? XFillRectangles : XDrawRectangles)(dc->dpy, dc->canvas, dc->gc, &r, 1);
+    (fill ? XFillRectangles : XDrawRectangles)(dc -> dpy, dc -> canvas, dc -> gc, &rect, 1);
 }
 
 // draw text
@@ -70,14 +56,16 @@ void drawtext(DC *dc, const char * text, ColorSet *col) {
     if(mn < n)
         for(n = MAX(mn-3, 0); n < mn; buf[n++] = '.');
 
-    drawrect(dc, 0, 0, dc->w, dc->h, True, col->BG);
+    drawrect_modifier(dc, 0, dc->color_border_pixels,
+                          dc->w, dc->h-(2*dc->color_border_pixels),
+                          True, col->BG);
     drawtextn(dc, buf, mn, col);
 }
 
 // drawtext helper that actually draws the text
 void drawtextn(DC * dc, const char * text, size_t n, ColorSet * col) {
     int x = dc->x + dc->font.height/2;
-    int y = dc->y + dc->font.ascent+1 + dc->text_offset_y;
+    int y = dc->y + dc->font.ascent + (dc->text_offset_y + dc->color_border_pixels + 2) / 2;
 
     XSetForeground(dc->dpy, dc->gc, col->FG);
 
@@ -98,12 +86,11 @@ void drawtextn(DC * dc, const char * text, size_t n, ColorSet * col) {
     }
 }
 
-// get a color from a string, and save it into the context 
+// get a color from a string, and save it into the context
 unlong getcolor(DC * dc, const char * colstr) {
-    Colormap cmap = DefaultColormap(dc->dpy, DefaultScreen(dc->dpy));
     XColor color;
 
-    if(!XAllocNamedColor(dc->dpy, cmap, colstr, &color, &color)) {
+    if(!XAllocNamedColor(dc->dpy, dc->wa.colormap, colstr, &color, &color)) {
         printf("cannot allocate color '%s'\n", colstr);
     }
 
@@ -114,19 +101,15 @@ unlong getcolor(DC * dc, const char * colstr) {
 ColorSet * initcolor(DC * dc, const char * foreground, const char * background) {
     ColorSet * col = (ColorSet *)malloc(sizeof(ColorSet));
 
-    if(!col) {
-        printf("error, cannot allocate memory for color set");
-    }
-
     col->BG = getcolor(dc, background);
     col->FG = getcolor(dc, foreground);
 
     if(dc->font.xft_font) {
         if(!XftColorAllocName(dc->dpy, DefaultVisual(dc->dpy, DefaultScreen(dc->dpy)),
             DefaultColormap(dc->dpy, DefaultScreen(dc->dpy)), foreground, &col->FG_xft)) {
-            printf("error, cannot allocate xft font color '%s'\n", foreground);
         }
     }
+
     return col;
 }
 
@@ -189,21 +172,23 @@ void initfont(DC * dc, const char * fontstr) {
 
 
 void mapdc(DC * dc, Window win, unsigned int w, unsigned int h) {
+    XClearArea(dc->dpy, win, 0, 0, w, h, 0);
     XCopyArea(dc->dpy, dc->canvas, win, dc->gc, 0, 0, w, h, 0, 0);
 }
 
 
-void resizedc(DC * dc, unsigned int w, unsigned int h) {
-    int screen = DefaultScreen(dc->dpy);
+void resizedc(DC * dc, unsigned int w, unsigned int h, XVisualInfo * vinfo, XSetWindowAttributes * wa) {
     if(dc->canvas)
         XFreePixmap(dc->dpy, dc->canvas);
     dc->canvas = XCreatePixmap(dc->dpy, DefaultRootWindow(dc->dpy), w, h,
-                               DefaultDepth(dc->dpy, screen));
+                               vinfo -> depth);
+    dc->empty = XCreatePixmap(dc->dpy, DefaultRootWindow(dc->dpy), w, h,
+                               vinfo -> depth);
     dc->x = dc->y = 0;
     dc->w = w;
     dc->h = h;
     if(dc->font.xft_font && !(dc->xftdraw)) {
-        dc->xftdraw = XftDrawCreate(dc->dpy, dc->canvas, DefaultVisual(dc->dpy,screen), DefaultColormap(dc->dpy,screen));
+        dc->xftdraw = XftDrawCreate(dc->dpy, dc->canvas, vinfo->visual, wa -> colormap);
         if(!(dc->xftdraw))
             printf("error, cannot create xft drawable\n");
     }
