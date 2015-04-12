@@ -29,6 +29,7 @@
 #include "tint3.h"
 #include "netinfo.h"
 #include "mouse.h"
+#include "dlist.h"
 
 #define INRECT(x,y,rx,ry,rw,rh) ((x) >= (rx) && (x) < (rx)+(rw) && (y) >= (ry) && (y) < (ry)+(rh))
 #define MIN(a,b)                ((a) < (b) ? (a) : (b))
@@ -97,8 +98,6 @@ int main() {
         init_mouse();
     }
     
-
-
     config_to_layout();
 
     run();
@@ -119,26 +118,33 @@ void update_nba(baritem * item) {
 
 // make a color if we can
 ColorSet * make_possible_color(char * fg, char * bg) {
-    if (fg[0] && bg[0]) {
-        return initcolor(dc, fg, bg);
+    if (!fg) {
+        fg = "#ffffff";
     }
-    ColorSet * result = initcolor(dc, fg, "#000000");
-    result -> BG = bg[0]?getcolor(dc, fg):bg_bar;
-    return result;
+    ColorSet *cs;
+
+    if (!bg) {
+        cs = initcolor(dc, fg, "#000000");
+        cs -> BG = bg_bar;
+    } else {
+        cs = initcolor(dc, fg, bg);
+    }
+
+    return cs;
 }
 
 // turn a single item from the config stream into a displayable item
-baritem * makeitem(block * config_info) {
+baritem * makeitem(block *block) {
     baritem * result = malloc(sizeof(baritem));
-    result -> invert = make_possible_color("#000000", "#ffffff");
-    result -> color  = make_possible_color(config_info -> forground, config_info -> background);
-    result -> format = config_info -> format;
-    result -> source = config_info -> source;
-    result -> string = quest;
-    result -> inverted = 0;
-    result -> xstart = 0;
-    result -> length = 0;
-    infer_type(config_info, result);
+    result->invert = make_possible_color("#000000", "#ffffff");
+    result->color  = make_possible_color(block->forground, block->background);
+    result->format = block->format;
+    result->source = block->source;
+    result->string = quest;
+    result->inverted = 0;
+    result->xstart = 0;
+    result->length = 0;
+    infer_type(block, result);
     update_nba(result);
     return result;
 }
@@ -171,9 +177,9 @@ void infer_type(block * conf_inf, baritem *ipl) {
             ipl -> update = NULL;
             ipl -> string = get_weather(ipl);
     } else if (IS_ID(conf_inf, "scale")) {
-        if (starts_with(conf_inf -> source, "battery")) {
+        if (!strncmp(conf_inf -> source, "battery", 7)) {
             ipl -> update = &get_battery;
-        } else if (starts_with(conf_inf -> source, "alsa")) {
+        } else if (!strncmp(conf_inf -> source, "alsa", 4)) {
             ipl -> update = &get_volume_level;
         }
     } else if (IS_ID(conf_inf, "graph")) {
@@ -183,51 +189,40 @@ void infer_type(block * conf_inf, baritem *ipl) {
 
 // gets the item by 
 baritem *item_by_coord(uint x) {
-    uint ctr = 0;
-    for(; ctr < layout->left->length; ctr++) {
-        baritem *bar = (layout->left->buffer)[ctr];
+    baritem *bar;
+    each(layout->left, bar) {
         uint st = bar->xstart;
         uint en = bar->xstart+bar->length;
         if(x>=st && x<=en) {
             return bar;
         }
     }
-    ctr = 0;
-    for(; ctr < layout->right->length; ctr++) {
-        baritem *bar = (layout->right->buffer)[ctr];
+
+    each(layout->right, bar) {
         uint st = bar->xstart;
         uint en = bar->xstart+bar->length;
         if(x>=st && x<=en) {
             return bar;
         }
     }
-    ctr = 0;
-    for(; ctr < layout->center->length; ctr++) {
-        baritem *bar = (layout->center->buffer)[ctr];
+    
+    each(layout->center, bar) {
         uint st = bar->xstart;
         uint en = bar->xstart+bar->length;
         if(x>=st && x<=en) {
             return bar;
         }
     }
+
     return NULL;
 }
 
 // convert a config to a drawable
-itemlist *config_to_drawable(block_list * bid) {
-    block_list *ctrtmp = bid;
-    itemlist *result = malloc(sizeof(itemlist));
-    result->length = 0;
-    while(ctrtmp) {
-        result->length++;
-        ctrtmp = ctrtmp->next;
-    }
-
-    result->buffer = malloc(sizeof(baritem*) * result->length);
-    uint ctr = 0;
-
-    for(; ctr < result->length; ctr++ , bid=bid->next) {
-        (result->buffer)[ctr] = makeitem(bid->data);
+dlist *config_to_drawable(dlist * bid) {
+    dlist *result = dlist_new();
+    block *block;
+    each(bid, block) {
+        dlist_add(result, makeitem(block));
     }
     return result;
 }
@@ -242,10 +237,10 @@ void config_to_layout() {
 }
 
 
-void update_list_of_items(itemlist *list) {
-    uint ctr = 0;
-    for(; ctr < list->length; ctr++) {
-        update_nba(((list->buffer)[ctr]));
+void update_list_of_items(dlist *list) {
+    baritem *item;
+    each(list, item) {
+        update_nba(item);
     }
 }
 
@@ -297,27 +292,27 @@ void drawmenu(void) {
 
 
 
-unsigned int total_list_length(itemlist * list) {
+unsigned int total_list_length(dlist * list) {
     uint len = 0;
-    uint ctr = 0;
-    for(; ctr < list->length; ctr++) {
-        int tmp = (list->buffer)[ctr]->length
-                = textw(dc, (list->buffer)[ctr]->string);
+
+    baritem *item;
+    each(list, item) {
+        int tmp = item->length = textw(dc, item->string);
         len += tmp;
     }
     return len;
 }
 
-void draw_list(itemlist * list) {
-    uint ctr = 0;
-    for(; ctr < list->length; ctr++) {
-        dc -> w = (list->buffer)[ctr]->length;
-        if ((list->buffer)[ctr] -> inverted) {
-            drawtext(dc, (list->buffer)[ctr]->string, (list->buffer)[ctr]->invert);
+void draw_list(dlist *list) {
+    baritem *item;
+    each(list, item) {
+        dc->w = item->length;
+        if (item->inverted) {
+            drawtext(dc, item->string, item->invert);
         } else {
-            drawtext(dc, (list->buffer)[ctr]->string, (list->buffer)[ctr]->color);
+            drawtext(dc, item->string, item->color);
         }
-        (list->buffer)[ctr]->xstart = dc->x;
+        item->xstart = dc->x;
         dc->x += dc->w;
     }
 }
@@ -389,7 +384,7 @@ void setup() {
         exit(0);
     }
 
-    configuration = readblock(fp);
+    configuration = build_bar_config(fp);
 
     dc = initdc();
     XVisualInfo vinfo;

@@ -5,10 +5,16 @@
  *
  */
 
-#include <stdlib.h>
 
 #ifndef _CONFPARSER_H_
 #define _CONFPARSER_H_
+
+#include <stdlib.h>
+#include "dlist.h"
+
+typedef enum loc {
+    TOP, BOTTOM
+} location;
 
 typedef struct {
     char *id;
@@ -16,14 +22,10 @@ typedef struct {
     char *type;
     char *format;
     char *source;
-    char forground [8];
-    char background [8];
+    char *forground;
+    char *background;
+    dlist *map;
 } block;
-
-typedef struct l {
-    struct l *next;
-    block *data;
-} block_list;
 
 typedef struct {
     int border_size;
@@ -31,15 +33,15 @@ typedef struct {
     int padding_size;
     char *border_color;
     char *background_color;
-    char *location;
-    block_list *left;
-    block_list *center;
-    block_list *right;
+    location location;
+    dlist *left;
+    dlist *center;
+    dlist *right;
     char **options;
 } bar_config;
 
-bar_config * readblock(FILE * fp);
-int starts_with(char * source, char * check);
+
+bar_config *build_bar_config(FILE *rc);
 int has_options(char *opt, bar_config *conf);
 
 #endif

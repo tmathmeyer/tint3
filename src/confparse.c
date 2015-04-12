@@ -1,17 +1,24 @@
-/*
- * Copyright (C) 2015 Ted Meyer
- *
- * see LICENSING for details
- *
- */
+
 
 #define _DEFAULT_SOURCE
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "dlist.h"
 #include "confparse.h"
-#define case(in, text) if (match_with_padding((in), (text)))
+
+char *leading(char *line) {
+    while(line && *line == ' ') {
+        line++;
+    }
+    return line;
+}
+
+char firstchar(char *line) {
+    line = leading(line);
+    return line?*line:0;
+}
 
 int starts_with(char *source, char *check) {
     int p = 0;
@@ -23,279 +30,230 @@ int starts_with(char *source, char *check) {
     return 1;
 }
 
-int match_with_padding(char *source, char *check) {
-    while(*source==' ') {
-        source++;
-    }
-    return starts_with(source, check);
-}
-
-void name_blocks(block_list * list) {
-    while(list) {
-        list = list -> next;
-    }
-}
-
-block * lookup_block(block_list * from, char * name_query) {
-    while(from != NULL) {
-        if (!strcmp(name_query, from -> data -> name)) {
-            return from -> data;
+dlist *intern_lines(FILE *filein) {
+    dlist *lines = dlist_new();
+    char line[100] = {0};
+    while(fgets(line, 100, filein)) {
+        int size = strlen(line);
+        if (size > 1) {   
+            char *copy = malloc(size+1);
+            memcpy(copy, line, size+1);
+            memset(line, 0, size);
+            dlist_add(lines, copy);
         }
-        from = from -> next;
     }
+    return lines;
+}
+
+dlist *itemize(dlist *lines) {
+    dlist *items = dlist_new();
+    char *line;
+
+    dlist *block = NULL;
+    each(lines, line){
+        if (firstchar(line) == '[') {
+            if (block) {
+                dlist_add(items, block);
+            }
+            block = dlist_new();
+        }
+        if (block) {
+            dlist_add(block, line);
+        }
+    }
+    if (block) {
+        dlist_add(items, block);
+    }
+
+    return items;
+}
+
+int first_space(char *str) {
+    int ctr = 0;
+    while(str && str[ctr] != ' ') {
+        ctr++;
+    }
+    return ctr;
+}
+
+block *as_block(dlist *chunk) {
+    block *res = malloc(sizeof(block));
+    res->id = NULL;
+    res->name = NULL;
+    res->type = NULL;
+    res->format = NULL;
+    res->source = NULL;
+    res->map = dlist_new();
+    
+    char *elem;
+    each(chunk, elem) {
+        char *line = leading(elem);
+        int size = strlen(line);
+        int mem_subtract;
+        int cpy_start;
+        int cpy_end;
+        char **write_to;
+        //char *buf;
+
+        if(starts_with(line, "[")) {
+            mem_subtract = 2;
+            cpy_start = 1;
+            cpy_end = 3;
+            write_to = &(res->name);
+        } else {
+            mem_subtract = first_space(line);
+            cpy_start = mem_subtract+1;
+            cpy_end = mem_subtract+2;
+            if(starts_with(line, "id")) {
+                write_to = &(res->id);
+            } else if(starts_with(line, "format")) {
+                write_to = &(res->format);
+            } else if(starts_with(line, "type")) {
+                write_to = &(res->type);
+            } else if(starts_with(line, "source")) {
+                write_to = &(res->source);
+            } else if(starts_with(line, "forground")) {
+                write_to = &(res->forground);
+            } else if(starts_with(line, "background")) {
+                write_to = &(res->background);
+            } else {
+                write_to = 0;
+            }
+        }
+
+        if (write_to) {
+            (*write_to) = calloc(size-mem_subtract, 1);
+            memcpy(*write_to, line+cpy_start, size-cpy_end);
+        }
+    }
+
+    return res;
+}
+
+block *get_block(dlist *blocks, char *name){
+    block *result;
+    each(blocks, result) {
+        if (result->name) {
+            if (strcmp(result->name, name) == 0) {
+                return result;
+            }
+        }
+    }
+    printf("cannot find block by name: ");
+    puts(name);
     return NULL;
 }
 
-char * as_hex_string(unsigned int i) {
-    char * result = malloc(6);
-    int j = 0;
-    for(; j < 6; j++) {
-        result[5-j] = "0123456789ABCDEF"[i%16];
-        i = i / 16;
+#define match(str) if (starts_with(line, (str)))
+bar_config *as_bar(dlist *src, dlist *blocks) {
+    bar_config *config = malloc(sizeof(bar_config));
+    config -> border_size = 0;
+    config -> padding_size = 0;
+    config -> margin_size = 0;
+    config -> location = TOP;
+    config -> border_color = NULL;
+    config -> background_color = NULL;
+    config -> left = dlist_new();
+    config -> center = dlist_new();
+    config -> right = dlist_new();
+
+    dlist **buffer = NULL;
+    char *full_line;
+    char *line;
+
+    each(src, full_line) {
+        line = leading(full_line);
+        match("borderwidth") {
+            config->border_size = atoi(line+12);
+        }
+
+        else match("padding") {
+            config->padding_size = atoi(line+8);
+        }
+
+        else match("margin") {
+            config->margin_size = atoi(line+7);
+        }
+
+        else match("location") {
+            config->location = starts_with(line+9, "top") ?
+                TOP : BOTTOM;
+        }
+
+        else match("bordercolor") {
+            config->border_color = calloc(8, 1);
+            memcpy(config->border_color, line+12, 7);
+        }
+        
+        else match("background") {
+            config->background_color = calloc(8, 1);
+            memcpy(config->border_color, line+12, 7);
+        }
+        
+        else match("left") {
+            buffer = &(config->left);
+        }
+        
+        else match("center") {
+            buffer = &(config->center);
+        }
+        
+        else match("right") {
+            buffer = &(config->right);
+        }
+
+        else if (buffer) {
+            line[strlen(line)-1] = 0;
+            block *named = get_block(blocks, line);
+            if (named) {
+                dlist_add(*buffer, named);
+            }
+        }
     }
-    return result;
+
+    return config;
 }
 
-char **parse_options(char *line) {
-    while(*line == ' ') {
-        line++;
-    }
-    line += 8;
+int is_bar(dlist *block) {
+    char *txt = leading((block->data)[0]);
+    return starts_with(txt, "[[");
+}
 
-    int pos = 0;
-    int commas = 0;
-    while(line[pos]) {
-        if (line[pos] == ',') {
-            commas++;
-        }
-        pos++;
-    }
-    commas += 1;
+int is_block(dlist *block) {
+    char *txt = leading((block->data)[0]);
+    return starts_with(txt, "[");
+}
 
-    char **result = malloc(commas * sizeof(char *));
-    char **res = result;
-    pos = 0;
+bar_config *build_bar_config(FILE *rc) {
+    dlist *lines = intern_lines(rc);
+    dlist *chunks = itemize(lines);
+    dlist *blocks = dlist_new();
+    dlist *bar_chunk = NULL;
+    
+    char *freeme;
+    dlist *iterate;
 
-    while(line[pos]) {
-        if (line[pos] == ',' || line[pos] == '\n') {
-            *res = calloc(pos+1, sizeof(char));
-            memcpy(*res, line, pos);
-            res++;
-            line += (pos + 1);
-            while(*line == ' ') {
-                line++;
+    each(chunks, iterate) {
+        if (is_bar(iterate)) {
+            bar_chunk = iterate;
+        } else if (is_block(iterate)) {
+            block *block = as_block(iterate);
+            dlist_add(blocks, block);
+            
+            each(iterate, freeme) {
+                free(freeme);
             }
-            pos = 0;
+            free(iterate);
         }
-        pos++;
     }
+    free(chunks);
+    free(lines);
 
-    return result;
+    return as_bar(bar_chunk, blocks);
 }
 
 int has_options(char *opt, bar_config *conf) {
-    if(conf -> options) {
-        int ctr = 0;
-        while((conf->options)[ctr]) {
-            if(match_with_padding(opt, (conf->options)[ctr])) {
-                return 1;
-            }
-            ctr ++;
-        }
-    }
+    (void) opt;
+    (void) conf;
     return 0;
-}
-
-
-
-void do_bar_read(FILE * from, bar_config * storage, block_list * modules) {
-    char * name = malloc(100);
-    while(fgets(name, 100, from)) {
-        int length = strlen(name);
-
-        case(name, "borderwidth") {
-            sscanf(name, "  borderwidth %i", &(storage -> border_size));
-        }
-
-        case(name, "margin") {
-            sscanf(name, "  margin %i", &(storage -> margin_size));
-        }
-
-        case(name, "padding") {
-            sscanf(name, "  padding %i", &(storage -> padding_size));
-        }
-
-        case(name, "options") {
-            storage -> options = parse_options(name);
-        }
-
-        case(name, "background") {
-            int c = 12;
-            storage -> background_color = calloc(1, 8);
-            while(name[c++] != '\n') {
-                (storage -> background_color)[c-14] = name[c-1];
-            }
-        }
-
-        case(name, "bordercolor") {
-            int c = 13;
-            storage -> border_color = calloc(1, 8);
-            while(name[c++] != '\n') {
-                (storage -> border_color)[c-15] = name[c-1];
-            }
-        }
-
-        case(name, "location") {
-            storage -> location = malloc(10);
-            strncpy(storage -> location, name+11, length>10?10:length);
-        }
-
-        case(name, "left") {
-            int count;
-            sscanf(name, "  left %i", &count);
-
-            for(;count-->0;) {
-                fgets(name, 100, from);
-                name[strlen(name)-1] = 0;
-                block * b = lookup_block(modules, name+4);
-                if (b != NULL) {
-                    block_list * cur = malloc(sizeof(block_list));
-                    cur -> next = storage -> left;
-                    cur -> data = b;
-                    storage -> left = cur;
-                }
-            }
-        }
-
-        case(name, "center") {
-            int count;
-            sscanf(name, "  center %i", &count);
-
-            for(;count-->0;) {
-                fgets(name, 100, from);
-                name[strlen(name)-1] = 0;
-                block * b = lookup_block(modules, name+4);
-                if (b != NULL) {
-                    block_list * cur = malloc(sizeof(block_list));
-                    cur -> next = storage -> center;
-                    cur -> data = b;
-                    storage -> center = cur;
-                }
-            }
-        }
-
-        case(name, "right") {
-            int count;
-            sscanf(name, "  right %i", &count);
-
-            for(;count-->0;) {
-                fgets(name, 100, from);
-                name[strlen(name)-1] = 0;
-                block * b = lookup_block(modules, name+4);
-                if (b != NULL) {
-                    block_list * cur = malloc(sizeof(block_list));
-                    cur -> next = storage -> right;
-                    cur -> data = b;
-                    storage -> right = cur;
-                }
-            }
-        }
-
-
-        if (length == 1) {
-            return;
-        }
-    }
-}
-
-block_list *reverse(block_list *blocks) {
-    block_list *nres = NULL;
-    block_list *tmp;
-    while(blocks) {
-        tmp = blocks->next;
-        blocks->next= nres;
-        nres = blocks;
-        blocks = tmp;
-    }
-    return nres;
-}
-
-bar_config * readblock (FILE * fp) {
-    block_list * blocks = NULL;
-    bar_config * result = NULL;
-
-    char * name = malloc(100);
-
-    while(fgets(name, 100, fp) != NULL) {
-        int length = strlen(name);
-
-        if (length == 0 || name[0] == '#') {
-            continue;
-        }
-
-        name[length-1] = 0;
-
-        if (starts_with(name, "[[bar]]")) {
-            result = malloc(sizeof(bar_config));
-            result -> options = NULL;
-            result -> border_size = 0;
-            result -> margin_size = 0;
-            result -> padding_size = 0;
-            do_bar_read(fp, result, blocks);
-        }
-        else if (name[0] == '[' && name[length-2] == ']') {
-            block_list * first    = malloc(sizeof(block_list));
-            first -> data         = malloc(sizeof(block));
-            first -> data -> name = calloc(1,length);
-            name[length-2] = 0;
-            sscanf(name, "[%s]", first -> data -> name);
-            first -> next = blocks;
-            blocks = first;
-        }
-
-        if (starts_with(name, "  id ")) {
-            blocks -> data -> id = malloc(length-5);
-            strncpy(blocks -> data -> id, name+5, length-5);
-        }
-        if (starts_with(name, "  type ")) {
-            blocks -> data -> type = malloc(length-7);
-            strncpy(blocks -> data -> type, name+7, length-7);
-        }
-        if (starts_with(name, "  format ")) {
-            blocks -> data -> format = malloc(length-9);
-            strncpy(blocks -> data -> format, name+9, length-9);
-        }
-        if (starts_with(name, "  source ")) {
-            blocks -> data -> source = malloc(length-9);
-            strncpy(blocks -> data -> source, name+9, length-9);
-        }
-
-        if (starts_with(name, "  forground ") || starts_with(name, "  fontcolor ")) {
-            int c = 0;
-            (blocks -> data -> forground)[0] = '#';
-            (blocks -> data -> forground)[7] = 0;
-
-            for(; c < 6; c++) {
-                (blocks -> data -> forground)[c+1] = name[c+13];
-            }
-        }
-
-        if (starts_with(name, "  background ")) {
-            int c = 0;
-            (blocks -> data -> background)[0] = '#';
-            (blocks -> data -> background)[7] = 0;
-
-            for(; c < 6; c++) {
-                (blocks -> data -> background)[c+1] = name[c+14];
-            }
-        }
-    }
-
-    fclose(fp);
-
-    result->center = reverse(result->center);
-    result->right = reverse(result->right);
-    result->left = reverse(result->left);
-
-    return result;
 }

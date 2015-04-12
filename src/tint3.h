@@ -2,6 +2,7 @@
 #define _T3_TINT3_H_
 
 #include <X11/Xft/Xft.h>
+#include "dlist.h"
 
 //=========================//
 // structs //
@@ -25,17 +26,12 @@ typedef struct baritem{
     char * (* update)(struct baritem *);
 } baritem;
 
-typedef struct itemlist {
-    uint length;
-    baritem ** buffer;
-} itemlist;
-
 typedef struct bar_layout {
-    itemlist * left;
+    dlist *left;
     short leftlen;
-    itemlist * right;
+    dlist *right;
     short rightlen;
-    itemlist * center;
+    dlist *center;
     short centerlen;
 } bar_layout;
 

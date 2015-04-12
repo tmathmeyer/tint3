@@ -10,16 +10,16 @@
 
 #include <X11/Xft/Xft.h>
 #include "tint3.h"
+#include "dlist.h"
 
 
-
-itemlist * config_to_list (char * list);
+dlist *config_to_list (char * list);
 baritem * char_to_item(char c);
 baritem * weather_s();
-void free_list(itemlist * list);
+void free_list(dlist *list);
 void free_baritem(baritem * item);
-void draw_list(itemlist * list);
-unsigned int total_list_length(itemlist * list);
+void draw_list(dlist *list);
+unsigned int total_list_length(dlist *list);
 
 
 
