@@ -37,7 +37,7 @@ typedef struct {
     dlist *left;
     dlist *center;
     dlist *right;
-    char **options;
+    dlist *options;
 } bar_config;
 
 

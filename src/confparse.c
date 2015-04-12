@@ -139,9 +139,30 @@ block *get_block(dlist *blocks, char *name){
             }
         }
     }
-    printf("cannot find block by name: ");
-    puts(name);
     return NULL;
+}
+
+dlist *parse_options(char *from){
+    int indx = 0;
+    char *tmp = NULL;
+    dlist *result = dlist_new();
+    while(from[indx]) {
+        if (from[indx] == ',' || from[indx] == '\n') {
+            if (indx > 0) {
+                tmp = calloc(indx, 1);
+                memcpy(tmp, from, indx);
+                from = leading(from+indx+1);
+                dlist_add(result, tmp);
+            }
+        }
+        indx++;
+    }
+    if (indx > 0) {
+        tmp = calloc(indx, 1);
+        memcpy(tmp, from, indx-1);
+        dlist_add(result, tmp);
+    }
+    return result;
 }
 
 #define match(str) if (starts_with(line, (str)))
@@ -202,6 +223,11 @@ bar_config *as_bar(dlist *src, dlist *blocks) {
             buffer = &(config->right);
         }
 
+        else match("options") {
+            config->options = parse_options(line+8);
+            buffer = NULL;
+        }
+
         else if (buffer) {
             line[strlen(line)-1] = 0;
             block *named = get_block(blocks, line);
@@ -255,7 +281,13 @@ bar_config *build_bar_config(FILE *rc) {
 }
 
 int has_options(char *opt, bar_config *conf) {
-    (void) opt;
-    (void) conf;
+    char *match;
+
+    each(conf->options, match) {
+        if (!strcmp(opt, match)) {
+            return 1;
+        }
+    }
+
     return 0;
 }
