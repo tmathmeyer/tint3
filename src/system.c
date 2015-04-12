@@ -80,13 +80,16 @@ char * get_battery(baritem * item) {
 }
 
 char * get_volume_level(baritem * item) {
-    char * pipe_format = "amixer get -c %s Master | tail -n 1 | cut -d '[' -f 2 | tr -d '%]'";
-    char pipe[72] = {0};
-    snprintf(pipe, 72, pipe_format, (item -> source)+5);
+    char * pipe_format = "amixer get -c %s Master | tail -n 1 | cut -d '[' -f 2,4";
+    char pipe[54] = {0};
+    char muted;
+    snprintf(pipe, 55, pipe_format, (item -> source)+5);
     FILE * pf = popen(pipe, "r");
     int i = 0;
     if (pf) {
-        fscanf(pf, "%i", &i);
+        fscanf(pf, "%i%%] [o%c", &i, &muted);
+        item -> inverted = muted == 'f' ? 0 : 1;
+        printf("Inverted? %c\n", item->inverted);
         fclose(pf);
     }
     char * result = malloc(5);
