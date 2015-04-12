@@ -209,6 +209,8 @@ bar_config *as_bar(dlist *src, dlist *blocks) {
                 dlist_add(*buffer, named);
             }
         }
+
+        free(full_line);
     }
 
     return config;
