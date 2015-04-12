@@ -80,17 +80,19 @@ char * get_battery(baritem * item) {
 }
 
 char * get_volume_level(baritem * item) {
-    char * pipe_format = "amixer get -c %s Master | tail -n 1 | cut -d '[' -f 2,4";
-    char pipe[54] = {0};
+    char * pipe_format = "amixer get -c %s | tail -n 1 | cut -d '[' -f 2,4";
+    int size = 44 + strlen(item -> source);
+    char *pipe = calloc(sizeof(char), size);
     char muted;
-    snprintf(pipe, 55, pipe_format, (item -> source)+5);
+    snprintf(pipe, size, pipe_format, (item -> source) + 5);
     FILE * pf = popen(pipe, "r");
     int i = 0;
     if (pf) {
         fscanf(pf, "%i%%] [o%c", &i, &muted);
-        item -> inverted = muted == 'f' ? 0 : 1;
+        item -> inverted = muted == 'f' ? 1 : 0;
         fclose(pf);
     }
+    free(pipe);
     char * result = malloc(5);
     snprintf(result, 5, "%i%%", i);
     return result;
@@ -104,3 +106,17 @@ char * get_plain_text(baritem * item) {
 }
 
 
+void toggle_mute(baritem * item) {
+    char * pipe_format = "amixer sset %s toggle";
+    int size = 13 + strlen(item -> source);
+    char * pipe = calloc(sizeof(char), size);
+    snprintf(pipe, size, pipe_format,(item -> source) + 7);
+    FILE * pf = popen(pipe, "r");
+    if(pf){
+        item -> string = (item -> update)(item);
+        fclose(pf);
+    }
+    free(pipe);
+    drawmenu();
+    return;
+}
