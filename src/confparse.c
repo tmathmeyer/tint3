@@ -228,7 +228,7 @@ bar_config *as_bar(dlist *src, dlist *blocks) {
 
         else match("bordercolor") {
             config->border_color = calloc(8, 1);
-            memcpy(config->border_color, line+11, 7);
+            memcpy(config->border_color, line+12, 7);
         }
         
         else match("background") {
