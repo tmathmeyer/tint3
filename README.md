@@ -2,7 +2,7 @@ tint3
 ===============
 ####tint3 is
  - a lightweight bar for the X11 window server
- - (almost) completly X11 compliant
+ - (almost) completely X11 compliant
  - easily configurable, and ready for the AUR [configuration.md](https://github.com/tmathmeyer/tint3/blob/master/configuration.md)
 
 ####Contributions
