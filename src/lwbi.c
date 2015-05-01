@@ -26,8 +26,15 @@ int get_battery_percent(char * forbattery) {
         if (fgets(tmp, sizeof tmp, fp)) energy_now = atoi(tmp);
         fclose(fp);
     } else {
-        perror(battery_read);
-        return -1;
+        snprintf(battery_read, sizeof battery_read, "%s/%s/%s", path, forbattery, "charge_now");
+        fp = fopen(battery_read, "r");
+        if(fp != NULL) {
+            if (fgets(tmp, sizeof tmp, fp)) energy_now = atoi(tmp);
+            fclose(fp);
+        } else {
+            perror(battery_read);
+            return -1;
+        }
     }
 
     snprintf(battery_read, sizeof battery_read, "%s/%s/%s", path, forbattery, "energy_full");
@@ -36,7 +43,14 @@ int get_battery_percent(char * forbattery) {
         if (fgets(tmp, sizeof tmp, fp)) energy_full = atoi(tmp);
         fclose(fp);
     } else {
-        return -2;
+        snprintf(battery_read, sizeof battery_read, "%s/%s/%s", path, forbattery, "charge_full");
+        fp = fopen(battery_read, "r");
+        if(fp != NULL) {
+            if (fgets(tmp, sizeof tmp, fp)) energy_full = atoi(tmp);
+            fclose(fp);
+        } else {
+            return -2;
+        }
     }
     return energy_now / (energy_full / 100);
 }
