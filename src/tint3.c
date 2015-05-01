@@ -35,7 +35,7 @@
 #define MIN(a,b)                ((a) < (b) ? (a) : (b))
 #define MAX(a,b)                ((a) > (b) ? (a) : (b))
 
-#define IS_ID(x, a) (!(strncmp(x -> id, a, strlen(a))))
+#define IS_ID(x, a) (!(strncmp(x->id, a, strlen(a))))
 
 
 static void run(void);
@@ -66,12 +66,12 @@ int topbar = 1;
 
 // get the height of the bar
 int get_bar_height(int font_height) {
-    return font_height - 1 + 2 * (configuration -> padding_size + configuration -> border_size);
+    return font_height-1 + 2*(configuration->padding_size + configuration->border_size);
 }
 
 // get the bar width
 int get_bar_width(int display_width) {
-    return display_width - 2 * configuration -> margin_size;
+    return display_width - 2 * configuration->margin_size;
 }
 
 int scale_to(int from, int to, float by) {
@@ -86,12 +86,12 @@ int main() {
     setup();
 
     
-    if (configuration -> background_color != NULL) {
-        bg_bar = getcolor(dc, configuration -> background_color);
+    if (configuration->background_color != NULL) {
+        bg_bar = getcolor(dc, configuration->background_color);
         draw_bg = 1;
     }
-    if (configuration -> border_color != NULL) {
-        bo_bar = getcolor(dc, configuration -> border_color);
+    if (configuration->border_color != NULL) {
+        bo_bar = getcolor(dc, configuration->border_color);
         draw_bo = 1;
     }
 
@@ -111,9 +111,9 @@ int main() {
 void update_nba(baritem * item) {
     if (item->update) {
         if ((item->string != NULL) && (item->string != quest)) {
-            free(item -> string);
+            free(item->string);
         }
-        item -> string = (item->update)(item);
+        item->string = (item->update)(item);
     }
 }
 
@@ -126,7 +126,7 @@ ColorSet * make_possible_color(char * fg, char * bg) {
 
     if (!bg) {
         cs = initcolor(dc, fg, "#000000");
-        cs -> BG = bg_bar;
+        cs->BG = bg_bar;
     } else {
         cs = initcolor(dc, fg, bg);
     }
@@ -157,36 +157,36 @@ char *questions(baritem *meh) {
 }
 
 // set the function that creates information
-void infer_type(block * conf_inf, baritem *ipl) {
-    ipl -> update = &questions;
+void infer_type(block *conf_inf, baritem *ipl) {
+    ipl->update = &questions;
 
     if (IS_ID(conf_inf, "radio")) {
-        if (!strncmp(conf_inf -> source, "workspaces", 10)) {
+        if (!strncmp(conf_inf->source, "workspaces", 10)) {
             spawn_vdesk_thread(ipl);
-            ipl -> update = NULL;
-            ipl -> string = get_desktops_info(ipl);
+            ipl->update = NULL;
+            ipl->string = get_desktops_info(ipl);
         }
     } else if (IS_ID(conf_inf, "text")) {
-        if (!strncmp(conf_inf -> source, "clock", 5)) {
-            ipl -> update = &get_time_format;
-        } else if (!strncmp(conf_inf -> source, "window_title", 12)) {
-            ipl -> update = &get_active_window_name;
+        if (!strncmp(conf_inf->source, "clock", 5)) {
+            ipl->update = &get_time_format;
+        } else if (!strncmp(conf_inf->source, "window_title", 12)) {
+            ipl->update = &get_active_window_name;
         } else {
-            ipl -> update = &get_plain_text;
+            ipl->update = &get_plain_text;
         }
     } else if (IS_ID(conf_inf, "weather")) {
             spawn_weather_thread(ipl);
-            ipl -> update = NULL;
-            ipl -> string = get_weather(ipl);
+            ipl->update = NULL;
+            ipl->string = get_weather(ipl);
     } else if (IS_ID(conf_inf, "scale")) {
-        if (!strncmp(conf_inf -> source, "battery", 7)) {
-            ipl -> update = &get_battery;
-        } else if (!strncmp(conf_inf -> source, "alsa", 4)) {
-            ipl -> update = &get_volume_level;
-            ipl -> click = &toggle_mute;
+        if (!strncmp(conf_inf->source, "battery", 7)) {
+            ipl->update = &get_battery;
+        } else if (!strncmp(conf_inf->source, "alsa", 4)) {
+            ipl->update = &get_volume_level;
+            ipl->click = &toggle_mute;
         }
     } else if (IS_ID(conf_inf, "graph")) {
-        ipl -> update = &get_net_graph;
+        ipl->update = &get_net_graph;
     }
 }
 
@@ -234,9 +234,9 @@ dlist *config_to_drawable(dlist * bid) {
 
 void config_to_layout() {
     layout = malloc(sizeof(bar_layout));
-    layout -> left = config_to_drawable(configuration -> left);
-    layout -> right = config_to_drawable(configuration -> right);
-    layout -> center = config_to_drawable(configuration -> center);
+    layout->left = config_to_drawable(configuration->left);
+    layout->right = config_to_drawable(configuration->right);
+    layout->center = config_to_drawable(configuration->center);
 }
 
 
@@ -252,9 +252,9 @@ void update_with_lens() {
     update_list_of_items(layout->right);
     update_list_of_items(layout->center);
 
-    layout -> leftlen = total_list_length(layout -> left);
-    layout -> rightlen = total_list_length(layout -> right);
-    layout -> centerlen = total_list_length(layout -> center);
+    layout->leftlen = total_list_length(layout->left);
+    layout->rightlen = total_list_length(layout->right);
+    layout->centerlen = total_list_length(layout->center);
 }
 
 
@@ -273,20 +273,20 @@ void drawmenu(void) {
         draw_rectangle(dc, 0, 0, width+2, height+2, True, bo_bar);
     }
     
-    draw_rectangle(dc, configuration -> border_size, configuration -> border_size,
-            width-2*configuration -> border_size,
-            height-2*configuration -> border_size, True, bg_bar);
+    draw_rectangle(dc, configuration->border_size, configuration->border_size,
+            width-2*configuration->border_size,
+            height-2*configuration->border_size, True, bg_bar);
     
 
     update_with_lens();
     
 
-    dc -> x = dc->color_border_pixels;
-    draw_list(layout -> left);
-    dc -> x = width-(layout -> rightlen)-dc->color_border_pixels;
-    draw_list(layout -> right);
-    dc -> x = (width-(layout -> centerlen))/2;
-    draw_list(layout -> center);
+    dc->x = dc->color_border_pixels;
+    draw_list(layout->left);
+    dc->x = width-(layout->rightlen)-dc->color_border_pixels;
+    draw_list(layout->right);
+    dc->x = (width-(layout->centerlen))/2;
+    draw_list(layout->center);
 
     mapdc(dc, win, width, height);
     pthread_mutex_unlock(&lock);
@@ -341,53 +341,79 @@ void run(void) {
 // gets the vertical position of the bar, depending on margins and position
 int vertical_position(Bool bar_on_top, int display_height, int bar_height) {
     if (bar_on_top) {
-        return configuration -> margin_size;
+        return configuration->margin_size;
     } else {
-        return display_height - (bar_height + configuration -> margin_size);
+        return display_height - (bar_height + configuration->margin_size);
     }
 }
 
 int horizontal_position() {
-    return configuration -> margin_size;
+    return configuration->margin_size;
 }
 
 
 
+void write_default(FILE *fp) {
+    fprintf(fp, "[active]\n"
+                "  id text\n"
+                "  source window_title\n"
+                "  forground #ffffff\n"
+                "[date]\n"
+                "  id text\n"
+                "  source clock\n"
+                "  format %%T  %%a - %%d\n"
+                "  forground #ffffff\n"
+                "[[bar]]\n"
+                "  bordercolor #ffffff\n"
+                "  background #000000\n"
+                "  borderwidth 0\n"
+                "  padding 2\n"
+                "  margin 5\n"
+                "  location top\n"
+                "  center\n"
+                "    active\n"
+                "    date\n");
+}
 
 
 
+FILE *test_set_config() {
+    char home[100] = {0};
+    char conf[100] = {0};
+    snprintf(home, 100, "%s/.tint3rc", getenv("HOME"));
+    snprintf(conf, 100, "%s/.config/tint3/tint3rc", getenv("HOME"));
 
+    FILE *fp_home = fopen(home, "r");
+    if (fp_home) {
+        return fp_home;
+    }
 
+    FILE *fp_conf = fopen(conf, "r");
+    if (fp_conf) {
+        return fp_conf;
+    }
 
+    FILE *fp_new = fopen(home, "w");
+    if (fp_new) {
+        write_default(fp_new);
+        fclose(fp_new);
 
+        fp_home = fopen(home, "r");
+        if (fp_home) {
+            return fp_home;
+        }
+    }
 
-
-
+    return NULL;
+}
 
 
 
 
 // TODO: clean this shit
 void setup() {
-    char cwd[100] = {0};
-    getcwd(cwd, 100);
-    char pwd[100] = {0};
-    snprintf(pwd, 100, "%s/tint3rc", cwd);
-    FILE * fp = fopen(pwd, "r");
-    if (fp == NULL) {
-        snprintf(pwd, 100, "%s/.tint3rc", getenv("HOME"));
-        fp = fopen(pwd, "r");
-        if (fp == NULL) {
-            fp = fopen("/etc/tint3/tint3rc", "r");
-        }
-    }
 
-    if (fp == NULL) {
-        perror("can't find a config file!! put one in ~/.tint3rc");
-        exit(0);
-    }
-
-    configuration = build_bar_config(fp);
+    configuration = build_bar_config(test_set_config());
 
     dc = initdc();
     XVisualInfo vinfo;
@@ -399,13 +425,13 @@ void setup() {
             AllocNone);
     wa.border_pixel = 0;
     wa.background_pixel = 0;
-    dc -> wa = wa;
+    dc->wa = wa;
     initfont(dc, font ? font : "fixed");
 
 
-    dc -> border_width = configuration -> margin_size;
-    dc -> color_border_pixels = configuration -> border_size;
-    dc -> text_offset_y = configuration -> padding_size; 
+    dc->border_width = configuration->margin_size;
+    dc->color_border_pixels = configuration->border_size;
+    dc->text_offset_y = configuration->padding_size; 
 
     int x, y;
 
@@ -483,8 +509,8 @@ void setup() {
     XChangeProperty(dc->dpy, win, prop, ptyp, 32,
             PropModeReplace, (unsigned char *) &all_desktops, 1);
 
-    NET_CURRENT_DESKTOP = XInternAtom(dc -> dpy, "_NET_CURRENT_DESKTOP", 0);
-    NET_NUMBER_DESKTOPS = XInternAtom(dc -> dpy, "_NET_NUMBER_OF_DESKTOPS", 0);
+    NET_CURRENT_DESKTOP = XInternAtom(dc->dpy, "_NET_CURRENT_DESKTOP", 0);
+    NET_NUMBER_DESKTOPS = XInternAtom(dc->dpy, "_NET_NUMBER_OF_DESKTOPS", 0);
     _CARDINAL_ = XA_CARDINAL;
 
     XSelectInput(dc->dpy, win, ExposureMask);

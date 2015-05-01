@@ -48,5 +48,6 @@ typedef struct {
 
 bar_config *build_bar_config(FILE *rc);
 int has_options(char *opt, bar_config *conf);
+void *getconfopt(block *forblock, char *element);
 
 #endif

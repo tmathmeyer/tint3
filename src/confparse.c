@@ -1,4 +1,9 @@
-
+/*
+ * Copyright (C) 2015 Ted Meyer
+ *
+ * see LICENSING for details
+ *
+ */
 
 #define _DEFAULT_SOURCE
 
@@ -77,6 +82,16 @@ int first_space(char *str) {
         ctr++;
     }
     return ctr;
+}
+
+void *getconfopt(block *forblock, char *name) {
+    entry *kvp;
+    each(forblock->map, kvp) {
+        if (!strcmp(name, kvp->key)) {
+            return kvp->value;
+        }
+    }
+    return NULL;
 }
 
 entry *get_map_entry(char *line) {
