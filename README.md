@@ -10,9 +10,6 @@ Contributions are welcome! If you would like to see a feature implemented, go fo
 
 
 ##TODO:
- - [ ] make a defualt configuration generator
- - [ ] add support for pianobar (pandora internet radio)
  - [ ] use pulseaudio libraries instead of alsa
  - [ ] clean up xlib calls
- - [ ] mouse and notification support
  - [ ] abi for adding modules
