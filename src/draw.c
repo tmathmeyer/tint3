@@ -119,7 +119,7 @@ DC * initdc(void) {
         printf("no locale support\n");
     }
 
-     DC * dc = malloc(sizeof(DC));
+    DC * dc = malloc(sizeof(DC));
     if(! dc) {
         printf("cannot allocate memory");
     }
