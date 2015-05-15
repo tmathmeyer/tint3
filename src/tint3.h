@@ -15,16 +15,17 @@ typedef struct ColorSet{
 } ColorSet;
 
 typedef struct baritem{
-    ColorSet * color;
-    ColorSet * invert;
+    ColorSet *color;
+    ColorSet *invert;
     unsigned int length;
     unsigned int xstart;
     unsigned char inverted;
-    char * string;
-    char * format;
-    char * source;
-    char * (* update)(struct baritem *);
-    void (* click)( struct baritem *);
+    char *string;
+    char *format;
+    char *source;
+    dlist *options;
+    char *(* update)(struct baritem *);
+    void (* click)(struct baritem *, int xpos);
 } baritem;
 
 typedef struct bar_layout {
@@ -92,7 +93,7 @@ int get_x11_property(Atom at, Atom type);
 // get an item by X
 baritem *item_by_coord(unsigned int x);
 
-
+char *get_baritem_option(char *opt_name, baritem* item);
 
 
 //================//

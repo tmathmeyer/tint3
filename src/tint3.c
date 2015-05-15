@@ -41,7 +41,7 @@
 static void run(void);
 static void setup(void);
 static void config_to_layout(void);
-void update_nba(baritem * item);
+void update_nba(baritem *item);
 static void infer_type(block *conf_inf, baritem *ipl);
 
 static int height = 0;
@@ -52,8 +52,8 @@ static unsigned long bg_bar = 0, draw_bg = 0;
 static unsigned long bo_bar = 0, draw_bo = 0;
 
 
-static bar_config * configuration;
-static bar_layout * layout;
+static bar_config *configuration;
+static bar_layout *layout;
 
 
 static pthread_mutex_t lock;
@@ -108,7 +108,7 @@ int main() {
 
 
 // update the item's string contents
-void update_nba(baritem * item) {
+void update_nba(baritem *item) {
     if (item->update) {
         if ((item->string != NULL) && (item->string != quest)) {
             free(item->string);
@@ -118,7 +118,7 @@ void update_nba(baritem * item) {
 }
 
 // make a color if we can
-ColorSet * make_possible_color(char * fg, char * bg) {
+ColorSet *make_possible_color(char *fg, char *bg) {
     if (!fg) {
         fg = "#ffffff";
     }
@@ -135,20 +135,31 @@ ColorSet * make_possible_color(char * fg, char * bg) {
 }
 
 // turn a single item from the config stream into a displayable item
-baritem * makeitem(block *block) {
-    baritem * result = malloc(sizeof(baritem));
+baritem *makeitem(block *block) {
+    baritem *result = malloc(sizeof(baritem));
     result->invert = make_possible_color("#000000", "#ffffff");
     result->color  = make_possible_color(block->forground, block->background);
     result->format = block->format;
     result->source = block->source;
     result->click = NULL;
     result->string = quest;
+    result->options = block->map;
     result->inverted = 0;
     result->xstart = 0;
     result->length = 0;
     infer_type(block, result);
     update_nba(result);
     return result;
+}
+
+char *get_baritem_option(char *opt_name, baritem* item) {
+    entry *every;
+    each(item->options, every) {
+        if (!strcmp(opt_name, every->key)) {
+            return every->value;
+        }
+    }
+    return NULL;
 }
 
 // fallback, in case no other source can be found
@@ -178,6 +189,7 @@ void infer_type(block *conf_inf, baritem *ipl) {
             spawn_weather_thread(ipl);
             ipl->update = NULL;
             ipl->string = get_weather(ipl);
+            ipl->click = &show_details;
     } else if (IS_ID(conf_inf, "scale")) {
         if (!strncmp(conf_inf->source, "battery", 7)) {
             ipl->update = &get_battery;
@@ -221,7 +233,7 @@ baritem *item_by_coord(uint x) {
 }
 
 // convert a config to a drawable
-dlist *config_to_drawable(dlist * bid) {
+dlist *config_to_drawable(dlist *bid) {
     dlist *result = dlist_new();
     block *block;
     each(bid, block) {
@@ -295,7 +307,7 @@ void drawmenu(void) {
 
 
 
-unsigned int total_list_length(dlist * list) {
+unsigned int total_list_length(dlist *list) {
     uint len = 0;
 
     baritem *item;
@@ -522,7 +534,7 @@ int get_x11_property(Atom at, Atom type) {
     int format_ret = 0, data = 1;
     unsigned long nitems_ret = 0,
                   bafter_ret = 0;
-    unsigned char * prop_value = 0;
+    unsigned char *prop_value = 0;
     int result;
 
     result = XGetWindowProperty(dc->dpy, root, at, 0, 0x7fffffff,
@@ -530,7 +542,7 @@ int get_x11_property(Atom at, Atom type) {
             &nitems_ret, &bafter_ret, &prop_value);
 
     if (result == Success && prop_value) {
-        data = ((unsigned long * ) prop_value)[0];
+        data = ((unsigned long *) prop_value)[0];
         XFree(prop_value);
     }
 

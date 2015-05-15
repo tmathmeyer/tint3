@@ -106,7 +106,8 @@ char * get_plain_text(baritem * item) {
 }
 
 
-void toggle_mute(baritem * item) {
+void toggle_mute(baritem *item, int xpos) {
+    (void) xpos; // specifically ignore this!
     char * pipe_format = "amixer sset %s toggle";
     int size = 13 + strlen(item -> source);
     char * pipe = calloc(sizeof(char), size);

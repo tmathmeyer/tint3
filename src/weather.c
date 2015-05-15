@@ -16,7 +16,9 @@
 #include "format.h"
 #include "json.h"
 #include "http.h"
+#include "draw.h"
 #include "tint3.h"
+#include "popup.h"
 
 #define weather_parse_size 4096
 
@@ -25,9 +27,53 @@ static fmt_map *formatmap = 0;
 static char * weather = 0;
 static pthread_t weather_ltnr;
 static int _INIT_ = 1;
+static popup_window *popup = NULL;
 
 
+void show_details(baritem *item, int xpos) {
+    (void) item;
+    if (popup) {
+        free_window(popup);
+        popup = NULL;
+    } else {
+        window_position usr_pref;
+        char *loc = get_baritem_option("details-location", item);
+        if (loc != NULL) {
+            if (!strcmp(loc, "mouse")) {
+                usr_pref = AT_MOUSE;
+            } else if (!strcmp(loc, "centre")) {
+                usr_pref = CENTERED;
+            } else if (!strcmp(loc, "aligned")) {
+                usr_pref = ALIGNED;
+            }
+        } else {
+            return;
+        }
+        
+        unsigned int X = 0;
+        unsigned int Y = 0;
+        unsigned int W = 120;
+        unsigned int H = 80;
 
+        switch(usr_pref) {
+            case CENTERED:
+                Y = 500; // make this generic
+                X = 900; // not just for 1080p
+                break;
+            case AT_MOUSE:
+                Y = dc->h;
+                X = xpos;
+                break;
+            case ALIGNED:
+                Y = dc->h;
+                X = item->xstart + (item->length)/2 - (W / 2);
+                break;
+        }
+
+        popup = create_window(dc->dpy, &(dc->gc), X, Y, W, H);
+    }
+    drawmenu();
+}
 
 void *weather_listen(void *DATA) {
     baritem * ipl = DATA;
@@ -139,17 +185,21 @@ void update_json_context(char * location) {
     char url[100] = {0};
     snprintf(url, 100, "/data/2.5/weather?q=%s", location);
 
-    char * host = "api.openweathermap.org";
-    char * weather_s = malloc(weather_parse_size);
+    char *host = "api.openweathermap.org";
+    char *weather_s = malloc(weather_parse_size);
     char ip[16] = {0};
     if (hostname_to_ip(host, ip)) {
         if (url_to_memory(weather_s, weather_parse_size, url, host, ip)) {
             if (strstr(weather_s, "HTTP/1.1 200")) {
-                char * JSON = strstr(weather_s, "{");
+                char *JSON = strstr(weather_s, "{");
                 if (jsoncontext) {
                     free_container(jsoncontext);
                 }
                 jsoncontext = from_string(&JSON);
+                if (!jsoncontext) {
+                    puts(JSON);
+                }
+
             }
         }
     } else {
@@ -162,6 +212,7 @@ int update_weather_string(char *weather_format) {
     if (!weather) {
         weather = malloc(128);
     }
+
     if (jsoncontext) {
         memset(weather, 0, 128);
         format_string(weather, weather_format, getformatmap());

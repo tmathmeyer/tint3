@@ -33,8 +33,8 @@ void *mouse_thread(void *data) {
                 break;
             case ButtonPress:
                 selected = item_by_coord(xe.xbutton.x);
-                if (selected && selected -> click ){
-                    (selected -> click)(selected);
+                if (selected && selected->click ){
+                    (selected -> click)(selected, xe.xbutton.x);
                 }
             	break;
             case LeaveNotify:

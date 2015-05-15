@@ -15,6 +15,6 @@ char *get_weather_string(char *weather_format, char *weather_location);
 int temperatureK(int place, char *string);
 int weather_conditions(int place, char *string);
 void spawn_weather_thread(baritem *ipl);
-
+void show_details(baritem *item, int xpos);
 #endif
 
