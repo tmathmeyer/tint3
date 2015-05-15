@@ -50,7 +50,7 @@ static int width  = 0;
 static char *quest = "???";
 static unsigned long bg_bar = 0, draw_bg = 0;
 static unsigned long bo_bar = 0, draw_bo = 0;
-
+static unsigned long timeout = 60000000;
 
 static bar_config *configuration;
 static bar_layout *layout;
@@ -66,7 +66,9 @@ int topbar = 1;
 
 // get the height of the bar
 int get_bar_height(int font_height) {
-    return font_height-1 + 2*(configuration->padding_size + configuration->border_size);
+    return font_height-1
+        + 2*(configuration->padding_size
+                + configuration->border_size);
 }
 
 // get the bar width
@@ -85,7 +87,7 @@ int main() {
     pthread_mutex_init(&lock, NULL);
     setup();
 
-    
+
     if (configuration->background_color != NULL) {
         bg_bar = getcolor(dc, configuration->background_color);
         draw_bg = 1;
@@ -98,7 +100,7 @@ int main() {
     if (has_options("mousehover", configuration)) {
         init_mouse();
     }
-    
+
     config_to_layout();
 
     run();
@@ -152,6 +154,28 @@ baritem *makeitem(block *block) {
     return result;
 }
 
+#define is_digit(x) ((x)<='9' && (x)>='0')
+void set_timeout(baritem *ipl) {
+    char *set = get_baritem_option("timeout", ipl);
+    unsigned short t_timeout = 0;
+    if (set) {
+        while(*set) {
+            t_timeout *= 10;
+            if (!is_digit(*set)) {
+                return;
+            }
+            t_timeout += (*set - '0');
+            set++;
+        }
+
+        printf("%i\n");
+        if (t_timeout < timeout/1000000) {
+            timeout = t_timeout * 1000000;
+        }
+        printf("%lu\n", timeout);
+    }
+}
+
 char *get_baritem_option(char *opt_name, baritem* item) {
     entry *every;
     each(item->options, every) {
@@ -180,16 +204,17 @@ void infer_type(block *conf_inf, baritem *ipl) {
     } else if (IS_ID(conf_inf, "text")) {
         if (!strncmp(conf_inf->source, "clock", 5)) {
             ipl->update = &get_time_format;
+            set_timeout(ipl);
         } else if (!strncmp(conf_inf->source, "window_title", 12)) {
             ipl->update = &get_active_window_name;
         } else {
             ipl->update = &get_plain_text;
         }
     } else if (IS_ID(conf_inf, "weather")) {
-            spawn_weather_thread(ipl);
-            ipl->update = NULL;
-            ipl->string = get_weather(ipl);
-            ipl->click = &show_details;
+        spawn_weather_thread(ipl);
+        ipl->update = NULL;
+        ipl->string = get_weather(ipl);
+        ipl->click = &show_details;
     } else if (IS_ID(conf_inf, "scale")) {
         if (!strncmp(conf_inf->source, "battery", 7)) {
             ipl->update = &get_battery;
@@ -220,7 +245,7 @@ baritem *item_by_coord(uint x) {
             return bar;
         }
     }
-    
+
     each(layout->center, bar) {
         uint st = bar->xstart;
         uint en = bar->xstart+bar->length;
@@ -284,14 +309,14 @@ void drawmenu(void) {
     if (draw_bo) {
         draw_rectangle(dc, 0, 0, width+2, height+2, True, bo_bar);
     }
-    
+
     draw_rectangle(dc, configuration->border_size, configuration->border_size,
             width-2*configuration->border_size,
             height-2*configuration->border_size, True, bg_bar);
-    
+
 
     update_with_lens();
-    
+
 
     dc->x = dc->color_border_pixels;
     draw_list(layout->left);
@@ -343,7 +368,7 @@ void run(void) {
         }
 
         drawmenu();
-        usleep(900000);
+        usleep(timeout);
     }
 }
 
@@ -366,25 +391,26 @@ int horizontal_position() {
 
 
 void write_default(FILE *fp) {
-    fprintf(fp, "[active]\n"
-                "  id text\n"
-                "  source window_title\n"
-                "  forground #ffffff\n"
-                "[date]\n"
-                "  id text\n"
-                "  source clock\n"
-                "  format %%T  %%a - %%d\n"
-                "  forground #ffffff\n"
-                "[[bar]]\n"
-                "  bordercolor #ffffff\n"
-                "  background #000000\n"
-                "  borderwidth 0\n"
-                "  padding 2\n"
-                "  margin 5\n"
-                "  location top\n"
-                "  center\n"
-                "    active\n"
-                "    date\n");
+    fprintf(fp,
+            "[active]\n"
+            "  id text\n"
+            "  source window_title\n"
+            "  forground #ffffff\n"
+            "[date]\n"
+            "  id text\n"
+            "  source clock\n"
+            "  format %%T  %%a - %%d\n"
+            "  forground #ffffff\n"
+            "[[bar]]\n"
+            "  bordercolor #ffffff\n"
+            "  background #000000\n"
+            "  borderwidth 0\n"
+            "  padding 2\n"
+            "  margin 5\n"
+            "  location top\n"
+            "  center\n"
+            "    active\n"
+            "    date\n");
 }
 
 
