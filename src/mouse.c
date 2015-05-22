@@ -20,29 +20,19 @@ void *mouse_thread(void *data) {
     XEvent xe;
     baritem *selected;
     Display *dsp;
-    baritem *last_selected;
 
     dsp = XOpenDisplay(NULL);
     XSelectInput(dsp, win, ButtonPressMask);
-    last_selected = NULL;
 
     while(1) {
         XNextEvent(dsp, &xe);
         switch(xe.type) {
-            case MotionNotify:
-                break;
             case ButtonPress:
                 selected = item_by_coord(xe.xbutton.x);
                 if (selected && selected->click ){
                     (selected -> click)(selected, xe.xbutton.x);
                 }
             	break;
-            case LeaveNotify:
-               	if (last_selected) {
-               		last_selected -> inverted = 0;
-               		last_selected = NULL;
-               		drawmenu();
-               	}
         }
     }
 

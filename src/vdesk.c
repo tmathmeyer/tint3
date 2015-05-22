@@ -16,8 +16,8 @@ void spawn_vdesk_thread(baritem *ipl) {
 }
 
 void *vdesk_listen(void *DATA) {
-    baritem * ipl = DATA;
-    Display* dsp = XOpenDisplay(NULL);
+    baritem *ipl = DATA;
+    Display *dsp = XOpenDisplay(NULL);
     XSelectInput(dsp, root, PropertyChangeMask) ;
     XEvent xe;
     while(1) {

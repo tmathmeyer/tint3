@@ -97,9 +97,7 @@ int main() {
         draw_bo = 1;
     }
 
-    if (has_options("mousehover", configuration)) {
-        init_mouse();
-    }
+    init_mouse();
 
     config_to_layout();
 
@@ -168,11 +166,9 @@ void set_timeout(baritem *ipl) {
             set++;
         }
 
-        printf("%i\n");
         if (t_timeout < timeout/1000000) {
             timeout = t_timeout * 1000000;
         }
-        printf("%lu\n", timeout);
     }
 }
 
@@ -214,7 +210,9 @@ void infer_type(block *conf_inf, baritem *ipl) {
         spawn_weather_thread(ipl);
         ipl->update = NULL;
         ipl->string = get_weather(ipl);
-        ipl->click = &show_details;
+        if (has_options("details", configuration)) {
+            ipl->click = &show_details;
+        }
     } else if (IS_ID(conf_inf, "scale")) {
         if (!strncmp(conf_inf->source, "battery", 7)) {
             ipl->update = &get_battery;

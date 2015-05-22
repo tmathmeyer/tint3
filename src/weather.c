@@ -29,49 +29,15 @@ static pthread_t weather_ltnr;
 static int _INIT_ = 1;
 static popup_window *popup = NULL;
 
-
-void show_details(baritem *item, int xpos) {
-    (void) item;
-    if (popup) {
+void unset_popup(void) {
+    if (popup != NULL) {
         free_window(popup);
         popup = NULL;
-    } else {
-        window_position usr_pref;
-        char *loc = get_baritem_option("details-location", item);
-        if (loc != NULL) {
-            if (!strcmp(loc, "mouse")) {
-                usr_pref = AT_MOUSE;
-            } else if (!strcmp(loc, "centre")) {
-                usr_pref = CENTERED;
-            } else if (!strcmp(loc, "aligned")) {
-                usr_pref = ALIGNED;
-            }
-        } else {
-            return;
-        }
-        
-        unsigned int X = 0;
-        unsigned int Y = 0;
-        unsigned int W = 120;
-        unsigned int H = 80;
-
-        switch(usr_pref) {
-            case CENTERED:
-                Y = 500; // make this generic
-                X = 900; // not just for 1080p
-                break;
-            case AT_MOUSE:
-                Y = dc->h;
-                X = xpos;
-                break;
-            case ALIGNED:
-                Y = dc->h;
-                X = item->xstart + (item->length)/2 - (W / 2);
-                break;
-        }
-
-        popup = create_window(dc->dpy, &(dc->gc), X, Y, W, H);
     }
+}
+
+void show_details(baritem *item, int xpos) {
+    popup = spawn_popup(item, AT_MOUSE, xpos, &unset_popup);
     drawmenu();
 }
 
