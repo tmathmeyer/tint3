@@ -12,7 +12,7 @@ An example is shown below (the ▉ will show up as a thermometer in the bar.)
   forground #aabbcc
   background #000000
   type temperature
-  source Worcester,usa
+  source Boston,usa
 ````
 
 ####Required Keywords:
@@ -99,9 +99,8 @@ Each configuration file MUST include a "bar" block, which is denoted by double b
     batteryone
     batterytwo
 ````
-There are a few required keywords in the bar block, including: 
-* border color : # symbol followed by six digit RGB hexadecimal
-* background :  # symbol followed by six digit RGB hexadecimal
+There are a few required properties in the bar block, including: 
+* bordercolor : # symbol followed by six digit RGB hexadecimal
 * borderwidth : the width of the border of the bar, in pixels
 * margin : the margins of the bar (how far away from the edges is the border), in pixels
 * padding : the padding, or space between top and bottom of the letters / characters and the border, in pixels
@@ -110,8 +109,16 @@ There are a few required keywords in the bar block, including:
 * right
 * center
 
+There are also some properties which are NOT required, including:
+* background :  # symbol followed by six digit RGB hexadecimal, if left out the bar will attempt transparency.
+* options : a comma separated list of strings that control some of the special dev features (more on these later)
+
 The left, center, and right keywords are special however. Following them is any number of names, which correspond to the names of the blocks you have defined. These determine the order and location of the elements you have defined. For this reason, blocks cannot be named any of the default keywords in the bar block. 
 ----
+
+## Dev features
+Sometimes there are features that are not finished but have source code in the master branch. These features can be enabled by using special options in the bar config.
+For example, toggle-mute-on-click was previously an option toggled by using "mousehover". All current options are described in the optional.md.
 
 ##Things to Remember:
 * ### all hex strings must be 6 digits long and preceded with a '#'
