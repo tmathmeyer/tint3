@@ -28,7 +28,7 @@ typedef struct named_field_list {
     struct named_field_list * next;
 } named_field_list;
 
-#define $(cont, source) (get(cont -> object, source));
+#define A(cont, source) (get(cont -> object, source));
 #define _(cont, source) (jndex(cont -> object -> fields, source));
 
 json_object * obj_from_string(char ** string);

@@ -23,3 +23,4 @@ void fmt_map_put(fmt_map *map, char fmtid, int (*fmt_fn)(int, char *));
 int format_string(char * dest, char * fmt, fmt_map * formatmap);
 
 #endif
+

@@ -70,20 +70,20 @@ struct comb {
 };
 
 int _temperature() {
-    container * w_main = $(jsoncontext, "main");
-    container * temperature = $(w_main, "temp");
+    container * w_main = A(jsoncontext, "main");
+    container * temperature = A(w_main, "temp");
     return *(temperature -> number);
 }
 
 int _pressure() {
-    container * w_main = $(jsoncontext, "main");
-    container * pressure = $(w_main, "pressure");
+    container * w_main = A(jsoncontext, "main");
+    container * pressure = A(w_main, "pressure");
     return *(pressure -> number);
 }
 
 int _humidity() {
-    container * w_main = $(jsoncontext, "main");
-    container * humidity = $(w_main, "humidity");
+    container * w_main = A(jsoncontext, "main");
+    container * humidity = A(w_main, "humidity");
     return *(humidity -> number);
 }
 
@@ -123,9 +123,9 @@ int dew_point(int place, char * string) {
 }
 
 int weather_conditions(int place, char * string) {
-    container * w_weather = $(jsoncontext, "weather");
+    container * w_weather = A(jsoncontext, "weather");
     container * first = _(w_weather, 0);
-    container * sky = $(first, "main");
+    container * sky = A(first, "main");
     char * sky_condition = sky -> string;
     return place + sprintf(string+place, "%s", sky_condition);
 }

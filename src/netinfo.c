@@ -65,3 +65,4 @@ char * get_net_graph(baritem * item) {
     update_network(source2);
     return graph_to_string(get_named_graph((item -> source)+8));
 }
+

@@ -12,7 +12,6 @@
 
 #define GRAPHLENGTH 15
 
-
 typedef struct graph{
     int graph[GRAPHLENGTH*3+1];
     int start;
@@ -32,6 +31,5 @@ char *graph_to_string(graph * gr);
 void recalc_max(graph * gr);
 void add_to_graph(int i, graph * gr);
 
-
-
 #endif
+

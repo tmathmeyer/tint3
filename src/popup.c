@@ -15,11 +15,20 @@
 #include "draw.h"
 #include "popup.h"
 
+void draw_popup(popup_window *w) {
+    XDrawArc(w->dsp, w->canvas, w->ctx, 60, 40, 40, 40, 45, 135);
+
+    XClearArea(w->dsp, w->win, 0, 0, w->w, w->h, 0);
+    XCopyArea(dc->dpy, dc->canvas, w->win, w->ctx, 0, 0, w->w, w->h, 0, 0);
+    XFlush(dc->dpy);
+}
+
 void *window_action_listener(void *ctx) {
     popup_window *win = (popup_window *)ctx;
     XEvent xe;
     XSelectInput(win->dsp, win->win, LeaveWindowMask);
 event:
+    draw_popup(win);
     XNextEvent(win->dsp, &xe);
     if (xe.type != LeaveNotify) {
         goto event;
@@ -94,8 +103,9 @@ popup_window *create_window(Display *dsp, GC *gc, int x, int y, int w, int h) {
     result->w = w;
     result->h = h;
     result->win = win;
-    result->context = *gc;
+    result->ctx = *gc;
     result->dsp = dsp;
+    result->canvas = XCreatePixmap(dsp, root, w, h, 32);
 
     pthread_create(&(result->thread), NULL, &window_action_listener, result);
     pthread_detach(result->thread);
@@ -104,6 +114,7 @@ popup_window *create_window(Display *dsp, GC *gc, int x, int y, int w, int h) {
 
 void free_window(popup_window *window) {
     if (window) {
+        XFreePixmap(window->dsp, window->canvas);
         XDestroyWindow(window->dsp, window->win);
         free(window);
     }

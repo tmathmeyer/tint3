@@ -29,4 +29,4 @@ CFLAGS   = -std=c11 -pedantic-errors -Wextra -Wall ${INCS} ${CPPFLAGS} -g
 LDFLAGS  = ${LIBS}
 
 # compiler and linker
-CC = gcc
+CC = clang

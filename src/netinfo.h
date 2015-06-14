@@ -21,3 +21,4 @@ net_info * get_net_info(void);
 char * get_net_graph(baritem * item);
 
 #endif
+

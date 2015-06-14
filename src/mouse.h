@@ -13,5 +13,5 @@
 void *mouse_thread(void *data);
 void init_mouse();
 
-
 #endif
+

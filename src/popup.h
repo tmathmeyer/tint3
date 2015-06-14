@@ -15,9 +15,10 @@ typedef enum window_position {
 typedef struct popup_window {
     uint x, y, w, h;
     Window win;
-    GC context;
+    GC ctx;
     Display *dsp;
     pthread_t thread;
+    Pixmap canvas;
     void (* free_reference)(void);
 } popup_window;
 

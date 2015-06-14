@@ -179,8 +179,9 @@ void mapdc(DC * dc, Window win, unsigned int w, unsigned int h) {
 
 
 void resizedc(DC * dc, unsigned int w, unsigned int h, XVisualInfo * vinfo, XSetWindowAttributes * wa) {
-    if(dc->canvas)
+    if(dc->canvas) {
         XFreePixmap(dc->dpy, dc->canvas);
+    }
     dc->canvas = XCreatePixmap(dc->dpy, DefaultRootWindow(dc->dpy), w, h,
                                vinfo -> depth);
     dc->empty = XCreatePixmap(dc->dpy, DefaultRootWindow(dc->dpy), w, h,
@@ -190,8 +191,9 @@ void resizedc(DC * dc, unsigned int w, unsigned int h, XVisualInfo * vinfo, XSet
     dc->h = h;
     if(dc->font.xft_font && !(dc->xftdraw)) {
         dc->xftdraw = XftDrawCreate(dc->dpy, dc->canvas, vinfo->visual, wa -> colormap);
-        if(!(dc->xftdraw))
+        if(!(dc->xftdraw)) {
             printf("error, cannot create xft drawable\n");
+        }
     }
 }
 
