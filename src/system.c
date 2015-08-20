@@ -121,3 +121,40 @@ void toggle_mute(baritem *item, int xpos) {
     drawmenu();
     return;
 }
+
+char *show_volume_level(baritem *item) {
+    char * pipe_format = "amixer get -c %s | tail -n 1 | cut -d '[' -f 2,4";
+    int size = 44 + strlen(item -> source);
+    char *pipe = calloc(sizeof(char), size);
+    char muted;
+    snprintf(pipe, size, pipe_format, (item -> source) + 5);
+    FILE * pf = popen(pipe, "r");
+    int i = 0;
+    if (pf) {
+        fscanf(pf, "%i%%] [o%c", &i, &muted);
+        item -> inverted = muted == 'f' ? 1 : 0;
+        fclose(pf);
+    }
+    free(pipe);
+    char * result = malloc(11);
+    memcpy(result, "----------", 11);
+    result[i/10] = '|';
+    return result;
+}
+
+void expand_volume(baritem *item, int xpos) {
+    int redraw = 0;
+    if (item->update == &get_volume_level) {
+        redraw = 1;
+    }
+    item->update = &show_volume_level;
+    if (redraw) {
+        drawmenu();
+    }
+}
+
+void leave_volume(baritem *item) {
+    item->update = &get_volume_level;
+    drawmenu();
+}
+

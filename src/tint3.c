@@ -48,8 +48,11 @@ static int height = 0;
 static int width  = 0;
 
 static char *quest = "???";
-static unsigned long bg_bar = 0, draw_bg = 0;
-static unsigned long bo_bar = 0, draw_bo = 0;
+
+static unsigned long bar_background_colour;
+static unsigned long bar_border_colour;
+static char *bar_font_colour;
+
 static unsigned long timeout = 60000000;
 
 static bar_config *configuration;
@@ -82,20 +85,23 @@ int scale_to(int from, int to, float by) {
 }
 
 int main() {
+    //mod_init();
+    //load_module("./test.so");
 
     XInitThreads();
     pthread_mutex_init(&lock, NULL);
     setup();
-
-
+    
     if (configuration->background_color != NULL) {
-        bg_bar = getcolor(dc, configuration->background_color);
-        draw_bg = 1;
+        bar_background_colour = getcolor(dc, configuration->background_color);
     }
     if (configuration->border_color != NULL) {
-        bo_bar = getcolor(dc, configuration->border_color);
-        draw_bo = 1;
+        bar_border_colour = getcolor(dc, configuration->border_color);
     }
+    if (configuration->font_color == NULL) {
+        exit(1);
+    }
+    bar_font_colour = configuration->font_color;
 
     init_mouse();
 
@@ -117,31 +123,28 @@ void update_nba(baritem *item) {
     }
 }
 
-// make a color if we can
-ColorSet *make_possible_color(char *fg, char *bg) {
-    if (!fg) {
-        fg = "#ffffff";
+ColorSet *make_baritem_colours(char *fg, char *bg) {   
+    ColorSet *result = malloc(sizeof(ColorSet));
+    result->FG = (fg) ? getcolor(dc, fg) : getcolor(dc, bar_font_colour);
+    result->BG = (bg) ? getcolor(dc, bg) : bar_background_colour;
+    if(dc->font.xft_font) {
+        if(!XftColorAllocName(dc->dpy, DefaultVisual(dc->dpy, DefaultScreen(dc->dpy)),
+            DefaultColormap(dc->dpy, DefaultScreen(dc->dpy)), fg?fg:bar_font_colour, &result->FG_xft)) {
+        }
     }
-    ColorSet *cs;
-
-    if (!bg) {
-        cs = initcolor(dc, fg, "#000000");
-        cs->BG = bg_bar;
-    } else {
-        cs = initcolor(dc, fg, bg);
-    }
-
-    return cs;
+    return result;
 }
 
 // turn a single item from the config stream into a displayable item
 baritem *makeitem(block *block) {
     baritem *result = malloc(sizeof(baritem));
-    result->invert = make_possible_color("#000000", "#ffffff");
-    result->color  = make_possible_color(block->forground, block->background);
+    result->invert = make_baritem_colours("#000000", "#ffffff");
+    result->color  = make_baritem_colours(block->forground, block->background);
     result->format = block->format;
     result->source = block->source;
     result->click = NULL;
+    result->mouseover = NULL;
+    result->mouse_exit = NULL;
     result->string = quest;
     result->options = block->map;
     result->inverted = 0;
@@ -211,7 +214,7 @@ void infer_type(block *conf_inf, baritem *ipl) {
         ipl->update = NULL;
         ipl->string = get_weather(ipl);
         if (has_options("details", configuration)) {
-            ipl->click = &show_details;
+            //ipl->click = &show_details;
         }
     } else if (IS_ID(conf_inf, "scale")) {
         if (!strncmp(conf_inf->source, "battery", 7)) {
@@ -219,6 +222,8 @@ void infer_type(block *conf_inf, baritem *ipl) {
         } else if (!strncmp(conf_inf->source, "alsa", 4)) {
             ipl->update = &get_volume_level;
             ipl->click = &toggle_mute;
+            ipl->mouseover = &expand_volume;
+            ipl->mouse_exit = &leave_volume;
         }
     } else if (IS_ID(conf_inf, "graph")) {
         ipl->update = &get_net_graph;
@@ -304,13 +309,13 @@ void drawmenu(void) {
     dc->w = 0;
     dc->h = height;
 
-    if (draw_bo) {
-        draw_rectangle(dc, 0, 0, width+2, height+2, True, bo_bar);
+    if (bar_border_colour) {
+        draw_rectangle(dc, 0, 0, width+2, height+2, True, bar_border_colour);
     }
 
     draw_rectangle(dc, configuration->border_size, configuration->border_size,
             width-2*configuration->border_size,
-            height-2*configuration->border_size, True, bg_bar);
+            height-2*configuration->border_size, True, bar_background_colour);
 
 
     update_with_lens();
@@ -332,11 +337,9 @@ void drawmenu(void) {
 
 unsigned int total_list_length(dlist *list) {
     uint len = 0;
-
     baritem *item;
     each(list, item) {
-        int tmp = item->length = textw(dc, item->string);
-        len += tmp;
+        len += (item->length = textw(dc, item->string));
     }
     return len;
 }
@@ -463,7 +466,6 @@ void setup() {
     wa.background_pixel = 0;
     dc->wa = wa;
     initfont(dc, font ? font : "fixed");
-
 
     dc->border_width = configuration->margin_size;
     dc->color_border_pixels = configuration->border_size;

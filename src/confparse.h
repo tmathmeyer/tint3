@@ -36,6 +36,7 @@ typedef struct {
     int border_size;
     int margin_size;
     int padding_size;
+    char *font_color;
     char *border_color;
     char *background_color;
     location location;

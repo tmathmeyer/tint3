@@ -29,6 +29,7 @@ char *get_volume_level(baritem *item);
 char *get_active_window_name(baritem *item);
 char *get_plain_text(baritem *item);
 void  toggle_mute(baritem *item, int xpos);
-
+void  expand_volume(baritem *item, int xpos);
+void  leave_volume(baritem *item);
 
 #endif

@@ -26,6 +26,8 @@ typedef struct baritem{
     dlist *options;
     char *(* update)(struct baritem *);
     void (* click)(struct baritem *, int xpos);
+    void (* mouseover)(struct baritem *, int xpos);
+    void (* mouse_exit)(struct baritem *);
 } baritem;
 
 typedef struct bar_layout {

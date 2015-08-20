@@ -212,6 +212,7 @@ bar_config *as_bar(dlist *src, dlist *blocks) {
     config -> padding_size = 0;
     config -> margin_size = 0;
     config -> location = TOP;
+    config -> font_color = NULL;
     config -> border_color = NULL;
     config -> background_color = NULL;
     config -> left = dlist_new();
@@ -244,6 +245,11 @@ bar_config *as_bar(dlist *src, dlist *blocks) {
         else match("bordercolor") {
             config->border_color = calloc(8, 1);
             memcpy(config->border_color, line+12, 7);
+        }
+
+        else match("fontcolor") {
+            config->font_color = calloc(8, 1);
+            memcpy(config->font_color, line+10, 7);
         }
         
         else match("background") {
