@@ -143,6 +143,8 @@ char *show_volume_level(baritem *item) {
 }
 
 void expand_volume(baritem *item, int xpos) {
+    (void)xpos;
+    
     int redraw = 0;
     if (item->update == &get_volume_level) {
         redraw = 1;

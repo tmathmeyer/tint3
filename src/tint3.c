@@ -222,8 +222,10 @@ void infer_type(block *conf_inf, baritem *ipl) {
         } else if (!strncmp(conf_inf->source, "alsa", 4)) {
             ipl->update = &get_volume_level;
             ipl->click = &toggle_mute;
-            ipl->mouseover = &expand_volume;
-            ipl->mouse_exit = &leave_volume;
+            if (has_options("vol_expand", configuration)) {
+                ipl->mouseover = &expand_volume;
+                ipl->mouse_exit = &leave_volume;
+            }
         }
     } else if (IS_ID(conf_inf, "graph")) {
         ipl->update = &get_net_graph;
