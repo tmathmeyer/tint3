@@ -23,6 +23,7 @@ typedef struct baritem{
     char *string;
     char *format;
     char *source;
+    char *shell;
     dlist *options;
     char *(* update)(struct baritem *);
     void (* click)(struct baritem *, int xpos);

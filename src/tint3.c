@@ -85,12 +85,11 @@ int scale_to(int from, int to, float by) {
 }
 
 int main() {
-    //mod_init();
-    //load_module("./test.so");
-
     XInitThreads();
     pthread_mutex_init(&lock, NULL);
+    puts("init threads");
     setup();
+    puts("init setup");
     
     if (configuration->background_color != NULL) {
         bar_background_colour = getcolor(dc, configuration->background_color);
@@ -103,10 +102,14 @@ int main() {
     }
     bar_font_colour = configuration->font_color;
 
+    puts("init colors");
     init_mouse();
 
+    puts("init mouse");
     config_to_layout();
 
+    puts("init config");
+    puts("running");
     run();
 
     return EXIT_FAILURE;
@@ -142,11 +145,13 @@ baritem *makeitem(block *block) {
     result->color  = make_baritem_colours(block->forground, block->background);
     result->format = block->format;
     result->source = block->source;
+    result->shell = block->shell_click;
+    result->string = quest;
+    result->options = block->map;
+    
     result->click = NULL;
     result->mouseover = NULL;
     result->mouse_exit = NULL;
-    result->string = quest;
-    result->options = block->map;
     result->inverted = 0;
     result->xstart = 0;
     result->length = 0;
@@ -190,9 +195,17 @@ char *questions(baritem *meh) {
     return meh?quest:NULL;
 }
 
+void shell_exec(baritem *item, int xpos) {
+    (void) xpos;
+    system(item->shell);
+}
+
 // set the function that creates information
 void infer_type(block *conf_inf, baritem *ipl) {
     ipl->update = &questions;
+    if (ipl->shell) {
+        ipl->click = &shell_exec;
+    }
 
     if (IS_ID(conf_inf, "radio")) {
         if (!strncmp(conf_inf->source, "workspaces", 10)) {
@@ -213,9 +226,6 @@ void infer_type(block *conf_inf, baritem *ipl) {
         spawn_weather_thread(ipl);
         ipl->update = NULL;
         ipl->string = get_weather(ipl);
-        if (has_options("details", configuration)) {
-            //ipl->click = &show_details;
-        }
     } else if (IS_ID(conf_inf, "scale")) {
         if (!strncmp(conf_inf->source, "battery", 7)) {
             ipl->update = &get_battery;
@@ -267,6 +277,7 @@ dlist *config_to_drawable(dlist *bid) {
     dlist *result = dlist_new();
     block *block;
     each(bid, block) {
+        printf("parsing %s\n", block->name);
         dlist_add(result, makeitem(block));
     }
     return result;
@@ -576,4 +587,3 @@ int get_x11_property(Atom at, Atom type) {
 
     return data;
 }
-

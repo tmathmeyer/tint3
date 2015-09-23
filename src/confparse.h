@@ -24,6 +24,7 @@ typedef struct {
     char *source;
     char *forground;
     char *background;
+    char *shell_click;
     dlist *map;
 } block;
 

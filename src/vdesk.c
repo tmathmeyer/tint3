@@ -8,7 +8,7 @@
 static int current_desktop = 0;
 static fmt_map *formatmap = 0;
 static pthread_t vdesk_ltnr;
-static char *japanese_numerals[10] = {"一", "二", "三", "四", "五", "六", "七", "八", "九", "十"};
+static char *han_zi[10] = {"一", "二", "三", "四", "五", "六", "七", "八", "九", "十"};
 
 
 void spawn_vdesk_thread(baritem *ipl) {
@@ -81,6 +81,31 @@ uint roman_numeral(char *buffer, uint num) {
     return position;
 }
 
+void copy_UTF(char *to, char *from) {
+    to[0] = from[0];
+    to[1] = from[1];
+    to[2] = from[2];
+}
+
+int print_han_zi(char *buffer, int num) {
+    if (num < 11) {
+        copy_UTF(buffer, han_zi[num-1]);
+        return 3;
+    } else if (num < 20) {
+        copy_UTF(buffer, han_zi[9]);
+        copy_UTF(buffer+3, han_zi[num-11]);
+        return 6;
+    } else {
+        copy_UTF(buffer, han_zi[num/10 - 1]);
+        copy_UTF(buffer+3, han_zi[9]);
+        if (num%10 == 0) {
+            return 6;
+        }
+        copy_UTF(buffer+6, han_zi[num%10 - 1]);
+        return 9;
+    }
+}
+
 int get_number_of_desktops () {
     return get_x11_property(NET_NUMBER_DESKTOPS, _CARDINAL_);
 }
@@ -105,9 +130,8 @@ int _roman_numerals(int place, char *string) {
     return place + roman_numeral(string+place, current_desktop);
 }
 
-// obviously this need to be fixed
-int _japanese_numerals(int place, char *string) {
-    return place + sprintf(string+place, current_desktop>10?"<E>":japanese_numerals[current_desktop-1]);
+int _han_zi(int place, char *string) {
+    return place + print_han_zi(string+place, current_desktop);
 }
 
 char *get_desktops_info(baritem *source) {
@@ -121,7 +145,7 @@ char *get_desktops_info(baritem *source) {
         formatmap = initmap(8);
         fmt_map_put(formatmap, 'N', &_arabic_numerals);
         fmt_map_put(formatmap, 'R', &_roman_numerals);
-        fmt_map_put(formatmap, 'J', &_japanese_numerals);
+        fmt_map_put(formatmap, 'J', &_han_zi);
     }
 
     current_desktop = 1;

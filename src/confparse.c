@@ -122,6 +122,7 @@ block *as_block(dlist *chunk) {
     res->type = NULL;
     res->format = NULL;
     res->source = NULL;
+    res->shell_click = NULL;
     res->map = dlist_new();
     
     char *elem;
@@ -143,6 +144,7 @@ block *as_block(dlist *chunk) {
             mem_subtract = first_space(line);
             cpy_start = mem_subtract+1;
             cpy_end = mem_subtract+2;
+
             if(starts_with(line, "id")) {
                 write_to = &(res->id);
             } else if(starts_with(line, "format")) {
@@ -153,6 +155,8 @@ block *as_block(dlist *chunk) {
                 write_to = &(res->source);
             } else if(starts_with(line, "forground")) {
                 write_to = &(res->forground);
+            } else if (starts_with(line, "shell")) {
+                write_to = &(res->shell_click);
             } else if(starts_with(line, "background")) {
                 write_to = &(res->background);
             } else {
