@@ -34,7 +34,7 @@
 #define INRECT(x,y,rx,ry,rw,rh) ((x) >= (rx) && (x) < (rx)+(rw) && (y) >= (ry) && (y) < (ry)+(rh))
 #define MIN(a,b)                ((a) < (b) ? (a) : (b))
 #define MAX(a,b)                ((a) > (b) ? (a) : (b))
-
+#define DEBUG(str) if (__debug__){puts(str);}
 #define IS_ID(x, a) (!(strncmp(x->id, a, strlen(a))))
 
 
@@ -65,7 +65,7 @@ static pthread_mutex_t lock;
 const char *font = "sakamoto-11";
 Window win;
 int topbar = 1;
-
+static int __debug__;
 
 // get the height of the bar
 int get_bar_height(int font_height) {
@@ -89,6 +89,9 @@ int main() {
     pthread_mutex_init(&lock, NULL);
     setup();
 
+    __debug__ = has_options("debug", configuration);
+    DEBUG("debugging initialized");
+
     if (configuration->background_color != NULL) {
         bar_background_colour = getcolor(dc, configuration->background_color);
     }
@@ -96,16 +99,26 @@ int main() {
         bar_border_colour = getcolor(dc, configuration->border_color);
     }
     if (configuration->font_color == NULL) {
+        DEBUG("no font-color.");
+        DEBUG("please add a {fontcolor #xxxxxx} option to your config gile");
+        DEBUG("Exiting...");
         exit(1);
     }
+
     bar_font_colour = configuration->font_color;
 
+    DEBUG("initializing mouse interaction");
     init_mouse();
+    DEBUG("done initializing mouse interaction");
 
+    DEBUG("initializing layout");
     config_to_layout();
+    DEBUG("done initializing layout");
 
+    DEBUG("running main loop");
     run();
 
+    DEBUG("run exited. failure. exiting");
     return EXIT_FAILURE;
 }
 
@@ -402,14 +415,13 @@ void write_default(FILE *fp) {
             "[active]\n"
             "  id text\n"
             "  source window_title\n"
-            "  forground #ffffff\n"
             "[date]\n"
             "  id text\n"
+            "  timeout 1\n"
             "  source clock\n"
             "  format %%T  %%a - %%d\n"
-            "  forground #ffffff\n"
             "[[bar]]\n"
-            "  bordercolor #ffffff\n"
+            "  fontcolor #ffffff\n"
             "  background #000000\n"
             "  borderwidth 0\n"
             "  padding 2\n"
