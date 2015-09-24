@@ -1,4 +1,6 @@
 #CONFIGURATION
+### see [tint3rc.example](https://github.com/tmathmeyer/tint3/blob/master/tint3rc.example) for an example config
+
 
 ##Blocks
 ###overview
@@ -53,10 +55,11 @@ currently, there are three modules that use the format strings, {id:text, source
   * D: dew point
 
 The format parameters used in the radio module are as follows:
-  * N: the number of the radio button 
+  * n: the number of the radio button 
   * J: the number of the radio button, japanese (chinese) numerals
   * R: the number of the radio button, roman numerals
-  * I: inverted
+  * N: the name pulled from xlib
+  * U: the name from xlib, but underlined
  
 An example of the radio configutation for desktops might be:
 ````
@@ -79,7 +82,7 @@ Note: this DOES work with unicode (3 byte) characters.
 Each configuration file MUST include a "bar" block, which is denoted by double brackets around the word "bar". This is required for the bar to start. A basic example of a configuration is shown:
 ````
 [[bar]]
-  bordercolor #22EE88
+  fontcolor #22EE88
   background #252117
   borderwidth 1
   padding 1
@@ -100,7 +103,7 @@ Each configuration file MUST include a "bar" block, which is denoted by double b
     batterytwo
 ````
 There are a few required properties in the bar block, including: 
-* bordercolor : # symbol followed by six digit RGB hexadecimal
+* fontcolor : # symbol followed by six digit RGB hexadecimal
 * borderwidth : the width of the border of the bar, in pixels
 * margin : the margins of the bar (how far away from the edges is the border), in pixels
 * padding : the padding, or space between top and bottom of the letters / characters and the border, in pixels
@@ -112,6 +115,7 @@ There are a few required properties in the bar block, including:
 There are also some properties which are NOT required, including:
 * background :  # symbol followed by six digit RGB hexadecimal, if left out the bar will attempt transparency.
 * options : a comma separated list of strings that control some of the special dev features (more on these later)
+* bordercolor : a # followed by six hex digits, representing the color of the border. This is required if borderwidth is greater than 0
 
 The left, center, and right keywords are special however. Following them is any number of names, which correspond to the names of the blocks you have defined. These determine the order and location of the elements you have defined. For this reason, blocks cannot be named any of the default keywords in the bar block. 
 ----

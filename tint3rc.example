@@ -1,0 +1,80 @@
+[[bar]]
+  fontcolor #ffffff
+  borderwidth 0
+  padding 5
+  margin 0
+  location bottom
+  options debug
+  left 2
+    desktops
+    active
+  center 2
+    date
+    time
+  right 6
+    upload
+    download
+    weather
+    volume
+    batteryone
+    batterytwo
+
+[active]
+  id text
+  source window_title
+
+[desktops]
+  id radio
+  source workspaces
+  format %N %U
+
+#split time and date (for no apparent reason)
+[time]
+  timeout 5
+  id text
+  source clock
+  format %T
+
+[date]
+  id text
+  source clock
+  format %a - %d
+
+[weather]
+  id weather
+  format %W, ▉%F (%H)
+  type temperature
+  details-location aligned
+  source Seattle,usa
+  shell notify-send "fuck you"
+
+[download]
+  id graph
+  source network wlp3s0 down
+  forground #D58D6B
+
+[upload]
+  id graph
+  source network wlp3s0 up
+  shell dmenu_run
+  forground #748DA6
+
+#dual battery system (x240)
+[batteryone]
+  id scale
+  forground #EEEE22
+  type unknown
+  source battery BAT1
+  format 0
+
+[batterytwo]
+  id scale
+  forground #11EE11
+  type unknown
+  source battery BAT0
+  format 1
+
+[volume]
+  id scale
+  source alsa 0 Master
+
