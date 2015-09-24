@@ -87,10 +87,8 @@ int scale_to(int from, int to, float by) {
 int main() {
     XInitThreads();
     pthread_mutex_init(&lock, NULL);
-    puts("init threads");
     setup();
-    puts("init setup");
-    
+
     if (configuration->background_color != NULL) {
         bar_background_colour = getcolor(dc, configuration->background_color);
     }
@@ -102,14 +100,10 @@ int main() {
     }
     bar_font_colour = configuration->font_color;
 
-    puts("init colors");
     init_mouse();
 
-    puts("init mouse");
     config_to_layout();
 
-    puts("init config");
-    puts("running");
     run();
 
     return EXIT_FAILURE;
@@ -132,7 +126,7 @@ ColorSet *make_baritem_colours(char *fg, char *bg) {
     result->BG = (bg) ? getcolor(dc, bg) : bar_background_colour;
     if(dc->font.xft_font) {
         if(!XftColorAllocName(dc->dpy, DefaultVisual(dc->dpy, DefaultScreen(dc->dpy)),
-            DefaultColormap(dc->dpy, DefaultScreen(dc->dpy)), fg?fg:bar_font_colour, &result->FG_xft)) {
+                    DefaultColormap(dc->dpy, DefaultScreen(dc->dpy)), fg?fg:bar_font_colour, &result->FG_xft)) {
         }
     }
     return result;
@@ -148,7 +142,7 @@ baritem *makeitem(block *block) {
     result->shell = block->shell_click;
     result->string = quest;
     result->options = block->map;
-    
+
     result->click = NULL;
     result->mouseover = NULL;
     result->mouse_exit = NULL;
@@ -277,7 +271,6 @@ dlist *config_to_drawable(dlist *bid) {
     dlist *result = dlist_new();
     block *block;
     each(bid, block) {
-        printf("parsing %s\n", block->name);
         dlist_add(result, makeitem(block));
     }
     return result;
@@ -562,13 +555,15 @@ void setup() {
 
     NET_CURRENT_DESKTOP = XInternAtom(dc->dpy, "_NET_CURRENT_DESKTOP", 0);
     NET_NUMBER_DESKTOPS = XInternAtom(dc->dpy, "_NET_NUMBER_OF_DESKTOPS", 0);
+    NET_DESKTOP_NAMES   = XInternAtom(dc->dpy, "_NET_DESKTOP_NAMES", 0);
+    _UTF8_STRING_       = XInternAtom(dc->dpy, "UTF8_String", 0);
     _CARDINAL_ = XA_CARDINAL;
 
     XSelectInput(dc->dpy, win, ExposureMask);
 }
 
 
-int get_x11_property(Atom at, Atom type) {
+int get_x11_cardinal_property(Atom at, Atom type) {
     Atom type_ret;
     int format_ret = 0, data = 1;
     unsigned long nitems_ret = 0,
@@ -584,6 +579,34 @@ int get_x11_property(Atom at, Atom type) {
         data = ((unsigned long *) prop_value)[0];
         XFree(prop_value);
     }
-
     return data;
+}
+
+dlist *get_x11_cpp_property(Atom at) {
+    Atom type_ret;
+    int format_ret = 0;
+    unsigned long n = 0,
+                  b = 0;
+    unsigned char *prop = 0;
+    int result;
+
+    result = XGetWindowProperty(dc->dpy, root, at, 0, 0x7fffffff,
+            0, AnyPropertyType, &type_ret, &format_ret,
+            &n, &b, &prop);
+
+    if ((result == Success) && prop) {
+        dlist *list = dlist_new();
+        unsigned int i = 0;
+        int new = 1;
+        while(i < n) {
+            if (new) {
+                dlist_add(list, strdup((char *)(prop+i)));
+            }
+            new = !(prop[i]);
+            i++;
+        }
+        XFree(prop);
+        return list;
+    }
+    return NULL;
 }

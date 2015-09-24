@@ -91,21 +91,25 @@ extern Window win;
 void drawmenu(void);
 
 // get a property 
-int get_x11_property(Atom at, Atom type);
+int get_x11_cardinal_property(Atom at, Atom type);
+dlist *get_x11_cpp_property(Atom at);
 
 // get an item by X
 baritem *item_by_coord(unsigned int x);
 
 char *get_baritem_option(char *opt_name, baritem* item);
 
-
 //================//
 // cardinals used //
 //================//
 
-Atom NET_NUMBER_DESKTOPS,
-     NET_CURRENT_DESKTOP;
+Atom NET_NUMBER_DESKTOPS
+    ,NET_CURRENT_DESKTOP
+    ,NET_DESKTOP_NAMES
+    ;
 
-Atom _CARDINAL_;
+Atom _CARDINAL_
+    ,_UTF8_STRING_
+    ;
 
 #endif

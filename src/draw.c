@@ -37,29 +37,39 @@ void draw_rectangle(DC * dc, unint x, unint y, unint w, unint h, Bool fill, unlo
     (fill ? XFillRectangles : XDrawRectangles)(dc -> dpy, dc -> canvas, dc -> gc, &rect, 1);
 }
 
+char *strip_backspaces(char *in);
+void get_underline_bounds(char *string, int *bounds, DC *dc);
+
 // draw text
-void drawtext(DC *dc, const char * text, ColorSet *col) {
-    char buf[MAX_TITLE_LENGTH];
+void drawtext(DC *dc, const char *text, ColorSet *col) {
+    int vals[2] = {0, -15};
+    get_underline_bounds((char *)text, vals, dc);
+    char *buf = strip_backspaces((char *)text);
 
     /* shorten text if necessary */
-    size_t n = strlen(text);
-    size_t mn = MIN(n, sizeof buf);
+    size_t mn = strlen(buf);
+    size_t shortened = mn;
     for(; textnw(dc, text, mn) > dc->w - dc->font.height/2; mn--) {
         if(mn == 0) {
             return; // dont draw text (there isn't any)
         }
+        shortened++;
     }
 
     memcpy(buf, text, mn);
 
     /* if the text was shortened, add some elipses */
-    if(mn < n)
-        for(n = MAX(mn-3, 0); n < mn; buf[n++] = '.');
+    if(shortened < mn)
+        for(size_t n = MAX(mn-3, 0); n < mn; buf[n++] = '.');
 
     drawrect_modifier(dc, 0, dc->color_border_pixels,
-                          dc->w, dc->h-(2*dc->color_border_pixels),
-                          True, col->BG);
+            dc->w, dc->h-(2*dc->color_border_pixels),
+            True, col->BG);
     drawtextn(dc, buf, mn, col);
+    if (vals[0]!=0 && vals[1]!=-15) {
+        XDrawLine(dc->dpy, dc->canvas, dc->gc, dc->x + vals[0], 20, dc->x + vals[0] + vals[1], 20);
+    }
+    free(buf);
 }
 
 // drawtext helper that actually draws the text
@@ -76,7 +86,7 @@ void drawtextn(DC * dc, const char * text, size_t n, ColorSet * col) {
             printf("error, xft drawable does not exist");
         }
         XftDrawStringUtf8(dc->xftdraw, &col->FG_xft,
-            dc->font.xft_font, x, y, (unsigned char*)text, n);
+                dc->font.xft_font, x, y, (unsigned char*)text, n);
 
     } else if(dc->font.set) {
         XmbDrawString(dc->dpy, dc->canvas, dc->font.set, dc->gc, x, y, text, n);
@@ -106,7 +116,7 @@ ColorSet * initcolor(DC * dc, const char * foreground, const char * background) 
 
     if(dc->font.xft_font) {
         if(!XftColorAllocName(dc->dpy, DefaultVisual(dc->dpy, DefaultScreen(dc->dpy)),
-            DefaultColormap(dc->dpy, DefaultScreen(dc->dpy)), foreground, &col->FG_xft)) {
+                    DefaultColormap(dc->dpy, DefaultScreen(dc->dpy)), foreground, &col->FG_xft)) {
         }
     }
 
@@ -158,7 +168,7 @@ void initfont(DC * dc, const char * fontstr) {
             dc->font.descent = MAX(dc->font.descent, xfonts[i]->descent);
         }
     } else if((dc->font.xft_font = XftFontOpenName(dc->dpy,
-            DefaultScreen(dc->dpy), fontstr))) {
+                    DefaultScreen(dc->dpy), fontstr))) {
         dc->font.ascent = dc->font.xft_font->ascent;
         dc->font.descent = dc->font.xft_font->descent;
     } else {
@@ -183,9 +193,9 @@ void resizedc(DC * dc, unsigned int w, unsigned int h, XVisualInfo * vinfo, XSet
         XFreePixmap(dc->dpy, dc->canvas);
     }
     dc->canvas = XCreatePixmap(dc->dpy, DefaultRootWindow(dc->dpy), w, h,
-                               vinfo -> depth);
+            vinfo -> depth);
     dc->empty = XCreatePixmap(dc->dpy, DefaultRootWindow(dc->dpy), w, h,
-                               vinfo -> depth);
+            vinfo -> depth);
     dc->x = dc->y = 0;
     dc->w = w;
     dc->h = h;
@@ -218,3 +228,37 @@ int textnw(DC * dc, const char * text, size_t len) {
 int textw(DC * dc, const char * text) {
     return textnw(dc, text, strlen(text)) + dc->font.height;
 }
+
+void get_underline_bounds(char *string, int *bounds, DC *dc) {
+    char *mod = strdup(string);
+    char *pos = mod;
+    char *fre = mod;
+
+    if (*mod == 7) {
+        bounds[0] -= 7;
+        bounds[1] -= 5;
+    }
+
+    while(*mod) {
+        if (*mod==7) {
+            *mod = 0;
+                *(bounds++) += textw(dc, (const char *)pos);
+            pos = mod+1;
+        }
+        mod++;
+    }
+    free(fre);
+}
+
+char *strip_backspaces(char *in) {
+    char *out = strdup(in);
+    char *src, *dst;
+    for (src = dst = out; *src != '\0'; src++) {
+        *dst = *src;
+        if (*dst != 7) dst++;
+    }
+    *(dst+1) = '\0';
+
+    return out;
+}
+

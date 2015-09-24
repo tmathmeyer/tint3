@@ -107,11 +107,11 @@ int print_han_zi(char *buffer, int num) {
 }
 
 int get_number_of_desktops () {
-    return get_x11_property(NET_NUMBER_DESKTOPS, _CARDINAL_);
+    return get_x11_cardinal_property(NET_NUMBER_DESKTOPS, _CARDINAL_);
 }
 
 int get_current_desktop () {
-    return get_x11_property(NET_CURRENT_DESKTOP, _CARDINAL_);
+    return get_x11_cardinal_property(NET_CURRENT_DESKTOP, _CARDINAL_);
 }
 
 uint16_t strcons(char *dest, const char *src, uint16_t ctr) {
@@ -134,6 +134,22 @@ int _han_zi(int place, char *string) {
     return place + print_han_zi(string+place, current_desktop);
 }
 
+int __xlib_names(int place, char *string) {
+    dlist *res = get_x11_cpp_property(NET_DESKTOP_NAMES);
+    char *data = (char *)(dget(res, current_desktop-1));
+    int result = place + sprintf(string+place, "%c%s%c", 7, data, 7);
+    dlist_deep_free(res);
+    return result;
+}
+
+int _xlib_names(int place, char *string) {
+    dlist *res = get_x11_cpp_property(NET_DESKTOP_NAMES);
+    char *data = (char *)(dget(res, current_desktop-1));
+    int result = place + sprintf(string+place, "%s", data);
+    dlist_deep_free(res);
+    return result;
+}
+
 char *get_desktops_info(baritem *source) {
     if (!source) {
         return NULL;
@@ -143,9 +159,11 @@ char *get_desktops_info(baritem *source) {
     }
     if (!formatmap) {
         formatmap = initmap(8);
-        fmt_map_put(formatmap, 'N', &_arabic_numerals);
+        fmt_map_put(formatmap, 'n', &_arabic_numerals);
         fmt_map_put(formatmap, 'R', &_roman_numerals);
         fmt_map_put(formatmap, 'J', &_han_zi);
+        fmt_map_put(formatmap, 'N', &_xlib_names);
+        fmt_map_put(formatmap, 'U', &__xlib_names);
     }
 
     current_desktop = 1;
@@ -156,7 +174,7 @@ char *get_desktops_info(baritem *source) {
     uint8_t rpos = 0;
     int numdesk = get_number_of_desktops();
     int curdesk = get_current_desktop();
-    char *tmp_bfr = calloc(numdesk * 4, sizeof(char));
+    char *tmp_bfr = calloc(numdesk * 15, sizeof(char));
     uint8_t ctr = 0;
     uint16_t offset = 0;
     while((source->format)[rpos]) {

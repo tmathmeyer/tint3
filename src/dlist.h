@@ -13,6 +13,8 @@ typedef struct dlist {
 
 int dlist_add(dlist *d, void *data);
 dlist *dlist_new();
+void dlist_deep_free(dlist *d);
+void dlist_free(dlist *d);
 
 #define lc(l) ((l)->__lc__)
 #define dget(l, i) (((l)->data)[(i)])

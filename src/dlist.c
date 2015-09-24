@@ -32,4 +32,17 @@ dlist *dlist_new() {
     return res;
 }
 
+void dlist_deep_free(dlist *d) {
+    void *data;
+    each(d, data) {
+        if (data) {
+            free(data);
+        }
+    }
+    dlist_free(d);
+}
 
+void dlist_free(dlist *d) {
+    free(d->data);
+    free(d);
+}
