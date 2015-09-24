@@ -1,5 +1,5 @@
 #CONFIGURATION
-### see [tint3rc.example](https://github.com/tmathmeyer/tint3/blob/master/tint3rc.example) for an example config
+### see [tint3rc.example](https://github.com/tmathmeyer/tint3/blob/master/tint3rc.example) for an example config, and ![screenshot](https://github.com/tmathmeyer/tint3/blob/master/tint3rc.example.screenshot.png") for the bar it creates (with transparent background)
 
 
 ##Blocks
