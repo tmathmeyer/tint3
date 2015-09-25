@@ -24,6 +24,7 @@
 
 
 #define MAX_TITLE_LENGTH 50
+#define MAX_TITLE_LENGTH_PX 300
 
 // draw a rectangle on the screen; either solid or bordered
 void drawrect_modifier(DC * dc, int x, int y, unint w, unint h, Bool fill, unlong color) {
@@ -45,30 +46,43 @@ void drawtext(DC *dc, const char *text, ColorSet *col) {
     int vals[2] = {0, -15};
     get_underline_bounds((char *)text, vals, dc);
     char *buf = strip_backspaces((char *)text);
+    puts(text);
+    puts(buf);
 
     /* shorten text if necessary */
-    size_t mn = strlen(buf);
-    size_t shortened = mn;
-    for(; textnw(dc, text, mn) > dc->w - dc->font.height/2; mn--) {
-        if(mn == 0) {
-            return; // dont draw text (there isn't any)
+    size_t str_len = strlen(buf);
+    size_t original_len = str_len;
+    do {
+        size_t textlen = textnw(dc, text, str_len);
+        if (str_len > MAX_TITLE_LENGTH || textlen > MAX_TITLE_LENGTH_PX) {
+            str_len --;
+        } else {
+            break;
         }
-        shortened++;
-    }
+    } while(1);
 
-    memcpy(buf, text, mn);
 
     /* if the text was shortened, add some elipses */
-    if(shortened < mn)
-        for(size_t n = MAX(mn-3, 0); n < mn; buf[n++] = '.');
+    if(str_len != original_len) {
+        buf[str_len-0] = 0;
+        buf[str_len-1] =
+        buf[str_len-2] =
+        buf[str_len-3] = '.';
+    }
+
 
     drawrect_modifier(dc, 0, dc->color_border_pixels,
             dc->w, dc->h-(2*dc->color_border_pixels),
             True, col->BG);
-    drawtextn(dc, buf, mn, col);
+
+    drawtextn(dc, buf, str_len, col);
+
     if (vals[0]!=0 && vals[1]!=-15) {
         XDrawLine(dc->dpy, dc->canvas, dc->gc, dc->x + vals[0], 20, dc->x + vals[0] + vals[1], 20);
     }
+
+    puts(buf);
+    puts("");
     free(buf);
 }
 
@@ -230,9 +244,8 @@ int textw(DC * dc, const char * text) {
 }
 
 void get_underline_bounds(char *string, int *bounds, DC *dc) {
-    char *mod = strdup(string);
+    char *mod = string;
     char *pos = mod;
-    char *fre = mod;
 
     if (*mod == 7) {
         bounds[0] -= 7;
@@ -241,13 +254,14 @@ void get_underline_bounds(char *string, int *bounds, DC *dc) {
 
     while(*mod) {
         if (*mod==7) {
+            char save = *mod;
             *mod = 0;
-                *(bounds++) += textw(dc, (const char *)pos);
+            *(bounds++) += textw(dc, (const char *)pos);
+            *mod = save;
             pos = mod+1;
         }
         mod++;
     }
-    free(fre);
 }
 
 char *strip_backspaces(char *in) {
@@ -257,7 +271,7 @@ char *strip_backspaces(char *in) {
         *dst = *src;
         if (*dst != 7) dst++;
     }
-    *(dst+1) = '\0';
+    *(dst+0) = '\0';
 
     return out;
 }
