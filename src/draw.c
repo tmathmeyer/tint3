@@ -46,8 +46,6 @@ void drawtext(DC *dc, const char *text, ColorSet *col) {
     int vals[2] = {0, -15};
     get_underline_bounds((char *)text, vals, dc);
     char *buf = strip_backspaces((char *)text);
-    puts(text);
-    puts(buf);
 
     /* shorten text if necessary */
     size_t str_len = strlen(buf);
@@ -81,8 +79,6 @@ void drawtext(DC *dc, const char *text, ColorSet *col) {
         XDrawLine(dc->dpy, dc->canvas, dc->gc, dc->x + vals[0], 20, dc->x + vals[0] + vals[1], 20);
     }
 
-    puts(buf);
-    puts("");
     free(buf);
 }
 
