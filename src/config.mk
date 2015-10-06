@@ -24,7 +24,7 @@ INCS = -I${X11INC} -I${XFTINC}
 LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${XFTLIBS} ${LXCBLIBS} -lpthread -ldl
 
 # flags
-CPPFLAGS = -D_BSD_SOURCE -DVERSION=\"${VERSION}\" ${XINERAMAFLAGS}
+CPPFLAGS = -DVERSION=\"${VERSION}\" ${XINERAMAFLAGS}
 CFLAGS   = -std=c11 -pedantic -rdynamic -Wextra -Wall ${INCS} ${CPPFLAGS} -g
 LDFLAGS  = ${LIBS}
 
