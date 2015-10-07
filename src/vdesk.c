@@ -156,7 +156,7 @@ dlist *get_desktops_info(baritem *source) {
         return NULL;
     }
     if (!(source -> format)) {
-        source -> format = "◆ ◇";
+        source -> format = "%N";
     }
     if (!formatmap) {
         formatmap = initmap(8);
@@ -164,23 +164,24 @@ dlist *get_desktops_info(baritem *source) {
         fmt_map_put(formatmap, 'R', &_roman_numerals);
         fmt_map_put(formatmap, 'J', &_han_zi);
         fmt_map_put(formatmap, 'N', &_xlib_names);
-        fmt_map_put(formatmap, 'U', &__xlib_names);
     }
     dlist *result = dlist_new();
     int numdesk = get_number_of_desktops();
     int curdesk = get_current_desktop();
     current_desktop = 1;
     
+    char *sel_atom = get_baritem_option("current", source);
+    (void) sel_atom;
 
     while(current_desktop <= numdesk) {
         text_element *dsk = calloc(sizeof(text_element), 1);
         char *name = calloc(sizeof(char), 15); // 15 is the max length of a desktop name
         if (curdesk == current_desktop-1) {
-            format_string(name, "%U", formatmap);
+            format_string(name, source->format, formatmap);
             dsk->color = copy_color(source->default_colors);
-            dsk->color->BG = alphaset(getcolor(dc, "#444444"), 100);
+            dsk->color->BG = getcolor(dc, "#00111111");
         } else {
-            format_string(name, "%N", formatmap);
+            format_string(name, source->format, formatmap);
             dsk->color = copy_color(source->default_colors);
         }
         dsk->text = name;

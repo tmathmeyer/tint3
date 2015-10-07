@@ -65,22 +65,6 @@ void free_stylized(void *ste_v) {
     free(ste);
 }
 
-static int settransparency_helper(Display *display, Window win, double alpha) {
-    int err;
-    if (alpha < 0 || alpha > 1) {
-        return err;
-    }
-    uint32_t cardinal_alpha = (uint32_t) (alpha * (uint32_t)-1) ;
-
-    if (cardinal_alpha == (uint32_t)-1) {
-        XDeleteProperty( display, win, XInternAtom( display, "_NET_WM_WINDOW_OPACITY", 0)) ;
-    } else {
-        XChangeProperty( display, win, XInternAtom( display, "_NET_WM_WINDOW_OPACITY", 0),
-                XA_CARDINAL, 32, PropModeReplace, (uint8_t*) &cardinal_alpha, 1) ;
-    }
-    return 0 ;
-}
-
 // get the height of the bar
 int get_bar_height(int font_height) {
     return font_height-1
@@ -102,8 +86,6 @@ int main() {
     XInitThreads();
     pthread_mutex_init(&lock, NULL);
     setup();
-
-    //settransparency_helper(dc->dpy, win, 1);
 
     if (configuration->background_color != NULL) {
         bar_background_colour = getcolor(dc, configuration->background_color);
