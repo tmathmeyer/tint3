@@ -178,7 +178,7 @@ dlist *get_desktops_info(baritem *source) {
         if (curdesk == current_desktop-1) {
             format_string(name, "%U", formatmap);
             dsk->color = copy_color(source->default_colors);
-            dsk->color->FG_xft = get_xft_color(dc, "#ff9999");
+            dsk->color->BG = alphaset(getcolor(dc, "#444444"), 100);
         } else {
             format_string(name, "%N", formatmap);
             dsk->color = copy_color(source->default_colors);

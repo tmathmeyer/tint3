@@ -14,6 +14,7 @@ typedef struct ColorSet{
     XftColor FG_xft;
 } ColorSet;
 
+#define UNDERLINE_TEXT 0x01
 typedef struct stylized_text_element {
     unsigned long attributes;
     char *text;
@@ -109,6 +110,7 @@ baritem *item_by_coord(unsigned int x);
 
 char *get_baritem_option(char *opt_name, baritem* item);
 
+ColorSet *make_baritem_colours(char *fg, char *bg);
 void free_stylized(void *ste_v);
 
 //================//

@@ -23,14 +23,9 @@
 
 #define MAX_WINDOW_TITLE_LENGTH 256
 
-
-#define BATTERY_FOREGROUND_HIGH "#00ff00"
-#define BATTERY_BACKGROUND_HIGH "#282"
-#define BATTERY_FOREGROUND_MED "#ff0"
-#define BATTERY_BACKGROUND_MED "#886"
-#define BATTERY_FOREGROUND_LOW "#ff0000"
-#define BATTERY_BACKGROUND_LOW "#222222"
-
+#define BATTERY_FOREGROUND_HIGH "#000000"
+#define BATTERY_FOREGROUND_MED "#000000"
+#define BATTERY_FOREGROUND_LOW "#000000"
 
 dlist *get_active_window_name(baritem *source) {
     if (!source) {
@@ -79,12 +74,30 @@ dlist *get_battery(baritem *item) {
     int battery_percent = get_battery_percent(batt);
     snprintf(msg, 9, "%i%%", battery_percent);
     ColorSet *colors;
+
+    char *high_forground = get_baritem_option("high_font", item);
+    char *high_background = get_baritem_option("high_color", item);
+    char *med_forground = get_baritem_option("med_font", item);
+    char *med_background = get_baritem_option("med_color", item);
+    char *low_forground = get_baritem_option("low_font", item);
+    char *low_background = get_baritem_option("low_color", item);
+
+    if (!high_forground) {
+        high_forground = BATTERY_FOREGROUND_HIGH;
+    }
+    if (!med_forground) {
+        med_forground = BATTERY_FOREGROUND_MED;
+    }
+    if (!low_forground) {
+        low_forground = BATTERY_FOREGROUND_LOW;
+    }
+
     if (battery_percent > 80) {
-        colors = initcolor(dc, "#000000", BATTERY_FOREGROUND_HIGH);
+        colors = make_baritem_colours(high_forground, high_background);
     } else if (battery_percent > 20) {
-        colors = initcolor(dc, "#000000", BATTERY_FOREGROUND_MED);
+        colors = make_baritem_colours(med_forground, med_background);
     } else {
-        colors = initcolor(dc, "#000000", BATTERY_FOREGROUND_LOW);
+        colors = make_baritem_colours(low_forground, low_background);
     }
 
     text_element *element = calloc(sizeof(text_element), 1);

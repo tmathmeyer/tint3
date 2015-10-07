@@ -9,6 +9,7 @@
 
 #include <locale.h>
 #include <stdarg.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -110,12 +111,17 @@ void drawtextn(DC * dc, const char * text, size_t n, ColorSet * col) {
 // get a color from a string, and save it into the context
 unlong getcolor(DC *dc, const char *colstr) {
     XColor color;
-
     if(!XAllocNamedColor(dc->dpy, dc->wa.colormap, colstr, &color, &color)) {
         printf("cannot allocate color '%s'\n", colstr);
+        return 0;
     }
-
     return color.pixel;
+}
+
+ulong alphaset(ulong color, uint8_t alpha) {
+    uint32_t mod = alpha;
+    mod <<= 24;
+    return (0x00ffffff & color) | mod;
 }
 
 

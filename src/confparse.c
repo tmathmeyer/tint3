@@ -53,6 +53,17 @@ dlist *intern_lines(FILE *filein) {
     return lines;
 }
 
+int not_just_spaces(char *line) {
+    while(*line) {
+        if (*line == ' ' || *line == '\n') {
+            (void)*line++;
+        } else {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 dlist *itemize(dlist *lines) {
     dlist *items = dlist_new();
     char *line;
@@ -66,7 +77,9 @@ dlist *itemize(dlist *lines) {
             block = dlist_new();
         }
         if (block) {
-            dlist_add(block, line);
+            if (not_just_spaces(line)) {
+                dlist_add(block, line);
+            }
         }
     }
     if (block) {
@@ -317,7 +330,6 @@ bar_config *build_bar_config(FILE *rc) {
         } else if (is_block(iterate)) {
             block *block = as_block(iterate);
             dlist_add(blocks, block);
-            
             each(iterate, freeme) {
                 free(freeme);
             }
