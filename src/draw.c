@@ -31,6 +31,14 @@ void drawrect_modifier(DC * dc, int x, int y, unint w, unint h, Bool fill, unlon
     draw_rectangle(dc, dc->x + x, dc->y +y, w, h, fill, color);
 }
 
+ColorSet *copy_color(ColorSet *color) {
+    ColorSet *res = calloc(sizeof(ColorSet), 1);
+    res->FG = color->FG;
+    res->BG = color->BG;
+    res->FG_xft = color->FG_xft;
+    return res;
+}
+
 void draw_rectangle(DC * dc, unint x, unint y, unint w, unint h, Bool fill, unlong color) {
     XRectangle rect = {x, y, w, h};
     XSetForeground(dc -> dpy, dc -> gc, color);
@@ -43,8 +51,6 @@ void get_underline_bounds(char *string, int *bounds, DC *dc);
 
 // draw text
 void drawtext(DC *dc, const char *text, ColorSet *col) {
-    int vals[2] = {0, -15};
-    get_underline_bounds((char *)text, vals, dc);
     char *buf = strip_backspaces((char *)text);
 
     /* shorten text if necessary */
@@ -75,10 +81,6 @@ void drawtext(DC *dc, const char *text, ColorSet *col) {
 
     drawtextn(dc, buf, str_len, col);
 
-    if (vals[0]!=0 && vals[1]!=-15) {
-        XDrawLine(dc->dpy, dc->canvas, dc->gc, dc->x + vals[0], 20, dc->x + vals[0] + vals[1], 20);
-    }
-
     free(buf);
 }
 
@@ -92,7 +94,6 @@ void drawtextn(DC * dc, const char * text, size_t n, ColorSet * col) {
 
     if(dc->font.xft_font) {
         if (!dc->xftdraw) {
-            // TODO: change to a logger
             printf("error, xft drawable does not exist");
         }
         XftDrawStringUtf8(dc->xftdraw, &col->FG_xft,
@@ -107,7 +108,7 @@ void drawtextn(DC * dc, const char * text, size_t n, ColorSet * col) {
 }
 
 // get a color from a string, and save it into the context
-unlong getcolor(DC * dc, const char * colstr) {
+unlong getcolor(DC *dc, const char *colstr) {
     XColor color;
 
     if(!XAllocNamedColor(dc->dpy, dc->wa.colormap, colstr, &color, &color)) {
@@ -117,18 +118,26 @@ unlong getcolor(DC * dc, const char * colstr) {
     return color.pixel;
 }
 
+
+XftColor get_xft_color(DC *dc, const char *colstr) {
+    XftColor xft;
+
+    if(dc->font.xft_font) {
+        if(!XftColorAllocName(dc->dpy, DefaultVisual(dc->dpy, DefaultScreen(dc->dpy)),
+            DefaultColormap(dc->dpy, DefaultScreen(dc->dpy)), colstr, &xft)) {
+        }
+    }
+
+    return xft;
+}
+
 // make a color set (foreground, background)
-ColorSet * initcolor(DC * dc, const char * foreground, const char * background) {
+ColorSet *initcolor(DC *dc, const char *foreground, const char *background) {
     ColorSet * col = (ColorSet *)malloc(sizeof(ColorSet));
 
     col->BG = getcolor(dc, background);
     col->FG = getcolor(dc, foreground);
-
-    if(dc->font.xft_font) {
-        if(!XftColorAllocName(dc->dpy, DefaultVisual(dc->dpy, DefaultScreen(dc->dpy)),
-                    DefaultColormap(dc->dpy, DefaultScreen(dc->dpy)), foreground, &col->FG_xft)) {
-        }
-    }
+    col->FG_xft = get_xft_color(dc, foreground);
 
     return col;
 }

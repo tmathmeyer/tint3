@@ -32,16 +32,23 @@
 #define BATTERY_BACKGROUND_LOW "#222222"
 
 
-char * get_active_window_name(baritem * source) {
+dlist *get_active_window_name(baritem *source) {
     if (!source) {
         return NULL;
     }
-    char * window_title = malloc(MAX_WINDOW_TITLE_LENGTH);
+    char *window_title = malloc(MAX_WINDOW_TITLE_LENGTH);
     get_title(window_title, MAX_WINDOW_TITLE_LENGTH);
-    return window_title;
+
+    dlist *result = dlist_new();
+    text_element *elem = calloc(sizeof(text_element), 1);
+    elem->text = window_title;
+    elem->color = copy_color(source->default_colors);
+
+    dlist_add(result, elem);
+    return result;
 }
 
-char * get_time_format(baritem * item) {
+dlist *get_time_format(baritem *item) {
     char exec[100] = {0};
     snprintf(exec, sizeof exec, "date +'%s'", item -> format);
     FILE * desc = popen(exec, "r");
@@ -56,30 +63,40 @@ char * get_time_format(baritem * item) {
         }
         pclose(desc);
     }
-    return msg;
+
+    dlist *result = dlist_new();
+    text_element *elem = calloc(sizeof(text_element), 1);
+    elem->text = msg;
+    elem->color = copy_color(item->default_colors);
+
+    dlist_add(result, elem);
+    return result;
 }
 
-char * get_battery(baritem * item) {
+dlist *get_battery(baritem *item) {
     char *batt = (item -> source)+8;
-    char * msg = calloc(0,9);
+    char *msg = calloc(0,9);
     int battery_percent = get_battery_percent(batt);
-    char * query = (item->format)[0] - '1' ? "╻:%i%%" : "╺:%i%%";
-    snprintf(msg, 9, query, battery_percent);
-
-    free(item -> color);
-
+    snprintf(msg, 9, "%i%%", battery_percent);
+    ColorSet *colors;
     if (battery_percent > 80) {
-        item -> color = initcolor(dc, "#000000", BATTERY_FOREGROUND_HIGH);
+        colors = initcolor(dc, "#000000", BATTERY_FOREGROUND_HIGH);
     } else if (battery_percent > 20) {
-        item -> color = initcolor(dc, "#000000", BATTERY_FOREGROUND_MED);
+        colors = initcolor(dc, "#000000", BATTERY_FOREGROUND_MED);
     } else {
-        item -> color = initcolor(dc, "#000000", BATTERY_FOREGROUND_LOW);
+        colors = initcolor(dc, "#000000", BATTERY_FOREGROUND_LOW);
     }
 
-    return msg;
+    text_element *element = calloc(sizeof(text_element), 1);
+    element->text = msg;
+    element->color = colors;
+
+    dlist *newlist = dlist_new();
+    dlist_add(newlist, element);
+    return newlist;
 }
 
-char * get_volume_level(baritem * item) {
+dlist *get_volume_level(baritem *item) {
     char * pipe_format = "amixer get -c %s | tail -n 1 | cut -d '[' -f 2,4";
     int size = 44 + strlen(item -> source);
     char *pipe = calloc(sizeof(char), size);
@@ -89,74 +106,40 @@ char * get_volume_level(baritem * item) {
     int i = 0;
     if (pf) {
         fscanf(pf, "%i%%] [o%c", &i, &muted);
-        item -> inverted = muted == 'f' ? 1 : 0;
         fclose(pf);
     }
     free(pipe);
-    char * result = malloc(5);
-    snprintf(result, 5, "%i%%", i);
-    return result;
-}
 
-char * get_plain_text(baritem * item) {
-    int len = strlen(item -> source);
-    char * result = malloc(len+1);
-    snprintf(result, len+1, item -> source);
-    return result;
-}
-
-
-void toggle_mute(baritem *item, int xpos) {
-    (void) xpos; // specifically ignore this!
-    char * pipe_format = "amixer sset %s toggle";
-    int size = 13 + strlen(item -> source);
-    char * pipe = calloc(sizeof(char), size);
-    snprintf(pipe, size, pipe_format,(item -> source) + 7);
-    FILE * pf = popen(pipe, "r");
-    if(pf){
-        item -> string = (item -> update)(item);
-        fclose(pf);
+    text_element *element = calloc(sizeof(text_element), 1);
+    element->text = calloc(sizeof(char), 5);
+    snprintf(element->text, 5, "%i%%", i);
+    element->color = calloc(sizeof(ColorSet), 1);
+    element->color->FG_xft = item->default_colors->FG_xft;
+    if (muted == 'f') {
+        element->color->FG = item->default_colors->BG;
+        element->color->BG = item->default_colors->FG;
+        element->color->FG_xft = get_xft_color(dc, "#000");
+    } else {
+        element->color->FG = item->default_colors->FG;
+        element->color->BG = item->default_colors->BG;
     }
-    free(pipe);
-    drawmenu();
-    return;
-}
-
-char *show_volume_level(baritem *item) {
-    char * pipe_format = "amixer get -c %s | tail -n 1 | cut -d '[' -f 2,4";
-    int size = 44 + strlen(item -> source);
-    char *pipe = calloc(sizeof(char), size);
-    char muted;
-    snprintf(pipe, size, pipe_format, (item -> source) + 5);
-    FILE * pf = popen(pipe, "r");
-    int i = 0;
-    if (pf) {
-        fscanf(pf, "%i%%] [o%c", &i, &muted);
-        item -> inverted = muted == 'f' ? 1 : 0;
-        fclose(pf);
-    }
-    free(pipe);
-    char * result = malloc(11);
-    memcpy(result, "----------", 11);
-    result[i/10] = '|';
-    return result;
-}
-
-void expand_volume(baritem *item, int xpos) {
-    (void)xpos;
     
-    int redraw = 0;
-    if (item->update == &get_volume_level) {
-        redraw = 1;
-    }
-    item->update = &show_volume_level;
-    if (redraw) {
-        drawmenu();
-    }
+    dlist *result = dlist_new();
+    dlist_add(result, element);
+    return result;
 }
 
-void leave_volume(baritem *item) {
-    item->update = &get_volume_level;
-    drawmenu();
-}
+dlist *get_plain_text(baritem *item) {
+    int len = strlen(item -> source);
+    char *text = malloc(len+1);
+    snprintf(text, len+1, item -> source);
+    
+    
+    dlist *result = dlist_new();
+    text_element *elem = calloc(sizeof(text_element), 1);
+    elem->text = text;
+    elem->color = copy_color(item->default_colors);
 
+    dlist_add(result, elem);
+    return result;
+}

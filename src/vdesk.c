@@ -4,6 +4,7 @@
 #include "vdesk.h"
 #include "format.h"
 #include "tint3.h"
+#include "draw.h"
 
 static int current_desktop = 0;
 static fmt_map *formatmap = 0;
@@ -24,7 +25,7 @@ void *vdesk_listen(void *DATA) {
         XNextEvent(dsp, &xe);
         switch(xe.type) {
             case PropertyNotify:
-               ipl -> string = get_desktops_info(ipl);
+               ipl->elements = get_desktops_info(ipl);
                drawmenu();
                break;
         }
@@ -137,7 +138,7 @@ int _han_zi(int place, char *string) {
 int __xlib_names(int place, char *string) {
     dlist *res = get_x11_cpp_property(NET_DESKTOP_NAMES);
     char *data = (char *)(dget(res, current_desktop-1));
-    int result = place + sprintf(string+place, "%c%s%c", 7, data, 7);
+    int result = place + sprintf(string+place, "%s", data);
     dlist_deep_free(res);
     return result;
 }
@@ -150,7 +151,7 @@ int _xlib_names(int place, char *string) {
     return result;
 }
 
-char *get_desktops_info(baritem *source) {
+dlist *get_desktops_info(baritem *source) {
     if (!source) {
         return NULL;
     }
@@ -165,41 +166,28 @@ char *get_desktops_info(baritem *source) {
         fmt_map_put(formatmap, 'N', &_xlib_names);
         fmt_map_put(formatmap, 'U', &__xlib_names);
     }
-
-    current_desktop = 1;
-    char default_desktop[10] = {0};
-    char selected_desktop[10] = {0};
-    uint8_t sel = 0;
-    uint8_t wpos = 0;
-    uint8_t rpos = 0;
+    dlist *result = dlist_new();
     int numdesk = get_number_of_desktops();
     int curdesk = get_current_desktop();
-    char *tmp_bfr = calloc(numdesk * 15, sizeof(char));
-    uint8_t ctr = 0;
-    uint16_t offset = 0;
-    while((source->format)[rpos]) {
-        if ((source->format)[rpos] == ' ') {
-            sel = 1;
-            wpos = 0;
-            rpos++;
-            continue;
-        }
-        (sel?selected_desktop:default_desktop)[wpos++] = (source->format)[rpos++];
-    }
+    current_desktop = 1;
     
-    while(ctr < numdesk) {
-        if (ctr == curdesk) {
-            offset += format_string(tmp_bfr+offset, selected_desktop, formatmap);
-        } else {
-            offset += format_string(tmp_bfr+offset, default_desktop, formatmap);
-        }
-        offset += strcons(tmp_bfr+offset, " ", 1);
-        current_desktop++;
-        ctr++;
-    }
 
-    char *result = calloc(offset+1, sizeof(char));
-    memcpy(result, tmp_bfr, offset);
-    free(tmp_bfr);
+    while(current_desktop <= numdesk) {
+        text_element *dsk = calloc(sizeof(text_element), 1);
+        char *name = calloc(sizeof(char), 15); // 15 is the max length of a desktop name
+        if (curdesk == current_desktop-1) {
+            format_string(name, "%U", formatmap);
+            dsk->color = copy_color(source->default_colors);
+            dsk->color->FG_xft = get_xft_color(dc, "#ff9999");
+        } else {
+            format_string(name, "%N", formatmap);
+            dsk->color = copy_color(source->default_colors);
+        }
+        dsk->text = name;
+        
+        dlist_add(result, dsk);
+
+        current_desktop++;
+    }
     return result;
 }

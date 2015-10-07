@@ -26,7 +26,8 @@ void mapdc(DC *dc, Window win, unsigned int w, unsigned int h);
 void resizedc(DC *dc, unsigned int w, unsigned int h, XVisualInfo * vinfo, XSetWindowAttributes * wa);
 int textnw(DC *dc, const char *text, size_t len);
 int textw(DC *dc, const char *text);
-
+ColorSet *copy_color(ColorSet *color);
+XftColor get_xft_color(DC *dc, const char *colstr);
 const char *progname;
 
 #endif

@@ -10,25 +10,35 @@
 
 typedef struct ColorSet{
     unsigned long FG;
-    XftColor FG_xft;
     unsigned long BG;
+    XftColor FG_xft;
 } ColorSet;
 
-typedef struct baritem{
+typedef struct stylized_text_element {
+    unsigned long attributes;
+    char *text;
     ColorSet *color;
-    ColorSet *invert;
+    unsigned int length;
+} text_element;
+
+typedef struct baritem{
+    //recalculated often
     unsigned int length;
     unsigned int xstart;
-    unsigned char inverted;
-    char *string;
+    
+    // text elements
+    dlist *elements;
+
+    // brought in from config file
+    ColorSet *default_colors;
+    dlist *options;
     char *format;
     char *source;
     char *shell;
-    dlist *options;
-    char *(* update)(struct baritem *);
+    
+    // update listeners
+    dlist *(* update)(struct baritem *);
     void (* click)(struct baritem *, int xpos);
-    void (* mouseover)(struct baritem *, int xpos);
-    void (* mouse_exit)(struct baritem *);
 } baritem;
 
 typedef struct bar_layout {
@@ -98,6 +108,8 @@ dlist *get_x11_cpp_property(Atom at);
 baritem *item_by_coord(unsigned int x);
 
 char *get_baritem_option(char *opt_name, baritem* item);
+
+void free_stylized(void *ste_v);
 
 //================//
 // cardinals used //

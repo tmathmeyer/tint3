@@ -43,29 +43,26 @@ static void setup(void);
 static void config_to_layout(void);
 void update_nba(baritem *item);
 static void infer_type(block *conf_inf, baritem *ipl);
-
 static int height = 0;
 static int width  = 0;
-
-static char *quest = "???";
-
 static unsigned long bar_background_colour;
 static unsigned long bar_border_colour;
 static char *bar_font_colour;
-
 static unsigned long timeout = 60000000;
-
 static bar_config *configuration;
 static bar_layout *layout;
-
-
 static pthread_mutex_t lock;
-
-
 const char *font = "sakamoto-11";
 Window win;
 int topbar = 1;
 static int __debug__;
+
+void free_stylized(void *ste_v) {
+    text_element *ste = ste_v;
+    free(ste->color);
+    free(ste->text);
+    free(ste);
+}
 
 // get the height of the bar
 int get_bar_height(int font_height) {
@@ -126,10 +123,10 @@ int main() {
 // update the item's string contents
 void update_nba(baritem *item) {
     if (item->update) {
-        if ((item->string != NULL) && (item->string != quest)) {
-            free(item->string);
+        if ((item->elements != NULL)) {
+            dlist_deep_free_custom(item->elements, &free_stylized);
         }
-        item->string = (item->update)(item);
+        item->elements = (item->update)(item);
     }
 }
 
@@ -148,18 +145,13 @@ ColorSet *make_baritem_colours(char *fg, char *bg) {
 // turn a single item from the config stream into a displayable item
 baritem *makeitem(block *block) {
     baritem *result = malloc(sizeof(baritem));
-    result->invert = make_baritem_colours("#000000", "#ffffff");
-    result->color  = make_baritem_colours(block->forground, block->background);
+    result->default_colors  = make_baritem_colours(block->forground, block->background);
     result->format = block->format;
     result->source = block->source;
     result->shell = block->shell_click;
-    result->string = quest;
+    result->elements = dlist_new();
     result->options = block->map;
-
     result->click = NULL;
-    result->mouseover = NULL;
-    result->mouse_exit = NULL;
-    result->inverted = 0;
     result->xstart = 0;
     result->length = 0;
     infer_type(block, result);
@@ -198,8 +190,9 @@ char *get_baritem_option(char *opt_name, baritem* item) {
 }
 
 // fallback, in case no other source can be found
-char *questions(baritem *meh) {
-    return meh?quest:NULL;
+dlist *questions(baritem *meh) {
+    (void)meh;
+    return dlist_new();
 }
 
 void shell_exec(baritem *item, int xpos) {
@@ -218,7 +211,7 @@ void infer_type(block *conf_inf, baritem *ipl) {
         if (!strncmp(conf_inf->source, "workspaces", 10)) {
             spawn_vdesk_thread(ipl);
             ipl->update = NULL;
-            ipl->string = get_desktops_info(ipl);
+            ipl->elements = get_desktops_info(ipl);
         }
     } else if (IS_ID(conf_inf, "text")) {
         if (!strncmp(conf_inf->source, "clock", 5)) {
@@ -232,20 +225,15 @@ void infer_type(block *conf_inf, baritem *ipl) {
     } else if (IS_ID(conf_inf, "weather")) {
         spawn_weather_thread(ipl);
         ipl->update = NULL;
-        ipl->string = get_weather(ipl);
+        ipl->elements = get_weather(ipl);
     } else if (IS_ID(conf_inf, "scale")) {
         if (!strncmp(conf_inf->source, "battery", 7)) {
             ipl->update = &get_battery;
         } else if (!strncmp(conf_inf->source, "alsa", 4)) {
             ipl->update = &get_volume_level;
-            ipl->click = &toggle_mute;
-            if (has_options("vol_expand", configuration)) {
-                ipl->mouseover = &expand_volume;
-                ipl->mouse_exit = &leave_volume;
-            }
         }
     } else if (IS_ID(conf_inf, "graph")) {
-        ipl->update = &get_net_graph;
+        //ipl->update = &get_net_graph;
     }
 }
 
@@ -255,6 +243,8 @@ baritem *item_by_coord(uint x) {
     each(layout->left, bar) {
         uint st = bar->xstart;
         uint en = bar->xstart+bar->length;
+        
+        printf("%s :: %i->%i\n", bar->source, st, en);
         if(x>=st && x<=en) {
             return bar;
         }
@@ -263,6 +253,7 @@ baritem *item_by_coord(uint x) {
     each(layout->right, bar) {
         uint st = bar->xstart;
         uint en = bar->xstart+bar->length;
+        printf("%s :: %i->%i\n", bar->source, st, en);
         if(x>=st && x<=en) {
             return bar;
         }
@@ -271,6 +262,7 @@ baritem *item_by_coord(uint x) {
     each(layout->center, bar) {
         uint st = bar->xstart;
         uint en = bar->xstart+bar->length;
+        printf("%s :: %i->%i\n", bar->source, st, en);
         if(x>=st && x<=en) {
             return bar;
         }
@@ -358,22 +350,26 @@ unsigned int total_list_length(dlist *list) {
     uint len = 0;
     baritem *item;
     each(list, item) {
-        len += (item->length = textw(dc, item->string));
+        item->length = 0;
+        text_element *element;
+        each(item->elements, element) {
+            item->length += (element->length = textw(dc, element->text));
+        }
+        len += item->length;
     }
     return len;
 }
 
 void draw_list(dlist *list) {
     baritem *item;
+    text_element *elem;
     each(list, item) {
-        dc->w = item->length;
-        if (item->inverted) {
-            drawtext(dc, item->string, item->invert);
-        } else {
-            drawtext(dc, item->string, item->color);
-        }
         item->xstart = dc->x;
-        dc->x += dc->w;
+        each(item->elements, elem) {
+            dc->w = elem->length;
+            drawtext(dc, elem->text, elem->color);
+            dc->x += dc->w;
+        }
     }
 }
 

@@ -42,6 +42,16 @@ void dlist_deep_free(dlist *d) {
     dlist_free(d);
 }
 
+void dlist_deep_free_custom(dlist *d, void(*cfree)(void *)) {
+    void *data;
+    each(d, data) {
+        if (data) {
+            cfree(data);
+        }
+    }
+    dlist_free(d);
+}
+
 void dlist_free(dlist *d) {
     free(d->data);
     free(d);
