@@ -243,8 +243,6 @@ baritem *item_by_coord(uint x) {
     each(layout->left, bar) {
         uint st = bar->xstart;
         uint en = bar->xstart+bar->length;
-        
-        printf("%s :: %i->%i\n", bar->source, st, en);
         if(x>=st && x<=en) {
             return bar;
         }
@@ -253,7 +251,6 @@ baritem *item_by_coord(uint x) {
     each(layout->right, bar) {
         uint st = bar->xstart;
         uint en = bar->xstart+bar->length;
-        printf("%s :: %i->%i\n", bar->source, st, en);
         if(x>=st && x<=en) {
             return bar;
         }
@@ -262,7 +259,6 @@ baritem *item_by_coord(uint x) {
     each(layout->center, bar) {
         uint st = bar->xstart;
         uint en = bar->xstart+bar->length;
-        printf("%s :: %i->%i\n", bar->source, st, en);
         if(x>=st && x<=en) {
             return bar;
         }
