@@ -47,24 +47,24 @@ config file.
 | ID | Properties | Required | Notes |
 | -- | ---------- | -------- | ----- |
 | * | fontcolor | no | a [Colorcode](#Colorcodes) font color |
-|| background | no | a [Colorcode](#Colorcodes) background color |
-|| shell | no | a string that is piped to sh when the block is clicked |
+| | background | no | a [Colorcode](#Colorcodes) background color |
+| | shell | no | a string that is piped to sh when the block is clicked |
 | workspace | format | no | [Workspace Format](#Formatting-Workspaces) |
-|| current | no | (future work!) |
+| | current | no | (future work!) |
 | clock | format | yes | [Clock Format](#Formatting-Clock) |
-|| timeout | no | How often this block should refresh itself, in microseconds |
+| | timeout | no | How often this block should refresh itself, in microseconds |
 | active | source | yes | must be "window_title" (future work!) |
 | text | source | yes | a raw string to display |
 | weather | source | yes | a location from openweathermap.org |
-|| format | yes | [Weather Format](#Formatting-Weather) |
+| | format | yes | [Weather Format](#Formatting-Weather) |
 | graph | source | yes | [System Sources](#System-Sources) |
 | scale | source | yes | [System Sources](#System-Sources) |
-||high_font | no | high value font [Colorcode](#Colorcodes) |
-||low_font | no | low value font [Colorcode](#Colorcodes) |
-||med_font | no | medium value font [Colorcode](#Colorcodes) |
-||high_color | no | high value background [Colorcode](#Colorcodes) |
-||low_color | no | low value background [Colorcode](#Colorcodes) |
-||med_color | no | med value background [Colorcode](#Colorcodes) |
+| | high_font | no | high value font [Colorcode](#Colorcodes) |
+| | low_font | no | low value font [Colorcode](#Colorcodes) |
+| | med_font | no | medium value font [Colorcode](#Colorcodes) |
+| | high_color | no | high value background [Colorcode](#Colorcodes) |
+| | low_color | no | low value background [Colorcode](#Colorcodes) |
+| | med_color | no | med value background [Colorcode](#Colorcodes) |
 
 ###Format Strings:
 tint3 uses standard-style format strings, where any characters escaped with a
