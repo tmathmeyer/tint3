@@ -45,7 +45,7 @@ config file.
 
 ####Valid ID values:
 | ID | Properties | Required | Notes |
-| -- | ---------- | -------- | ----- |
+| --- | ---------- | -------- | ----- |
 | * | fontcolor | no | a [Colorcode](#Colorcodes) font color |
 | | background | no | a [Colorcode](#Colorcodes) background color |
 | | shell | no | a string that is piped to sh when the block is clicked |
