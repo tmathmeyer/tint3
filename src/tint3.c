@@ -205,21 +205,22 @@ void infer_type(block *conf_inf, baritem *ipl) {
         ipl->click = &shell_exec;
     }
 
-    if (IS_ID(conf_inf, "radio")) {
-        if (!strncmp(conf_inf->source, "workspaces", 10)) {
-            spawn_vdesk_thread(ipl);
-            ipl->update = NULL;
-            ipl->elements = get_desktops_info(ipl);
-        }
-    } else if (IS_ID(conf_inf, "text")) {
-        if (!strncmp(conf_inf->source, "clock", 5)) {
-            ipl->update = &get_time_format;
-            set_timeout(ipl);
-        } else if (!strncmp(conf_inf->source, "window_title", 12)) {
+    if (IS_ID(conf_inf, "workspace")) {
+        spawn_vdesk_thread(ipl);
+        ipl->update = NULL;
+        ipl->elements = get_desktops_info(ipl);
+    } else if (IS_ID(conf_inf, "clock")) {
+        ipl->update = &get_time_format;
+        set_timeout(ipl);
+    } else if (IS_ID(conf_inf, "active")) {
+        if (!strncmp(conf_inf->source, "window_title", 12)) {
             ipl->update = &get_active_window_name;
         } else {
-            ipl->update = &get_plain_text;
+            DEBUG("unrecognized active source");
+            DEBUG(conf_inf->source);
         }
+    } else if (IS_ID(conf_inf, "text")) {
+        ipl->update = &get_plain_text;
     } else if (IS_ID(conf_inf, "weather")) {
         spawn_weather_thread(ipl);
         ipl->update = NULL;
