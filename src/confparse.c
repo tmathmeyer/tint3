@@ -8,6 +8,7 @@
 #define _DEFAULT_SOURCE
 
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <string.h>
 #include "dlist.h"
@@ -53,6 +54,17 @@ dlist *intern_lines(FILE *filein) {
     return lines;
 }
 
+int not_just_spaces(char *line) {
+    while(*line) {
+        if (*line == ' ' || *line == '\n') {
+            (void)*line++;
+        } else {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 dlist *itemize(dlist *lines) {
     dlist *items = dlist_new();
     char *line;
@@ -66,7 +78,9 @@ dlist *itemize(dlist *lines) {
             block = dlist_new();
         }
         if (block) {
-            dlist_add(block, line);
+            if (not_just_spaces(line)) {
+                dlist_add(block, line);
+            }
         }
     }
     if (block) {
@@ -153,6 +167,8 @@ block *as_block(dlist *chunk) {
                 write_to = &(res->type);
             } else if(starts_with(line, "source")) {
                 write_to = &(res->source);
+            } else if(starts_with(line, "fontcolor")) {
+                write_to = &(res->forground);
             } else if(starts_with(line, "forground")) {
                 write_to = &(res->forground);
             } else if (starts_with(line, "shell")) {
@@ -247,18 +263,18 @@ bar_config *as_bar(dlist *src, dlist *blocks) {
         }
 
         else match("bordercolor") {
-            config->border_color = calloc(8, 1);
-            memcpy(config->border_color, line+12, 7);
+            config->border_color = strdup(line+12);
+            (config->border_color)[strlen(config->border_color)-1] = 0;
         }
 
         else match("fontcolor") {
-            config->font_color = calloc(8, 1);
-            memcpy(config->font_color, line+10, 7);
+            config->font_color = strdup(line+10);
+            (config->font_color)[strlen(config->font_color)-1] = 0;
         }
         
         else match("background") {
-            config->background_color = calloc(8, 1);
-            memcpy(config->background_color, line+11, 7);
+            config->background_color = strdup(line+11);
+            (config->background_color)[strlen(config->background_color)-1] = 0;
         }
         
         else match("left") {
@@ -317,7 +333,6 @@ bar_config *build_bar_config(FILE *rc) {
         } else if (is_block(iterate)) {
             block *block = as_block(iterate);
             dlist_add(blocks, block);
-            
             each(iterate, freeme) {
                 free(freeme);
             }

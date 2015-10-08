@@ -8,6 +8,7 @@
 #ifndef _DRAW_H_
 #define _DRAW_H_
 
+#include <stdint.h>
 #include "tint3.h"
 
 DC *dc;
@@ -26,7 +27,9 @@ void mapdc(DC *dc, Window win, unsigned int w, unsigned int h);
 void resizedc(DC *dc, unsigned int w, unsigned int h, XVisualInfo * vinfo, XSetWindowAttributes * wa);
 int textnw(DC *dc, const char *text, size_t len);
 int textw(DC *dc, const char *text);
-
+ColorSet *copy_color(ColorSet *color);
+XftColor get_xft_color(DC *dc, const char *colstr);
+ulong alphaset(ulong color, uint8_t alpha);
 const char *progname;
 
 #endif

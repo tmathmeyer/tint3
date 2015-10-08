@@ -14,6 +14,7 @@ typedef struct dlist {
 int dlist_add(dlist *d, void *data);
 dlist *dlist_new();
 void dlist_deep_free(dlist *d);
+void dlist_deep_free_custom(dlist *d, void(*cfree)(void *));
 void dlist_free(dlist *d);
 
 #define lc(l) ((l)->__lc__)

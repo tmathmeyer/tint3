@@ -10,7 +10,8 @@
 
 #include "tint3.h"
 
-char *get_weather(baritem * item);
+dlist *get_weather(baritem *item);
+
 char *get_weather_string(char *weather_format, char *weather_location);
 int temperatureK(int place, char *string);
 int weather_conditions(int place, char *string);

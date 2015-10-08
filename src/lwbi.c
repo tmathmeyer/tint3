@@ -11,7 +11,7 @@
 #include <string.h>
 #include <stdio.h>
 
-int get_battery_percent(char * forbattery) {
+int get_battery_percent(char *forbattery) {
     char * path = "/sys/class/power_supply";
     FILE * fp;
     char battery_read[512];

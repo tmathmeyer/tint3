@@ -59,7 +59,7 @@ int setup(void) {
     return 0;
 }
 
-char * expand_escapes(const char *src) {
+char *expand_escapes(const char *src) {
     char *dest = (char *)malloc(2 * strlen(src) + 1);
     char *start = dest;
     char c;

@@ -45,7 +45,7 @@ void *weather_listen(void *DATA) {
     baritem * ipl = DATA;
     sleep(1);
     while(1) {
-        ipl -> string = get_weather(ipl);
+        ipl->elements = get_weather(ipl);
         drawmenu();
         sleep(30*60);
     }
@@ -56,12 +56,21 @@ void spawn_weather_thread(baritem *ipl) {
     pthread_create(&weather_ltnr, NULL, weather_listen, ipl);
 }
 
-char *get_weather(baritem* item) {
+dlist *get_weather(baritem* item) {
+    dlist *result = dlist_new();
+    text_element *elem = calloc(sizeof(text_element), 1);
+    
     if (_INIT_) {
         _INIT_ = 0;
-        return strdup("~connecting~");
+        elem->text = strdup("~connecting~");
+    } else {
+        elem->text = get_weather_string(item->format, item->source);
     }
-    return get_weather_string(item -> format, item -> source);
+
+    elem->color = item->default_colors;
+
+    dlist_add(result, elem);
+    return result;
 }
 
 struct comb {

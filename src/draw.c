@@ -9,6 +9,7 @@
 
 #include <locale.h>
 #include <stdarg.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -31,6 +32,14 @@ void drawrect_modifier(DC * dc, int x, int y, unint w, unint h, Bool fill, unlon
     draw_rectangle(dc, dc->x + x, dc->y +y, w, h, fill, color);
 }
 
+ColorSet *copy_color(ColorSet *color) {
+    ColorSet *res = calloc(sizeof(ColorSet), 1);
+    res->FG = color->FG;
+    res->BG = color->BG;
+    res->FG_xft = color->FG_xft;
+    return res;
+}
+
 void draw_rectangle(DC * dc, unint x, unint y, unint w, unint h, Bool fill, unlong color) {
     XRectangle rect = {x, y, w, h};
     XSetForeground(dc -> dpy, dc -> gc, color);
@@ -43,8 +52,6 @@ void get_underline_bounds(char *string, int *bounds, DC *dc);
 
 // draw text
 void drawtext(DC *dc, const char *text, ColorSet *col) {
-    int vals[2] = {0, -15};
-    get_underline_bounds((char *)text, vals, dc);
     char *buf = strip_backspaces((char *)text);
 
     /* shorten text if necessary */
@@ -75,15 +82,11 @@ void drawtext(DC *dc, const char *text, ColorSet *col) {
 
     drawtextn(dc, buf, str_len, col);
 
-    if (vals[0]!=0 && vals[1]!=-15) {
-        XDrawLine(dc->dpy, dc->canvas, dc->gc, dc->x + vals[0], 20, dc->x + vals[0] + vals[1], 20);
-    }
-
     free(buf);
 }
 
 // drawtext helper that actually draws the text
-void drawtextn(DC * dc, const char * text, size_t n, ColorSet * col) {
+void drawtextn(DC *dc, const char *text, size_t n, ColorSet *col) {
     int x = dc->x + dc->font.height/2;
     int y = dc->y + dc->font.ascent + (dc->text_offset_y + dc->color_border_pixels + 2) / 2;
 
@@ -92,7 +95,6 @@ void drawtextn(DC * dc, const char * text, size_t n, ColorSet * col) {
 
     if(dc->font.xft_font) {
         if (!dc->xftdraw) {
-            // TODO: change to a logger
             printf("error, xft drawable does not exist");
         }
         XftDrawStringUtf8(dc->xftdraw, &col->FG_xft,
@@ -107,28 +109,79 @@ void drawtextn(DC * dc, const char * text, size_t n, ColorSet * col) {
 }
 
 // get a color from a string, and save it into the context
-unlong getcolor(DC * dc, const char * colstr) {
+unlong _getcolor(DC *dc, const char *colstr) {
     XColor color;
-
     if(!XAllocNamedColor(dc->dpy, dc->wa.colormap, colstr, &color, &color)) {
         printf("cannot allocate color '%s'\n", colstr);
+        return 0;
     }
-
     return color.pixel;
 }
 
+ulong alphaset(ulong color, uint8_t alpha) {
+    uint32_t mod = alpha;
+    mod <<= 24;
+    return (0x00ffffff & color) | mod;
+}
+
+uint8_t hex(char c) {
+    if (c >= '0' && c <= '9') {
+        return (uint8_t)(c-'0');
+    }
+    if (c >= 'a' && c <= 'f') {
+        return (uint8_t)(10+c-'a');
+    }
+    if (c >= 'A' && c <= 'F') {
+        return (uint8_t)(10+c-'A');
+    }
+    return 0;
+}
+
+ulong getcolor(DC *dc, const char *colstr) {
+    char *rgbcs = strdup(colstr);
+    char *freeme = rgbcs;
+    uint8_t value;
+    switch(strlen(colstr)) {
+        case 4: // #rgb
+        case 7: // #rrggbb
+            free(freeme);
+            return _getcolor(dc, colstr);
+        case 9: // #aarrggbb
+            value = 16*hex(colstr[1]) + hex(colstr[2]);
+            rgbcs += 2;
+            break;
+        case 5: // #argb
+            value = hex(colstr[1]) * 17;
+            rgbcs += 1;
+            break;
+    }
+
+    rgbcs[0] = '#';
+    ulong result = _getcolor(dc, rgbcs);
+    result = alphaset(result, value);
+    free(freeme);
+    return result;
+}
+
+XftColor get_xft_color(DC *dc, const char *colstr) {
+    XftColor xft;
+
+    if(dc->font.xft_font) {
+        if(!XftColorAllocName(dc->dpy, DefaultVisual(dc->dpy, DefaultScreen(dc->dpy)),
+            DefaultColormap(dc->dpy, DefaultScreen(dc->dpy)), colstr, &xft)) {
+        }
+    }
+
+    return xft;
+}
+
 // make a color set (foreground, background)
-ColorSet * initcolor(DC * dc, const char * foreground, const char * background) {
+ColorSet *initcolor(DC *dc, const char *foreground, const char *background) {
     ColorSet * col = (ColorSet *)malloc(sizeof(ColorSet));
 
     col->BG = getcolor(dc, background);
     col->FG = getcolor(dc, foreground);
-
-    if(dc->font.xft_font) {
-        if(!XftColorAllocName(dc->dpy, DefaultVisual(dc->dpy, DefaultScreen(dc->dpy)),
-                    DefaultColormap(dc->dpy, DefaultScreen(dc->dpy)), foreground, &col->FG_xft)) {
-        }
-    }
+    col->FG_xft = get_xft_color(dc, foreground);
 
     return col;
 }

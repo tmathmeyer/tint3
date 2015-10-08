@@ -9,13 +9,16 @@
 #include <stdlib.h>
 #include "format.h"
 
+
+#include <stdio.h>
+
 int BAD(int start, char *dest) {
     (void) dest;
     return start;
 }
 
 typedef int (*textformatter)(int, char *);
-textformatter lookup(fmt_map * fmt, char id) {
+textformatter lookup(fmt_map *fmt, char id) {
     if (!fmt) {
         return BAD;
     } else {
@@ -29,7 +32,7 @@ textformatter lookup(fmt_map * fmt, char id) {
     return BAD;
 }
 
-int format_string(char * dest, char * fmt, fmt_map * formatmap) {
+int format_string(char *dest, char *fmt, fmt_map *formatmap) {
     int e = 0;
     int i = 0;
     int d = 0;
