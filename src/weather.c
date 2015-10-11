@@ -157,8 +157,8 @@ fmt_map * getformatmap() {
 
 
 void update_json_context(char * location) {
-    char url[100] = {0};
-    snprintf(url, 100, "/data/2.5/weather?q=%s", location);
+    char url[256] = {0};
+    snprintf(url, 100, "/data/2.5/weather?q=%s&APPID="API_KEY, location);
 
     char *host = "api.openweathermap.org";
     char *weather_s = malloc(weather_parse_size);

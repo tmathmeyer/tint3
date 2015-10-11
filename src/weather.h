@@ -10,6 +10,8 @@
 
 #include "tint3.h"
 
+#define API_KEY "4fdd945fddcc1a090934dacc3e38b8d7"
+
 dlist *get_weather(baritem *item);
 
 char *get_weather_string(char *weather_format, char *weather_location);

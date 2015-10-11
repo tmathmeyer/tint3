@@ -187,7 +187,7 @@ ColorSet *initcolor(DC *dc, const char *foreground, const char *background) {
 }
 
 
-DC * initdc(void) {
+DC *initdc(void) {
     if(!setlocale(LC_CTYPE, "") || !XSupportsLocale()) {
         printf("no locale support\n");
     }
