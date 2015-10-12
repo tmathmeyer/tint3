@@ -65,6 +65,7 @@ config file.
 | | high_color | no | high value background [Colorcode](#Colorcodes) |
 | | low_color | no | low value background [Colorcode](#Colorcodes) |
 | | med_color | no | med value background [Colorcode](#Colorcodes) |
+| shell | source | yes | a command to execute, the output of which will be displayed |
 
 ###Format Strings:
 tint3 uses standard-style format strings, where any characters escaped with a
