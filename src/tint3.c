@@ -233,6 +233,8 @@ void infer_type(block *conf_inf, baritem *ipl) {
         }
     } else if (IS_ID(conf_inf, "graph")) {
         //ipl->update = &get_net_graph;
+    } else if (IS_ID(conf_inf, "shell")) {
+       ipl->update=&shell_cmd; 
     }
 }
 

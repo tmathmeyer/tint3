@@ -68,6 +68,26 @@ dlist *get_time_format(baritem *item) {
     return result;
 }
 
+dlist *shell_cmd(baritem *item) {
+    dlist *result = dlist_new();
+
+    FILE *pf = popen(item->source, "r");
+    if (pf) {
+        char line[50];
+        fgets(line, 50, pf);
+        line[48] = 0;
+
+        text_element *elem = calloc(sizeof(text_element), 1);
+        elem->text = strdup(line);
+        elem->color = copy_color(item->default_colors);
+
+        dlist_add(result, elem);
+        fclose(pf);
+    }
+
+    return result;
+}
+
 dlist *get_battery(baritem *item) {
     char *batt = (item -> source)+8;
     char *msg = calloc(0,9);
@@ -136,7 +156,7 @@ dlist *get_volume_level(baritem *item) {
         element->color->FG = item->default_colors->FG;
         element->color->BG = item->default_colors->BG;
     }
-    
+
     dlist *result = dlist_new();
     dlist_add(result, element);
     return result;
@@ -146,8 +166,8 @@ dlist *get_plain_text(baritem *item) {
     int len = strlen(item -> source);
     char *text = malloc(len+1);
     snprintf(text, len+1, item -> source);
-    
-    
+
+
     dlist *result = dlist_new();
     text_element *elem = calloc(sizeof(text_element), 1);
     elem->text = text;
