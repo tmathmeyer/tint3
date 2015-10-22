@@ -14,16 +14,16 @@
 unsigned long long old_down=0, old_up=0;
 unsigned long net_tick = 0;
 
-void update_network(char * interface) {
+void update_network(char *interface) {
     if (time(NULL)-net_tick > 2) {
         time((time_t *)&net_tick);
 
-        FILE * fp = fopen("/proc/net/dev", "r");
+        FILE *fp = fopen("/proc/net/dev", "r");
         if (fp == NULL) {
             return;
         }
 
-        char * buffer = malloc(4096), * bt = buffer, temp = 0;
+        char *buffer = malloc(4096), *bt = buffer, temp = 0;
         while( (temp=fgetc(fp)) != EOF) {
             *(bt++) = temp;
         }
@@ -40,7 +40,7 @@ void update_network(char * interface) {
 
         int ud = up-old_up, dd = down-old_down;
 
-        char * netname = calloc(0, strlen(interface) + 4);
+        char *netname = calloc(0, strlen(interface) + 4);
         snprintf(netname, strlen(interface)+4, "%s up", interface);
 
         if (old_down != 0 && old_up != 0) {
@@ -58,7 +58,7 @@ void update_network(char * interface) {
     }
 }
 
-char * get_net_graph(baritem * item) {
+char *get_net_graph(baritem *item) {
     char source2[20] = {0};
     snprintf(source2, 20, item -> source + 8);
     strstr(source2, " ")[0] = 0;
