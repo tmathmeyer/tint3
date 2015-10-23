@@ -9,10 +9,7 @@ url="https://github.com/tmathmeyer/${pkgname}"
 license=('GPL')
 depends=('libxft' 'xcb-util-wm' 'libxinerama')
 makedepends=('git' 'libx11' 'xcb-util')
-optdepends=()
-provides=("${pkgname}")
-conflicts=("${pkgname}" "tint3-cpp-git")
-conflicts=("${pkgname}" "tint3-git")
+conflicts=("tint3-git" "tint3-cpp-git")
 source=("git://github.com/tmathmeyer/${pkgname}.git")
 md5sums=('SKIP')
 
