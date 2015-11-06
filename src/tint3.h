@@ -22,6 +22,21 @@ typedef struct stylized_text_element {
     unsigned int length;
 } text_element;
 
+typedef struct colored_graph_element {
+    int *xys;
+    unsigned int xy_count;
+    ColorSet *color;
+} graph_element;
+
+typedef struct generic_element {
+    union {
+        graph_element *graph;
+        text_element *text;
+    };
+    unsigned int opt;
+    unsigned int length;
+} element;
+
 typedef struct baritem{
     //recalculated often
     unsigned int length;

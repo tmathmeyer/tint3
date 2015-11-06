@@ -59,9 +59,19 @@ int topbar = 1;
 static int __debug__;
 
 void free_stylized(void *ste_v) {
-    text_element *ste = ste_v;
-    free(ste->color);
-    free(ste->text);
+    element *ste = ste_v;
+    switch(ste->opt) {
+        case 0:
+            free(ste->text->color);
+            free(ste->text->text);
+            free(ste->text);
+            break;
+        case 1:
+            free(ste->graph->color);
+            free(ste->graph->xys);
+            free(ste->graph);
+            break;
+    }
     free(ste);
 }
 
@@ -325,9 +335,7 @@ void drawmenu(void) {
             width-2*configuration->border_size,
             height-2*configuration->border_size, True, bar_background_colour);
 
-
     update_with_lens();
-
 
     dc->x = dc->color_border_pixels;
     draw_list(layout->left);
@@ -341,16 +349,41 @@ void drawmenu(void) {
 }
 
 
+void drawgraph(DC *dc, graph_element *element) {
+    drawline(dc, dc->x, element->xy_count, element->xys);
+}
 
+unsigned int graphlength(graph_element *element) {
+    unsigned int smallest = 9999999; // honestly, its just easier
+    unsigned int largest = 0;
+    unsigned int i = element->xy_count;
+    int *el = element->xys;
+    while(i --> 0) {
+        if (*el > largest) {
+            largest = *el;
+        }
+        if (*el < smallest) {
+            smallest = *el;
+        }
+    }
+    return largest - smallest;
+}
 
 unsigned int total_list_length(dlist *list) {
     uint len = 0;
     baritem *item;
     each(list, item) {
         item->length = 0;
-        text_element *element;
+        element *element;
         each(item->elements, element) {
-            item->length += (element->length = textw(dc, element->text));
+            switch(element->opt) {
+                case 0:
+                    item->length += (element->length = textw(dc, element->text->text));
+                    break;
+                case 1:
+                    item->length += (element->length = graphlength(element->graph));
+                    break;
+            }
         }
         len += item->length;
     }
@@ -359,12 +392,18 @@ unsigned int total_list_length(dlist *list) {
 
 void draw_list(dlist *list) {
     baritem *item;
-    text_element *elem;
+    element *elem;
     each(list, item) {
         item->xstart = dc->x;
         each(item->elements, elem) {
             dc->w = elem->length;
-            drawtext(dc, elem->text, elem->color);
+            switch(elem->opt) {
+                case 0:
+                    drawtext(dc, elem->text->text, elem->text->color);
+                    break;
+                case 1:
+                    drawgraph(dc, elem->graph);
+            }
             dc->x += dc->w;
         }
     }

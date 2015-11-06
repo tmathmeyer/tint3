@@ -39,7 +39,10 @@ dlist *get_active_window_name(baritem *source) {
     elem->text = window_title;
     elem->color = copy_color(source->default_colors);
 
-    dlist_add(result, elem);
+    element *e = calloc(sizeof(element), 1);
+    e->text = elem;
+    e->opt = 0;
+    dlist_add(result, e);
     return result;
 }
 
@@ -64,7 +67,11 @@ dlist *get_time_format(baritem *item) {
     elem->text = msg;
     elem->color = copy_color(item->default_colors);
 
-    dlist_add(result, elem);
+    element *e = calloc(sizeof(element), 1);
+    e->text = elem;
+    e->opt = 0;
+
+    dlist_add(result, e);
     return result;
 }
 
@@ -81,7 +88,11 @@ dlist *shell_cmd(baritem *item) {
         elem->text = strdup(line);
         elem->color = copy_color(item->default_colors);
 
-        dlist_add(result, elem);
+        element *e = calloc(sizeof(element), 1);
+        e->text = elem;
+        e->opt = 0;
+
+        dlist_add(result, e);
         fclose(pf);
     }
 
@@ -120,12 +131,17 @@ dlist *get_battery(baritem *item) {
         colors = make_baritem_colours(low_forground, low_background);
     }
 
-    text_element *element = calloc(sizeof(text_element), 1);
-    element->text = msg;
-    element->color = colors;
+    text_element *elem = calloc(sizeof(text_element), 1);
+    elem->text = msg;
+    elem->color = colors;
 
     dlist *newlist = dlist_new();
-    dlist_add(newlist, element);
+
+    element *e = calloc(sizeof(element), 1);
+    e->text = elem;
+    e->opt = 0;
+
+    dlist_add(newlist, e);
     return newlist;
 }
 
@@ -143,22 +159,27 @@ dlist *get_volume_level(baritem *item) {
     }
     free(pipe);
 
-    text_element *element = calloc(sizeof(text_element), 1);
-    element->text = calloc(sizeof(char), 5);
-    snprintf(element->text, 5, "%i%%", i);
-    element->color = calloc(sizeof(ColorSet), 1);
-    element->color->FG_xft = item->default_colors->FG_xft;
+    text_element *elem = calloc(sizeof(text_element), 1);
+    elem->text = calloc(sizeof(char), 5);
+    snprintf(elem->text, 5, "%i%%", i);
+    elem->color = calloc(sizeof(ColorSet), 1);
+    elem->color->FG_xft = item->default_colors->FG_xft;
     if (muted == 'f') {
-        element->color->FG = item->default_colors->BG;
-        element->color->BG = item->default_colors->FG;
-        element->color->FG_xft = get_xft_color(dc, "#000");
+        elem->color->FG = item->default_colors->BG;
+        elem->color->BG = item->default_colors->FG;
+        elem->color->FG_xft = get_xft_color(dc, "#000");
     } else {
-        element->color->FG = item->default_colors->FG;
-        element->color->BG = item->default_colors->BG;
+        elem->color->FG = item->default_colors->FG;
+        elem->color->BG = item->default_colors->BG;
     }
 
     dlist *result = dlist_new();
-    dlist_add(result, element);
+
+    element *e = calloc(sizeof(element), 1);
+    e->text = elem;
+    e->opt = 0;
+
+    dlist_add(result, e);
     return result;
 }
 
@@ -173,6 +194,10 @@ dlist *get_plain_text(baritem *item) {
     elem->text = text;
     elem->color = copy_color(item->default_colors);
 
-    dlist_add(result, elem);
+    element *e = calloc(sizeof(element), 1);
+    e->text = elem;
+    e->opt = 0;
+
+    dlist_add(result, e);
     return result;
 }

@@ -27,8 +27,20 @@
 #define MAX_TITLE_LENGTH 50
 #define MAX_TITLE_LENGTH_PX 300
 
+
+void drawline(DC *dc, int at_x, int npts, int *points) {
+    XSetForeground(dc->dpy, dc->gc, getcolor(dc, "#ff0000"));
+    while(npts --> 1) {
+        XDrawLine(dc->dpy, dc->canvas, dc->gc, *(points+0)+at_x
+                                             , dc->h - *(points+1)
+                                             , *(points+2)+at_x
+                                             , dc->h - *(points+3));
+        points += 2;
+    }
+}
+
 // draw a rectangle on the screen; either solid or bordered
-void drawrect_modifier(DC * dc, int x, int y, unint w, unint h, Bool fill, unlong color) {
+void drawrect_modifier(DC *dc, int x, int y, unint w, unint h, Bool fill, unlong color) {
     draw_rectangle(dc, dc->x + x, dc->y +y, w, h, fill, color);
 }
 
@@ -40,19 +52,18 @@ ColorSet *copy_color(ColorSet *color) {
     return res;
 }
 
-void draw_rectangle(DC * dc, unint x, unint y, unint w, unint h, Bool fill, unlong color) {
+void draw_rectangle(DC *dc, unint x, unint y, unint w, unint h, Bool fill, unlong color) {
     XRectangle rect = {x, y, w, h};
     XSetForeground(dc -> dpy, dc -> gc, color);
 
     (fill ? XFillRectangles : XDrawRectangles)(dc -> dpy, dc -> canvas, dc -> gc, &rect, 1);
 }
 
-char *strip_backspaces(char *in);
 void get_underline_bounds(char *string, int *bounds, DC *dc);
 
 // draw text
 void drawtext(DC *dc, const char *text, ColorSet *col) {
-    char *buf = strip_backspaces((char *)text);
+    char *buf = (char *)text;
 
     /* shorten text if necessary */
     size_t str_len = strlen(buf);
@@ -81,8 +92,6 @@ void drawtext(DC *dc, const char *text, ColorSet *col) {
             True, col->BG);
 
     drawtextn(dc, buf, str_len, col);
-
-    free(buf);
 }
 
 // drawtext helper that actually draws the text
@@ -177,7 +186,7 @@ XftColor get_xft_color(DC *dc, const char *colstr) {
 
 // make a color set (foreground, background)
 ColorSet *initcolor(DC *dc, const char *foreground, const char *background) {
-    ColorSet * col = (ColorSet *)malloc(sizeof(ColorSet));
+    ColorSet *col = (ColorSet *)malloc(sizeof(ColorSet));
 
     col->BG = getcolor(dc, background);
     col->FG = getcolor(dc, foreground);
@@ -192,7 +201,7 @@ DC *initdc(void) {
         printf("no locale support\n");
     }
 
-    DC * dc = malloc(sizeof(DC));
+    DC *dc = malloc(sizeof(DC));
     if(! dc) {
         printf("cannot allocate memory");
     }
@@ -214,8 +223,8 @@ DC *initdc(void) {
 }
 
 
-void initfont(DC * dc, const char * fontstr) {
-    char * def, ** missing = NULL;
+void initfont(DC *dc, const char *fontstr) {
+    char *def, **missing = NULL;
     int i, n;
 
     if((dc->font.xfont = XLoadQueryFont(dc->dpy, fontstr))) {
@@ -244,14 +253,14 @@ void initfont(DC * dc, const char * fontstr) {
 }
 
 
-void mapdc(DC * dc, Window win, unsigned int w, unsigned int h) {
+void mapdc(DC *dc, Window win, unsigned int w, unsigned int h) {
     XClearArea(dc->dpy, win, 0, 0, w, h, 0);
     XCopyArea(dc->dpy, dc->canvas, win, dc->gc, 0, 0, w, h, 0, 0);
     XFlush(dc->dpy);
 }
 
 
-void resizedc(DC * dc, unsigned int w, unsigned int h, XVisualInfo * vinfo, XSetWindowAttributes * wa) {
+void resizedc(DC *dc, unsigned int w, unsigned int h, XVisualInfo *vinfo, XSetWindowAttributes *wa) {
     if(dc->canvas) {
         XFreePixmap(dc->dpy, dc->canvas);
     }
@@ -271,7 +280,7 @@ void resizedc(DC * dc, unsigned int w, unsigned int h, XVisualInfo * vinfo, XSet
 }
 
 
-int textnw(DC * dc, const char * text, size_t len) {
+int textnw(DC *dc, const char *text, size_t len) {
     len = MIN(MAX_TITLE_LENGTH, len);
     if(dc->font.xft_font) {
         XGlyphInfo gi;
@@ -288,7 +297,7 @@ int textnw(DC * dc, const char * text, size_t len) {
 }
 
 
-int textw(DC * dc, const char * text) {
+int textw(DC *dc, const char *text) {
     return textnw(dc, text, strlen(text)) + dc->font.height;
 }
 
@@ -311,17 +320,5 @@ void get_underline_bounds(char *string, int *bounds, DC *dc) {
         }
         mod++;
     }
-}
-
-char *strip_backspaces(char *in) {
-    char *out = strdup(in);
-    char *src, *dst;
-    for (src = dst = out; *src != '\0'; src++) {
-        *dst = *src;
-        if (*dst != 7) dst++;
-    }
-    *(dst+0) = '\0';
-
-    return out;
 }
 

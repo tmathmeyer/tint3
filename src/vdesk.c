@@ -186,7 +186,11 @@ dlist *get_desktops_info(baritem *source) {
         }
         dsk->text = name;
         
-        dlist_add(result, dsk);
+        element *elem = calloc(sizeof(element), 1);
+        elem->text = dsk;
+        elem->opt = 0;
+
+        dlist_add(result, elem);
 
         current_desktop++;
     }
