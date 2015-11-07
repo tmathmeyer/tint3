@@ -67,7 +67,6 @@ void free_stylized(void *ste_v) {
             free(ste->text);
             break;
         case 1:
-            free(ste->graph->color);
             free(ste->graph->xys);
             free(ste->graph);
             break;
@@ -241,8 +240,10 @@ void infer_type(block *conf_inf, baritem *ipl) {
         } else if (!strncmp(conf_inf->source, "alsa", 4)) {
             ipl->update = &get_volume_level;
         }
-    } else if (IS_ID(conf_inf, "graph")) {
-        //ipl->update = &get_net_graph;
+    } else if (IS_ID(conf_inf, "network")) {
+        if (!strncmp("graph", get_baritem_option("style", ipl), 5)) {
+            ipl->update = &get_net_graph;
+        }
     } else if (IS_ID(conf_inf, "shell")) {
        ipl->update=&shell_cmd; 
     }
@@ -350,12 +351,12 @@ void drawmenu(void) {
 
 
 void drawgraph(DC *dc, graph_element *element) {
-    drawline(dc, dc->x, element->xy_count, element->xys);
+    drawline(dc, element->color, dc->x, element->xy_count, element->xys);
 }
 
 unsigned int graphlength(graph_element *element) {
-    unsigned int smallest = 9999999; // honestly, its just easier
-    unsigned int largest = 0;
+    int smallest = 9999999; // honestly, its just easier
+    int largest = 0;
     unsigned int i = element->xy_count;
     int *el = element->xys;
     while(i --> 0) {
@@ -365,8 +366,10 @@ unsigned int graphlength(graph_element *element) {
         if (*el < smallest) {
             smallest = *el;
         }
+        el += 2;
     }
-    return largest - smallest;
+    //return largest - smallest;
+    return 100;
 }
 
 unsigned int total_list_length(dlist *list) {

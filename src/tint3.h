@@ -115,6 +115,7 @@ extern Window win;
 
 // redraw the bar (why did I call it menu?)
 void drawmenu(void);
+void update_nba(baritem *item);
 
 // get a property 
 int get_x11_cardinal_property(Atom at, Atom type);

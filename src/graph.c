@@ -7,76 +7,96 @@
 #define _DEFAULT_SOURCE
 
 #include "graph.h"
+#include "dmap.h"
+#include "tint3.h"
 
-static const char *bar_map = "▁▂▃▄▅▆▇";
-static glist *graphs = NULL;
+static dmap *map = NULL;
 
-graph * get_named_graph(char * name) {
-    glist * temp = graphs;
-    while(temp) {
-        if (!strncmp(name, temp -> name, strlen(name))) {
-            return temp -> data;
-        }
-        temp = temp -> next;
+graph_element *get_named(char *name) {
+    if (!map) {
+        map = map_new();
+        put(map, name, init_ir(50)); // TODO MUST FIX
     }
-    glist * addition = malloc(sizeof(glist));
-    addition -> name = name;
-    addition -> data = make_new_graph();
-    addition -> next = graphs;
-    graphs = addition;
-    return addition -> data;
+    graph_ir *ir = map_get(map, name);
+    if (ir) {
+        return from_ir(ir, 30, 0); // TODO FIX THIS VERY IMPORTANT
+    }
+    return NULL;
 }
 
-void recalc_max(graph * gr) {
-    int ctr = 0, i = 0;
-    for(; i < GRAPHLENGTH; i++) {
-        if ((gr -> graph)[i] > ctr) {
-            ctr = (gr -> graph)[i];
-        }
+void ir_put_next(graph_ir *ir, float value) {   
+    ir->tail->value = value;
+    ir->tail = ir->tail->next;
+    ir->head = ir->head->next;
+    if (ir->occupied_size < ir->max_size) {
+        ir->occupied_size++;
     }
-    gr -> max = ctr;
 }
 
-void add_to_graph(int i, graph * gr) {
-    int old = (gr -> graph)[gr -> start];
-    (gr -> graph)[gr -> start] = i;
-    if (i > gr -> max) {
-        gr -> max = i;
+graph_element *write_graph_value(char *name, float value) {
+    if (!map) {
+        map = map_new();
     }
-    if (old ==  gr -> max) {
-        recalc_max(gr);
+    graph_ir *graph = (graph_ir *)map_get(map, name);
+    if (!graph) {
+        graph = init_ir(50); //TODO FIX THIS VERY IMPORTANT
+        put(map, name, graph);
     }
-    gr -> start = ((gr -> start)+1)%GRAPHLENGTH;
+    ir_put_next(graph, value);
+    return from_ir(graph, 30, 0); //TODO FIX THIS VERY IMPORTANT
 }
 
-char * graph_to_string(graph * gr) {
-    char * result = malloc(GRAPHLENGTH*3+1);
-    int ctr = 0, i = 0;
-    for(; i < GRAPHLENGTH*3+1; i++) {
-        result[i] = 0;
+graph_chain *make_loop(int size) {
+    graph_chain *head = calloc(sizeof(graph_chain), 1);
+    graph_chain *tail = head;
+
+    while(size --> 1) {
+        tail->next = calloc(sizeof(graph_chain), 1);
+        tail = tail->next;
     }
-    i = 0;
-    for(; i < GRAPHLENGTH; i++) {
-        int val = (gr -> graph)[((gr -> start)+i)%GRAPHLENGTH]*7/((gr -> max)+1) + 1;
-        if (val < 0) {
-            val = 0;
+    tail->next = head;
+    return head;
+}
+
+graph_ir *init_ir(int size) {
+    graph_ir *res = calloc(sizeof(graph_ir), 1);
+    res->occupied_size = 0; //redundant, but whatever
+    res->max_size = size;
+    res->tail = 
+    res->head = make_loop(size);
+    return res;
+}
+
+graph_element *from_ir(graph_ir *ir, int upperbound, int lowerbound) {
+    float float_max = -3.4028e+38;
+    float float_min = 3.4028e+38;
+    graph_element *result = calloc(sizeof(graph_element), 1);
+    int count = 0;
+    int x = ir->max_size;
+    graph_chain *c = ir->head;
+    while(x --> 0) {
+        if (c->value > float_max) {
+            float_max = c->value;
         }
-        result[ctr++] = bar_map[(val-1)*3+0];
-        result[ctr++] = bar_map[(val-1)*3+1];
-        result[ctr++] = bar_map[(val-1)*3+2];
+        if (c->value < float_min) {
+            float_min = c->value;
+        }
+        c = c->next;
     }
-    result[GRAPHLENGTH*3] = 0;
+
+    x = ir->max_size;
+    c = ir->head;
+    result->xy_count = x;
+    result->xys = calloc(sizeof(int), x * 2);
+
+    while(x --> 0) {
+        float ratio = (c->value - float_min) / (float_max - float_min + 1);
+        float gp = ((upperbound - lowerbound) * ratio) + lowerbound;
+        (result->xys)[count] = count*1;
+        (result->xys)[count+1] = (int)gp;
+        count+=2;
+        c = c->next;
+    }
+
     return result;
 }
-
-graph * make_new_graph() {
-    graph * g = NULL;
-    g = malloc(sizeof(graph));
-    g -> start = 0;
-    g -> max = 0;
-    int i=0; for(; i<GRAPHLENGTH; i++) {
-        (g->graph)[i] = 0;
-    }
-    return g;
-}
-

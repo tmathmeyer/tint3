@@ -28,12 +28,12 @@
 #define MAX_TITLE_LENGTH_PX 300
 
 
-void drawline(DC *dc, int at_x, int npts, int *points) {
-    XSetForeground(dc->dpy, dc->gc, getcolor(dc, "#ff0000"));
+void drawline(DC *dc, ColorSet *cs, int at_x, int npts, int *points) {
+    XSetForeground(dc->dpy, dc->gc, cs->FG);
     while(npts --> 1) {
-        XDrawLine(dc->dpy, dc->canvas, dc->gc, *(points+0)+at_x
+        XDrawLine(dc->dpy, dc->canvas, dc->gc, at_x + *(points+0)
                                              , dc->h - *(points+1)
-                                             , *(points+2)+at_x
+                                             , at_x + *(points+2)
                                              , dc->h - *(points+3));
         points += 2;
     }
