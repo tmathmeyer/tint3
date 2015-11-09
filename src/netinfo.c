@@ -15,7 +15,7 @@ unsigned long long old_down=0, old_up=0;
 unsigned long net_tick = 0;
 
 void update_network(char *interface) {
-    if (time(NULL)-net_tick > 5) {
+    if (time(NULL)-net_tick > 0) { // TODO redesign
         time((time_t *)&net_tick);
 
         FILE *fp = fopen("/proc/net/dev", "r");
@@ -65,6 +65,9 @@ dlist *get_net_graph(baritem *item) {
     if (a) {
         dlist_add(res, e);
         a->color = item->default_colors;
+    } else {
+        free(e);
+        dlist_free(res);
     }
     return res;
 }

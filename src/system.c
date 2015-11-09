@@ -50,7 +50,7 @@ dlist *get_time_format(baritem *item) {
     char exec[100] = {0};
     snprintf(exec, sizeof exec, "date +'%s'", item -> format);
     FILE * desc = popen(exec, "r");
-    char * msg = calloc(0, 20);
+    char * msg = calloc(1, 20);
     int msg_c = 0; char msg_s;
     if (desc) {
         while( (msg_s = fgetc(desc)) != '\n') {
@@ -101,7 +101,7 @@ dlist *shell_cmd(baritem *item) {
 
 dlist *get_battery(baritem *item) {
     char *batt = (item -> source)+8;
-    char *msg = calloc(0,9);
+    char *msg = calloc(1,9);
     int battery_percent = get_battery_percent(batt);
     snprintf(msg, 9, "%i%%", battery_percent);
     ColorSet *colors;

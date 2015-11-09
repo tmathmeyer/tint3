@@ -43,7 +43,7 @@ graph_element *write_graph_value(char *name, float value) {
         put(map, name, graph);
     }
     ir_put_next(graph, value);
-    return from_ir(graph, 30, 0); //TODO FIX THIS VERY IMPORTANT
+    return NULL; //TODO eventually return from_ir on graph, for re-arch
 }
 
 graph_chain *make_loop(int size) {

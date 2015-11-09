@@ -57,6 +57,7 @@ const char *font = "sakamoto-11";
 Window win;
 int topbar = 1;
 static int __debug__;
+static int __valgrind__;
 
 void free_stylized(void *ste_v) {
     element *ste = ste_v;
@@ -338,12 +339,14 @@ void drawmenu(void) {
 
     update_with_lens();
 
-    dc->x = dc->color_border_pixels;
-    draw_list(layout->left);
-    dc->x = width-(layout->rightlen)-dc->color_border_pixels;
-    draw_list(layout->right);
-    dc->x = (width-(layout->centerlen))/2;
-    draw_list(layout->center);
+    if (!__valgrind__) {
+        dc->x = dc->color_border_pixels;
+        draw_list(layout->left);
+        dc->x = width-(layout->rightlen)-dc->color_border_pixels;
+        draw_list(layout->right);
+        dc->x = (width-(layout->centerlen))/2;
+        draw_list(layout->center);
+    }
 
     mapdc(dc, win, width, height);
     pthread_mutex_unlock(&lock);
@@ -507,6 +510,11 @@ void setup() {
 
     configuration = build_bar_config(test_set_config());
     __debug__ = has_options("debug", configuration);
+    __valgrind__ = has_options("valgrind", configuration);
+
+    if (__debug__) {
+        printf("valgrind is %i\n", __valgrind__);
+    }
 
     DEBUG("DEBUG_INIT");
 
