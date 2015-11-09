@@ -57,11 +57,21 @@ const char *font = "sakamoto-11";
 Window win;
 int topbar = 1;
 static int __debug__;
+static int __valgrind__;
 
 void free_stylized(void *ste_v) {
-    text_element *ste = ste_v;
-    free(ste->color);
-    free(ste->text);
+    element *ste = ste_v;
+    switch(ste->opt) {
+        case 0:
+            free(ste->text->color);
+            free(ste->text->text);
+            free(ste->text);
+            break;
+        case 1:
+            free(ste->graph->xys);
+            free(ste->graph);
+            break;
+    }
     free(ste);
 }
 
@@ -231,8 +241,10 @@ void infer_type(block *conf_inf, baritem *ipl) {
         } else if (!strncmp(conf_inf->source, "alsa", 4)) {
             ipl->update = &get_volume_level;
         }
-    } else if (IS_ID(conf_inf, "graph")) {
-        //ipl->update = &get_net_graph;
+    } else if (IS_ID(conf_inf, "network")) {
+        if (!strncmp("graph", get_baritem_option("style", ipl), 5)) {
+            ipl->update = &get_net_graph;
+        }
     } else if (IS_ID(conf_inf, "shell")) {
        ipl->update=&shell_cmd; 
     }
@@ -325,32 +337,59 @@ void drawmenu(void) {
             width-2*configuration->border_size,
             height-2*configuration->border_size, True, bar_background_colour);
 
-
     update_with_lens();
 
-
-    dc->x = dc->color_border_pixels;
-    draw_list(layout->left);
-    dc->x = width-(layout->rightlen)-dc->color_border_pixels;
-    draw_list(layout->right);
-    dc->x = (width-(layout->centerlen))/2;
-    draw_list(layout->center);
+    if (!__valgrind__) {
+        dc->x = dc->color_border_pixels;
+        draw_list(layout->left);
+        dc->x = width-(layout->rightlen)-dc->color_border_pixels;
+        draw_list(layout->right);
+        dc->x = (width-(layout->centerlen))/2;
+        draw_list(layout->center);
+    }
 
     mapdc(dc, win, width, height);
     pthread_mutex_unlock(&lock);
 }
 
 
+void drawgraph(DC *dc, graph_element *element) {
+    drawline(dc, element->color, dc->x, element->xy_count, element->xys);
+}
 
+unsigned int graphlength(graph_element *element) {
+    int smallest = 9999999; // honestly, its just easier
+    int largest = 0;
+    unsigned int i = element->xy_count;
+    int *el = element->xys;
+    while(i --> 0) {
+        if (*el > largest) {
+            largest = *el;
+        }
+        if (*el < smallest) {
+            smallest = *el;
+        }
+        el += 2;
+    }
+    //return largest - smallest;
+    return 100;
+}
 
 unsigned int total_list_length(dlist *list) {
     uint len = 0;
     baritem *item;
     each(list, item) {
         item->length = 0;
-        text_element *element;
+        element *element;
         each(item->elements, element) {
-            item->length += (element->length = textw(dc, element->text));
+            switch(element->opt) {
+                case 0:
+                    item->length += (element->length = textw(dc, element->text->text));
+                    break;
+                case 1:
+                    item->length += (element->length = graphlength(element->graph));
+                    break;
+            }
         }
         len += item->length;
     }
@@ -359,12 +398,18 @@ unsigned int total_list_length(dlist *list) {
 
 void draw_list(dlist *list) {
     baritem *item;
-    text_element *elem;
+    element *elem;
     each(list, item) {
         item->xstart = dc->x;
         each(item->elements, elem) {
             dc->w = elem->length;
-            drawtext(dc, elem->text, elem->color);
+            switch(elem->opt) {
+                case 0:
+                    drawtext(dc, elem->text->text, elem->text->color);
+                    break;
+                case 1:
+                    drawgraph(dc, elem->graph);
+            }
             dc->x += dc->w;
         }
     }
@@ -465,6 +510,11 @@ void setup() {
 
     configuration = build_bar_config(test_set_config());
     __debug__ = has_options("debug", configuration);
+    __valgrind__ = has_options("valgrind", configuration);
+
+    if (__debug__) {
+        printf("valgrind is %i\n", __valgrind__);
+    }
 
     DEBUG("DEBUG_INIT");
 

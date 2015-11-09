@@ -32,4 +32,5 @@ XftColor get_xft_color(DC *dc, const char *colstr);
 ulong alphaset(ulong color, uint8_t alpha);
 const char *progname;
 
+void drawline(DC *dc, ColorSet *cs, int at_x, int npts, int *points);
 #endif

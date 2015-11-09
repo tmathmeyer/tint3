@@ -25,9 +25,12 @@ void *vdesk_listen(void *DATA) {
         XNextEvent(dsp, &xe);
         switch(xe.type) {
             case PropertyNotify:
-               ipl->elements = get_desktops_info(ipl);
-               drawmenu();
-               break;
+                if ((ipl->elements != NULL)) {
+                    dlist_deep_free_custom(ipl->elements, &free_stylized);
+                }
+                ipl->elements = get_desktops_info(ipl);
+                drawmenu();
+                break;
         }
     }
 
@@ -166,6 +169,7 @@ dlist *get_desktops_info(baritem *source) {
         fmt_map_put(formatmap, 'N', &_xlib_names);
     }
     dlist *result = dlist_new();
+    
     int numdesk = get_number_of_desktops();
     int curdesk = get_current_desktop();
     current_desktop = 1;
@@ -186,9 +190,14 @@ dlist *get_desktops_info(baritem *source) {
         }
         dsk->text = name;
         
-        dlist_add(result, dsk);
+        element *elem = calloc(sizeof(element), 1);
+        elem->text = dsk;
+        elem->opt = 0;
+
+        dlist_add(result, elem);
 
         current_desktop++;
     }
     return result;
+
 }

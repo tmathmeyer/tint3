@@ -68,8 +68,11 @@ dlist *get_weather(baritem* item) {
     }
 
     elem->color = item->default_colors;
+    element *e = calloc(sizeof(element), 1);
+    e->text = elem;
+    e->opt = 0;
 
-    dlist_add(result, elem);
+    dlist_add(result, e);
     return result;
 }
 

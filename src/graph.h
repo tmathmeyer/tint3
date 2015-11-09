@@ -12,24 +12,30 @@
 
 #define GRAPHLENGTH 15
 
-typedef struct graph{
-    int graph[GRAPHLENGTH*3+1];
-    int start;
-    int max;
-} graph;
+typedef struct graph_chain {
+    struct graph_chain *next;
+    float value;
+} graph_chain;
 
-typedef struct glist{
-    struct glist * next;
-    char * name;
-    graph * data;
-} glist;
+typedef struct graph_ir {
+    unsigned int occupied_size;
+    unsigned int max_size;
+    graph_chain *head;
+    graph_chain *tail;
+} graph_ir;
 
+/**
+ * returns a graph element WITH NO COLOR
+ * */
+graph_element *write_graph_value(char *name, float value);
 
-graph *make_new_graph();
-graph *get_named_graph(char * name);
-char *graph_to_string(graph * gr);
-void recalc_max(graph * gr);
-void add_to_graph(int i, graph * gr);
+graph_chain *make_loop(int size);
+
+graph_ir *init_ir(int size);
+
+graph_element *from_ir(graph_ir *ir, int upperbound, int lowerbound);
+
+graph_element *get_named(char *name);
 
 #endif
 
