@@ -65,6 +65,8 @@ config file.
 | | high_color | no | high value background [Colorcode](#Colorcodes) |
 | | low_color | no | low value background [Colorcode](#Colorcodes) |
 | | med_color | no | med value background [Colorcode](#Colorcodes) |
+| | cutoff:high | no | number 0-100, denotes change from med to high |
+| | cutoff:low | no | number 0-100, denotes change from low to med |
 | shell | source | yes | a command to execute, the output of which will be displayed |
 
 ###Format Strings:

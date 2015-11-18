@@ -123,9 +123,23 @@ dlist *get_battery(baritem *item) {
         low_forground = BATTERY_FOREGROUND_LOW;
     }
 
-    if (battery_percent > 80) {
+    char *highpoint = get_baritem_option("cutoff:high", item);
+    char *lowpoint = get_baritem_option("cutoff:low", item);
+    int high = 80;
+    int low = 20;
+
+    if (highpoint) {
+        high = atoi(highpoint); //TODO: I feel like this should be checked...
+    }
+
+    if (lowpoint) {
+        low = atoi(lowpoint); //TODO: same as above
+    }
+
+
+    if (battery_percent > high) {
         colors = make_baritem_colours(high_forground, high_background);
-    } else if (battery_percent > 20) {
+    } else if (battery_percent > low) {
         colors = make_baritem_colours(med_forground, med_background);
     } else {
         colors = make_baritem_colours(low_forground, low_background);
