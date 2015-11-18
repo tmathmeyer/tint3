@@ -166,7 +166,6 @@ A basic example of a configuration is shown:
  * center
 
 ####Optional Properties
-[Colorcode](#Colorcodes)
 * background : [Colorcode](#Colorcodes) default is fully transparent
 * bordercolor : [Colorcode](#Colorcodes) This is required if borderwidth is greater than 0
 * fontname : the name of the font to use. Use the name of the ttf file,
