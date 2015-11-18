@@ -166,8 +166,9 @@ A basic example of a configuration is shown:
  * center
 
 ####Optional Properties
-* background :  [[colorcode]], default is fully transparent
-* bordercolor :  [[colorcode]] This is required if borderwidth is greater than 0
+[Colorcode](#Colorcodes)
+* background : [Colorcode](#Colorcodes) default is fully transparent
+* bordercolor : [Colorcode](#Colorcodes) This is required if borderwidth is greater than 0
 * fontname : the name of the font to use. Use the name of the ttf file,
 than the actual font name. use 'fc-list' to get a list of font files and their names
 
