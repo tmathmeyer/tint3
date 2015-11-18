@@ -512,6 +512,10 @@ void setup() {
     __debug__ = has_options("debug", configuration);
     __valgrind__ = has_options("valgrind", configuration);
 
+    if (configuration->font_name) {
+        font = configuration->font_name;
+    }
+
     if (__debug__) {
         printf("valgrind is %i\n", __valgrind__);
     }

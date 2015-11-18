@@ -40,6 +40,7 @@ typedef struct {
     char *font_color;
     char *border_color;
     char *background_color;
+    char *font_name;
     location location;
     dlist *left;
     dlist *center;

@@ -233,6 +233,7 @@ bar_config *as_bar(dlist *src, dlist *blocks) {
     config -> margin_size = 0;
     config -> location = TOP;
     config -> font_color = NULL;
+    config -> font_name = NULL;
     config -> border_color = NULL;
     config -> background_color = NULL;
     config -> left = dlist_new();
@@ -270,6 +271,11 @@ bar_config *as_bar(dlist *src, dlist *blocks) {
         else match("fontcolor") {
             config->font_color = strdup(line+10);
             (config->font_color)[strlen(config->font_color)-1] = 0;
+        }
+
+        else match("fontname") {
+            config->font_name = strdup(line+9);
+            (config->font_name)[strlen(config->font_name)-1] = 0;
         }
         
         else match("background") {
