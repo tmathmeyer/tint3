@@ -174,8 +174,8 @@ dlist *get_desktops_info(baritem *source) {
     int curdesk = get_current_desktop();
     current_desktop = 1;
     
-    char *sel_atom = get_baritem_option("current", source);
-    (void) sel_atom;
+    char *cur_bg = get_baritem_option("active:background", source);
+    char *cur_fg = get_baritem_option("action:font", source);
 
     while(current_desktop <= numdesk) {
         text_element *dsk = calloc(sizeof(text_element), 1);
@@ -183,7 +183,12 @@ dlist *get_desktops_info(baritem *source) {
         if (curdesk == current_desktop-1) {
             format_string(name, source->format, formatmap);
             dsk->color = copy_color(source->default_colors);
-            dsk->color->BG = getcolor(dc, "#00111111");
+            if (cur_bg) {
+                dsk->color->BG = getcolor(dc, cur_bg);
+            }
+            if (cur_fg) {
+                dsk->color->FG = getcolor(dc, cur_fg);
+            }
         } else {
             format_string(name, source->format, formatmap);
             dsk->color = copy_color(source->default_colors);

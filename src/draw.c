@@ -97,7 +97,7 @@ void drawtext(DC *dc, const char *text, ColorSet *col) {
 // drawtext helper that actually draws the text
 void drawtextn(DC *dc, const char *text, size_t n, ColorSet *col) {
     int x = dc->x + dc->font.height/2;
-    int y = dc->y + dc->font.ascent + (dc->text_offset_y + dc->color_border_pixels + 2) / 2;
+    int y = dc->y + dc->font.ascent + (dc->text_offset_y + 2*dc->color_border_pixels + 2) / 2;
 
     XSetForeground(dc->dpy, dc->gc, col->FG);
 
