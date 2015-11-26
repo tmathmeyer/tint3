@@ -32,7 +32,7 @@
 #include "mouse.h"
 #include "dlist.h"
 
-#define INRECT(x,y,rx,ry,rw,rh) ((x) >= (rx) && (x) < (rx)+(rw) && (y) >= (ry) && (y) < (ry)+(rh))
+#define INRECT(x,y,a,b,c,d)((x)>=(a)&&(x)<(a)+(c)&&(y)>=(b)&&(y)<(b)+(d))
 #define MIN(a,b)                ((a) < (b) ? (a) : (b))
 #define MAX(a,b)                ((a) > (b) ? (a) : (b))
 #define DEBUG(str) if (__debug__){puts(str);}
@@ -143,8 +143,13 @@ ColorSet *make_baritem_colours(char *fg, char *bg) {
     result->FG = (fg) ? getcolor(dc, fg) : getcolor(dc, bar_font_colour);
     result->BG = (bg) ? getcolor(dc, bg) : bar_background_colour;
     if(dc->font.xft_font) {
-        if(!XftColorAllocName(dc->dpy, DefaultVisual(dc->dpy, DefaultScreen(dc->dpy)),
-                    DefaultColormap(dc->dpy, DefaultScreen(dc->dpy)), fg?fg:bar_font_colour, &result->FG_xft)) {
+        if(!XftColorAllocName(
+            dc->dpy
+            ,DefaultVisual(dc->dpy, DefaultScreen(dc->dpy))
+            ,DefaultColormap(dc->dpy, DefaultScreen(dc->dpy))
+            ,fg?fg:bar_font_colour, &result->FG_xft)
+        ) {
+            // do something if it fails
         }
     }
     return result;
@@ -153,7 +158,8 @@ ColorSet *make_baritem_colours(char *fg, char *bg) {
 // turn a single item from the config stream into a displayable item
 baritem *makeitem(block *block) {
     baritem *result = malloc(sizeof(baritem));
-    result->default_colors  = make_baritem_colours(block->forground, block->background);
+    result->default_colors =
+        make_baritem_colours(block->forground, block->background);
     result->format = block->format;
     result->source = block->source;
     result->shell = block->shell_click;
@@ -384,10 +390,12 @@ unsigned int total_list_length(dlist *list) {
         each(item->elements, element) {
             switch(element->opt) {
                 case 0:
-                    item->length += (element->length = textw(dc, element->text->text));
+                    item->length +=
+                        (element->length=textw(dc, element->text->text));
                     break;
                 case 1:
-                    item->length += (element->length = graphlength(element->graph));
+                    item->length +=
+                        (element->length = graphlength(element->graph));
                     break;
             }
         }
@@ -560,8 +568,8 @@ void setup() {
     win = XCreateWindow(dc->dpy, root, x, y, width, height, 0,
             vinfo.depth, InputOutput,
             vinfo.visual,
-            CWOverrideRedirect|CWEventMask|CWColormap|CWBorderPixel|CWBackPixel,
-            &wa);
+            CWOverrideRedirect|CWEventMask|CWColormap|CWBorderPixel|CWBackPixel
+            ,&wa);
     dc->gc = XCreateGC(dc->dpy, win, 0, NULL);
 
     resizedc(dc, width, height, &vinfo, &wa);
