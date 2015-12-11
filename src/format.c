@@ -38,6 +38,9 @@ int format_string(char *dest, char *fmt, fmt_map *formatmap) {
     int d = 0;
     for(;fmt[i];i++) {
         if (fmt[i] == '%') {
+            if (d) {
+                dest[e++] = '%';
+            }
             d = !d;
         } else if (d) {
             d = !d;
