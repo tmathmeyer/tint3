@@ -1,18 +1,18 @@
 [[bar]]
   fontcolor #ffffff
+  fontname Fantasque Sans Mono
   borderwidth 0
-  padding 5
+  padding 6
   margin 0
   location bottom
   options debug
-  left 2
+  left
     desktops
     active
-  center 2
-    date
+  center
     time
-  right 6
-    upload
+    date
+  right
     download
     weather
     volume
@@ -20,61 +20,62 @@
     batterytwo
 
 [active]
-  id text
+  id active
   source window_title
 
+# %N -> Name of the desktop
 [desktops]
-  id radio
-  source workspaces
-  format %N %U
+  id workspace
+  format %N
+  active:background #2002
 
-#split time and date (for no apparent reason)
+# split time and date, looks better on a dual monitor system
 [time]
+  id clock
   timeout 5
-  id text
-  source clock
   format %T
+  shell bg.sh
 
 [date]
-  id text
-  source clock
+  id clock
   format %a - %d
 
 [weather]
   id weather
-  format %W, ▉%F (%H)
-  type temperature
-  details-location aligned
-  source Seattle,usa
-  shell notify-send "fuck you"
+  format %W, %F°F (%H%%)
+  source Boston,usa
 
 [download]
-  id graph
-  source network wlp3s0 down
-  forground #D58D6B
+  id network
+  style graph
+  source wlp3s0 down
+  forground #ff0000
 
 [upload]
-  id graph
-  source network wlp3s0 up
+  id network
+  style graph
+  source wlp3s0 up
   shell dmenu_run
-  forground #748DA6
+  fontcolor #748DA6
 
 #dual battery system (x240)
 [batteryone]
   id scale
-  forground #EEEE22
-  type unknown
   source battery BAT1
-  format 0
+  high_font #00FF00
+  med_font #FFFF00
+  low_font #222222
+  low_color #FF0000
 
 [batterytwo]
   id scale
-  forground #11EE11
-  type unknown
   source battery BAT0
-  format 1
+  high_font #00FF00
+  med_font #FFFF00
+  low_font #222222
+  low_color #FF0000
 
 [volume]
   id scale
   source alsa 0 Master
-
+  shell amixer set Master toggle
