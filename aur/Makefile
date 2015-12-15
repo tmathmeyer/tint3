@@ -6,8 +6,13 @@ local:
 	makepkg
 	rm -rf src pkg PKGBUILD
 
-git:
+remote:
 	ln -s PKGBUILD.remote PKGBUILD
+	makepkg
+	rm -rf src pkg PKGBUILD
+
+git:
+	ln -s PKGBUILD.git PKGBUILD
 	makepkg
 	rm -rf src pkg PKGBUILD
 
