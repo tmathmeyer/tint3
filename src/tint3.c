@@ -32,18 +32,21 @@
 #include "mouse.h"
 #include "dlist.h"
 
+/* Macros */
 #define INRECT(x,y,a,b,c,d)((x)>=(a)&&(x)<(a)+(c)&&(y)>=(b)&&(y)<(b)+(d))
 #define MIN(a,b)                ((a) < (b) ? (a) : (b))
 #define MAX(a,b)                ((a) > (b) ? (a) : (b))
 #define DEBUG(str) if (__debug__){puts(str);}
 #define IS_ID(x, a) (!(strncmp(x->id, a, strlen(a))))
 
-
+/* Functions */
 static void run(void);
 static void setup(void);
 static void config_to_layout(void);
 void update_nba(baritem *item);
 static void infer_type(block *conf_inf, baritem *ipl);
+
+/* Variables */
 static int height = 0;
 static int width  = 0;
 static unsigned long bar_background_colour;
@@ -58,6 +61,8 @@ Window win;
 int topbar = 1;
 static int __debug__;
 static int __valgrind__;
+
+/* Implementation */
 
 void free_stylized(void *ste_v) {
     element *ste = ste_v;
@@ -84,7 +89,11 @@ int get_bar_height(int font_height) {
 
 // get the bar width
 int get_bar_width(int display_width) {
-    return display_width - 2 * configuration->margin_size;
+    if (configuration->width != 0) {
+        return configuration->width;
+    } else {
+    	return display_width - 2 * configuration->margin_size;
+    }
 }
 
 int scale_to(int from, int to, float by) {
@@ -92,6 +101,7 @@ int scale_to(int from, int to, float by) {
     return to-f;
 }
 
+// Main
 int main() {
     XInitThreads();
     pthread_mutex_init(&lock, NULL);
@@ -297,7 +307,6 @@ dlist *config_to_drawable(dlist *bid) {
 }
 
 
-
 void config_to_layout() {
     layout = malloc(sizeof(bar_layout));
     layout->left = config_to_drawable(configuration->left);
@@ -323,11 +332,7 @@ void update_with_lens() {
     layout->centerlen = total_list_length(layout->center);
 }
 
-
-
-
-
-
+// Draw the bar
 void drawmenu(void) {
     pthread_mutex_lock(&lock);
     dc->x = 0;

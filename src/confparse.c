@@ -231,6 +231,7 @@ bar_config *as_bar(dlist *src, dlist *blocks) {
     config -> border_size = 0;
     config -> padding_size = 0;
     config -> margin_size = 0;
+    config -> width = 0;
     config -> location = TOP;
     config -> font_color = NULL;
     config -> font_name = NULL;
@@ -257,6 +258,10 @@ bar_config *as_bar(dlist *src, dlist *blocks) {
         else match("margin") {
             config->margin_size = atoi(line+7);
         }
+	
+	else match("width") {
+	     config->width = atoi(line+6);
+	}
 
         else match("location") {
             config->location = starts_with(line+9, "top") ?
