@@ -35,7 +35,10 @@ typedef struct map_entry {
 
 typedef struct {
     int border_size;
-    int margin_size;
+    int margin_right;
+    int margin_left;
+    int margin_top;
+    int margin_bottom;
     int padding_size;
     int width;
     char *font_color;

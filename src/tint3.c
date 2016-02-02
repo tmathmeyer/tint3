@@ -90,9 +90,11 @@ int get_bar_height(int font_height) {
 // get the bar width
 int get_bar_width(int display_width) {
     if (configuration->width != 0) {
-        return configuration->width;
+        return configuration->width 
+        	- configuration->margin_right 
+        		- configuration->margin_left;
     } else {
-    	return display_width - 2 * configuration->margin_size;
+    	return display_width;
     }
 }
 
@@ -449,14 +451,14 @@ void run(void) {
 // gets the vertical position of the bar, depending on margins and position
 int vertical_position(Bool bar_on_top, int display_height, int bar_height) {
     if (bar_on_top) {
-        return configuration->margin_size;
+        return configuration->margin_top;
     } else {
-        return display_height - (bar_height + configuration->margin_size);
+        return display_height - (bar_height + configuration->margin_bottom);
     }
 }
 
 int horizontal_position() {
-    return configuration->margin_size;
+    return configuration->margin_left;
 }
 
 
@@ -548,7 +550,7 @@ void setup() {
     dc->wa = wa;
     initfont(dc, font ? font : "fixed");
 
-    dc->border_width = configuration->margin_size;
+    dc->border_width = configuration->border_size;
     dc->color_border_pixels = configuration->border_size;
     dc->text_offset_y = configuration->padding_size; 
 

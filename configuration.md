@@ -171,11 +171,14 @@ A basic example of a configuration is shown:
 * fontname : the name of the font to use. Use the name of the ttf file,
 than the actual font name. use 'fc-list' to get a list of font files and their names
 * width : force the bar width to the given value (in *pixel*)
+
 The left, center, and right keywords are special however. Following them is 
 any number of names, which correspond to the names of the blocks you have
 defined. These determine the order and location of the elements you have
 defined. For this reason, blocks cannot be named any of the default keywords
 in the bar block. 
+
+You can also replace the `margin` property by `margin-left`, `margin-right`, `margin-top` and `margin-bottom`.
 
 ##Location Examples
  * Boston,usa
