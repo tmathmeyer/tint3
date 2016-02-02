@@ -178,7 +178,7 @@ defined. These determine the order and location of the elements you have
 defined. For this reason, blocks cannot be named any of the default keywords
 in the bar block. 
 
-You can also replace the `margin` property by `margin-left`, `margin-right`, `margin-top` and `margin-bottom`.
+You can also replace the `margin` property by `manual-margin-left`, `manual-margin-right`, `manual-margin-top` and `manual-margin-bottom`. Note that `margin-left` override `margin-right` when `width` is defined. 
 
 ##Location Examples
  * Boston,usa
