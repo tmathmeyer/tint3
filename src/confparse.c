@@ -259,9 +259,9 @@ bar_config *as_bar(dlist *src, dlist *blocks) {
         }
 
         else match("margin") {
-            config->margin_right = atoi(line+7);
-            config->margin_left = atoi(line+7);
-            config->margin_top = atoi(line+7);
+            config->margin_right  =
+            config->margin_left   =
+            config->margin_top    =
             config->margin_bottom = atoi(line+7);
         }
 
