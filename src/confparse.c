@@ -230,7 +230,11 @@ bar_config *as_bar(dlist *src, dlist *blocks) {
     bar_config *config = malloc(sizeof(bar_config));
     config -> border_size = 0;
     config -> padding_size = 0;
-    config -> margin_size = 0;
+    config -> margin_right = 0;
+    config -> margin_left = 0;
+    config -> margin_top = 0;
+    config -> margin_bottom = 0;
+    config -> width = 0;
     config -> location = TOP;
     config -> font_color = NULL;
     config -> font_name = NULL;
@@ -254,9 +258,32 @@ bar_config *as_bar(dlist *src, dlist *blocks) {
             config->padding_size = atoi(line+8);
         }
 
-        else match("margin") {
-            config->margin_size = atoi(line+7);
+	else match("margin") {
+            config->margin_right = atoi(line+7);
+            config->margin_left = atoi(line+7);
+            config->margin_top = atoi(line+7);
+            config->margin_bottom = atoi(line+7);
+	}
+
+        else match("manual-margin-right") {
+            config->margin_right = atoi(line+20);
         }
+	
+        else match("manual-margin-left") {
+            config->margin_left = atoi(line+19);
+        }
+        
+        else match("manual-margin-top") {
+            config->margin_top = atoi(line+18);
+        }
+        
+        else match("manual-margin-bottom") {
+            config->margin_bottom = atoi(line+21);
+        }
+
+	else match("width") {
+	     config->width = atoi(line+6);
+	}
 
         else match("location") {
             config->location = starts_with(line+9, "top") ?
