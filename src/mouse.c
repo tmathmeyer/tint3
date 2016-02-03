@@ -34,7 +34,7 @@ void *mouse_thread(void *data) {
                     (selected->click)(selected, xe.xbutton.x);
                     drawmenu();
                 }
-            	break;
+                break;
         }
     }
 

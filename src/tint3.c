@@ -92,9 +92,9 @@ int get_bar_width(int display_width) {
     if (configuration->width != 0) {
         return configuration->width;
     } else {
-    	return display_width
-        	- configuration->margin_right 
-        		- configuration->margin_left;
+        return display_width
+             - configuration->margin_right 
+             - configuration->margin_left;
     }
 }
 
@@ -459,11 +459,11 @@ int vertical_position(Bool bar_on_top, int display_height, int bar_height) {
 
 int horizontal_position() {
     if (configuration->margin_left != 0) {
-    	return configuration->margin_left;
+        return configuration->margin_left;
     } else if (configuration->margin_right != 0) {
-    	return - configuration->margin_right;
+        return 0 - configuration->margin_right;
     } else {
-    	return 0;
+        return 0;
     }
 }
 
