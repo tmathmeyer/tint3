@@ -5,6 +5,11 @@ Example rc file:
 produces:
 ![screenshot](https://github.com/tmathmeyer/tint3/blob/master/screenshot.png)
 
+### Configuration path
+
+The configuration is basically fetch from `~/.tint3rc` or `~/.config/tint3/tint3rc`. 
+You can also set a custom path using the `tint3 -c /path/to/your/awesome/config/file` 
+command.
 
 ##Blocks
 ###overview

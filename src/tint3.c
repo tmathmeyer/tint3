@@ -49,6 +49,7 @@ static void infer_type(block *conf_inf, baritem *ipl);
 /* Variables */
 static int height = 0;
 static int width  = 0;
+static char *config_path = NULL;
 static unsigned long bar_background_colour;
 static unsigned long bar_border_colour;
 static char *bar_font_colour;
@@ -104,9 +105,25 @@ int scale_to(int from, int to, float by) {
 }
 
 // Main
-int main() {
+int main(int argc, char *argv[]) {
     XInitThreads();
     pthread_mutex_init(&lock, NULL);
+
+    // parse params
+    char opt;
+    while ((opt = getopt(argc, argv, "hc:")) != (char)-1) {
+        switch (opt) {
+            case 'h':
+                printf ("Usage : [-h | -c CONFIG_PATH]\n");
+                exit(EXIT_SUCCESS);
+                break;
+            case 'c':
+                config_path = optarg;
+                printf ("Config path is : %s \n", config_path);
+                break;
+        }
+    }
+
     setup();
 
     if (configuration->background_color != NULL) {
@@ -494,32 +511,49 @@ void write_default(FILE *fp) {
 
 
 FILE *test_set_config() {
-    char home[100] = {0};
-    char conf[100] = {0};
-    snprintf(home, 100, "%s/.tint3rc", getenv("HOME"));
-    snprintf(conf, 100, "%s/.config/tint3/tint3rc", getenv("HOME"));
+    if (config_path != NULL) {
+        if( access( config_path, F_OK ) == -1 ) {
+            printf("The provided config file does not exist ! \n");
+            exit(EXIT_FAILURE);
+        }
 
-    FILE *fp_home = fopen(home, "r");
-    if (fp_home) {
-        return fp_home;
-    }
+        char arg_conf[100] = {0};
 
-    FILE *fp_conf = fopen(conf, "r");
-    if (fp_conf) {
-        return fp_conf;
-    }
+        snprintf(arg_conf, 100, config_path);
 
-    FILE *fp_new = fopen(home, "w");
-    if (fp_new) {
-        write_default(fp_new);
-        fclose(fp_new);
+        FILE *fp_arg_conf = fopen(arg_conf, "r");
 
-        fp_home = fopen(home, "r");
+        if (fp_arg_conf) {
+            return fp_arg_conf;
+        }
+    } else {
+        char home[100] = {0};
+        char conf[100] = {0};
+
+        snprintf(home, 100, "%s/.tint3rc", getenv("HOME"));
+        snprintf(conf, 100, "%s/.config/tint3/tint3rc", getenv("HOME"));
+
+        FILE *fp_home = fopen(home, "r");
         if (fp_home) {
             return fp_home;
         }
-    }
 
+        FILE *fp_conf = fopen(conf, "r");
+        if (fp_conf) {
+            return fp_conf;
+        }
+
+        FILE *fp_new = fopen(home, "w");
+        if (fp_new) {
+            write_default(fp_new);
+            fclose(fp_new);
+
+            fp_home = fopen(home, "r");
+            if (fp_home) {
+                return fp_home;
+            }
+        }
+    }
     return NULL;
 }
 
