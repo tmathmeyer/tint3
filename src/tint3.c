@@ -466,8 +466,8 @@ void run(void) {
 
 
 // gets the vertical position of the bar, depending on margins and position
-int vertical_position(Bool bar_on_top, int display_height, int bar_height) {
-    if (bar_on_top) {
+int vertical_position(location bar_on_top, int display_height, int bar_height) {
+    if (bar_on_top == TOP) {
         return configuration->margin_top;
     } else {
         return display_height - (bar_height + configuration->margin_bottom);
@@ -604,7 +604,10 @@ void setup() {
     width  = get_bar_width(DisplayWidth(dc->dpy, screen));
 
     x = horizontal_position();
-    y = vertical_position(topbar, DisplayHeight(dc->dpy, screen), height);
+    y = vertical_position(
+            configuration->location
+            ,DisplayHeight(dc->dpy, screen)
+            ,height);
 
 
 
