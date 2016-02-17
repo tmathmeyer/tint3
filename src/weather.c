@@ -135,10 +135,17 @@ int dew_point(int place, char * string) {
 }
 
 int weather_conditions(int place, char * string) {
-    container * w_weather = A(jsoncontext, "weather");
-    container * first = _(w_weather, 0);
-    container * sky = A(first, "main");
-    char * sky_condition = sky -> string;
+    container *w_weather = A(jsoncontext, "weather");
+    char *sky_condition = "no forcast";
+    if (w_weather) {
+        container *first = _(w_weather, 0);
+        if (first) {
+            container *sky = A(first, "main");
+            if (sky) {
+                sky_condition = sky -> string;
+            }
+        }
+    }
     return place + sprintf(string+place, "%s", sky_condition);
 }
 
