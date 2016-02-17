@@ -136,7 +136,7 @@ int dew_point(int place, char * string) {
 
 int weather_conditions(int place, char * string) {
     container *w_weather = A(jsoncontext, "weather");
-    char *sky_condition = "no forcast";
+    char *sky_condition = "no forecast";
     if (w_weather) {
         container *first = _(w_weather, 0);
         if (first) {
