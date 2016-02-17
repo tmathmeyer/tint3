@@ -4,7 +4,7 @@
   borderwidth 0
   padding 6
   margin 0
-  location bottom
+  location top
   options debug
   left
     desktops
@@ -23,13 +23,11 @@
   id active
   source window_title
 
-# %N -> Name of the desktop
 [desktops]
   id workspace
   format %N
   active:background #2002
 
-# split time and date, looks better on a dual monitor system
 [time]
   id clock
   timeout 5
@@ -50,13 +48,6 @@
   style graph
   source wlp3s0 down
   forground #ff0000
-
-[upload]
-  id network
-  style graph
-  source wlp3s0 up
-  shell dmenu_run
-  fontcolor #748DA6
 
 #dual battery system (x240)
 [batteryone]
