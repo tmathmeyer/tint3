@@ -41,8 +41,12 @@ void update_network(char *interface) {
         int ud = up-old_up, dd = down-old_down;
 
         if (old_down != 0 && old_up != 0) {
-            write_graph_value("up", (float)ud);
-            write_graph_value("down", (float)dd);
+            char *graph = malloc(strlen(interface)+6);
+            sprintf(graph, "%s down", interface);
+            write_graph_value(graph, (float)dd);
+            sprintf(graph, "%s up", interface);
+            write_graph_value(graph, (float)ud);
+            free(graph);
         }
 
         old_down = down;
@@ -53,11 +57,15 @@ void update_network(char *interface) {
 }
 
 dlist *get_net_graph(baritem *item) {
-    char source2[20] = {0};
-    snprintf(source2, 20, item->source);
-    strstr(source2, " ")[0] = 0;
-    update_network(source2);
-    graph_element *a = get_named((item -> source)+7);
+#define MAX_INTERFACE 20
+    char interface[MAX_INTERFACE] = {0};
+    //8 is the length of "network"
+    snprintf(interface, MAX_INTERFACE, item->source+8);
+    char *block = strstr(interface, " ");
+    *block = 0; // break the interface and type
+    update_network(interface);
+    *block = ' ';
+    graph_element *a = get_named(interface);
     element *e = calloc(sizeof(element), 1);
     e->opt = 1;
     e->graph = a;

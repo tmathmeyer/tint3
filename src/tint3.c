@@ -31,20 +31,19 @@
 #include "netinfo.h"
 #include "mouse.h"
 #include "dlist.h"
+#include "suggest.h"
 
 /* Macros */
 #define INRECT(x,y,a,b,c,d)((x)>=(a)&&(x)<(a)+(c)&&(y)>=(b)&&(y)<(b)+(d))
 #define MIN(a,b)                ((a) < (b) ? (a) : (b))
 #define MAX(a,b)                ((a) > (b) ? (a) : (b))
 #define DEBUG(str) if (__debug__){puts(str);}
-#define IS_ID(x, a) (!(strncmp(x->id, a, strlen(a))))
 
 /* Functions */
 static void run(void);
 static void setup(void);
 static void config_to_layout(void);
 void update_nba(baritem *item);
-static void infer_type(block *conf_inf, baritem *ipl);
 
 /* Variables */
 static int height = 0;
@@ -199,6 +198,7 @@ baritem *makeitem(block *block) {
     result->length = 0;
     infer_type(block, result);
     update_nba(result);
+    result->name = block->name;
     return result;
 }
 
@@ -232,57 +232,9 @@ char *get_baritem_option(char *opt_name, baritem* item) {
     return NULL;
 }
 
-// fallback, in case no other source can be found
-dlist *questions(baritem *meh) {
-    (void)meh;
-    return dlist_new();
-}
-
 void shell_exec(baritem *item, int xpos) {
     (void) xpos;
     system(item->shell);
-}
-
-// set the function that creates information
-void infer_type(block *conf_inf, baritem *ipl) {
-    ipl->update = &questions;
-    if (ipl->shell) {
-        ipl->click = &shell_exec;
-    }
-
-    if (IS_ID(conf_inf, "workspace")) {
-        spawn_vdesk_thread(ipl);
-        ipl->update = NULL;
-        ipl->elements = get_desktops_info(ipl);
-    } else if (IS_ID(conf_inf, "clock")) {
-        ipl->update = &get_time_format;
-        set_timeout(ipl);
-    } else if (IS_ID(conf_inf, "active")) {
-        if (!strncmp(conf_inf->source, "window_title", 12)) {
-            ipl->update = &get_active_window_name;
-        } else {
-            DEBUG("unrecognized active source");
-            DEBUG(conf_inf->source);
-        }
-    } else if (IS_ID(conf_inf, "text")) {
-        ipl->update = &get_plain_text;
-    } else if (IS_ID(conf_inf, "weather")) {
-        spawn_weather_thread(ipl);
-        ipl->update = NULL;
-        ipl->elements = get_weather(ipl);
-    } else if (IS_ID(conf_inf, "scale")) {
-        if (!strncmp(conf_inf->source, "battery", 7)) {
-            ipl->update = &get_battery;
-        } else if (!strncmp(conf_inf->source, "alsa", 4)) {
-            ipl->update = &get_volume_level;
-        }
-    } else if (IS_ID(conf_inf, "network")) {
-        if (!strncmp("graph", get_baritem_option("style", ipl), 5)) {
-            ipl->update = &get_net_graph;
-        }
-    } else if (IS_ID(conf_inf, "shell")) {
-       ipl->update=&shell_cmd; 
-    }
 }
 
 // gets the item by 

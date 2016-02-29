@@ -1,5 +1,5 @@
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
 #include <stdio.h>
 
 #include "dmap.h"
@@ -20,7 +20,17 @@ unsigned int hash(char *key) {
     return result;
 }
 
+char *_copy(char *c) {
+    char *res = calloc(1, strlen(c)+1);
+    char *r = res;
+    while(*c) {
+        *(r++) = *(c++);
+    }
+    return res;
+}
+
 void *put(struct map *map, char *key, void *val) {
+    key = _copy(key);
     unsigned int h = hash(key);
     struct kvpl *c_list = (map->body)[h % map->size];
     struct kvpl *c_temp = c_list;

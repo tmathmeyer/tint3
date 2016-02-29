@@ -19,12 +19,24 @@ XFTLIBS  = -lXft -lXrender -lfreetype -lz -lfontconfig
 #lxcb libraries
 LXCBLIBS = -lxcb -lxcb-icccm -lxcb-ewmh
 
-# includes and libs
-INCS = -I${X11INC} -I${XFTINC}
-LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${XFTLIBS} ${LXCBLIBS} -lpthread -ldl
+#libnotify
+LIBNOT = -lnotify -lgdk_pixbuf-2.0 -lgio-2.0 -lgobject-2.0 -lglib-2.0
+INCNOT = -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng16 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include
 
-# flags
-CPPFLAGS = -DVERSION=\"${VERSION}\" ${XINERAMAFLAGS}
+
+
+
+
+# TO COMPILE WITHOUT LIBNOTIFY SUPPORT
+#    1. remove ${INCNOT} from INCS
+#    2. remove ${LIBNOT} from LIBS
+#    3. remove -DLIBNOTIFY from CPPFLAGS
+# includes and libs
+INCS = -I${X11INC} -I${XFTINC} ${INCNOT}
+LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${XFTLIBS} ${LXCBLIBS} ${LIBNOT} -lpthread -ldl
+
+# FLAGS: C-Pre-Processor, Compile Flags, Linked Flags
+CPPFLAGS = -DVERSION=\"${VERSION}\" ${XINERAMAFLAGS} -DLIBNOTIFY
 CFLAGS   = -std=c11 -pedantic -rdynamic -Wextra -Wall ${INCS} ${CPPFLAGS} -g
 LDFLAGS  = ${LIBS}
 

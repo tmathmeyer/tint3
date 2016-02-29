@@ -51,6 +51,9 @@ typedef struct baritem{
     char *format;
     char *source;
     char *shell;
+
+    // name
+    char *name;
     
     // update listeners
     dlist *(* update)(struct baritem *);
@@ -116,6 +119,8 @@ extern Window win;
 // redraw the bar (why did I call it menu?)
 void drawmenu(void);
 void update_nba(baritem *item);
+void shell_exec(baritem *item, int xpos);
+void set_timeout(baritem *ipl);
 
 // get a property 
 int get_x11_cardinal_property(Atom at, Atom type);

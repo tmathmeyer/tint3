@@ -57,7 +57,7 @@ config file.
 | workspace | format | no | [Workspace Format](#Formatting-Workspaces) |
 | | current | no | (future work!) |
 | clock | format | yes | [Clock Format](#Formatting-Clock) |
-| | timeout | no | How often this block should refresh itself, in microseconds |
+| | timeout | no | How often this block should refresh itself, in seconds |
 | active | source | yes | must be "window_title" (future work!) |
 | text | source | yes | a raw string to display |
 | weather | source | yes | a location from openweathermap.org |

@@ -10,6 +10,7 @@
 #define _CONFPARSER_H_
 
 #include <stdlib.h>
+#include <stdio.h>
 #include "dlist.h"
 
 typedef enum loc {
