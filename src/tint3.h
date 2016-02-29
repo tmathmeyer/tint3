@@ -23,9 +23,9 @@ typedef struct stylized_text_element {
 } text_element;
 
 typedef struct colored_graph_element {
-    int *xys;
-    unsigned int xy_count;
-    ColorSet *color;
+    int *data;
+    size_t rows, cols;
+    ColorSet **colors;
 } graph_element;
 
 typedef struct generic_element {

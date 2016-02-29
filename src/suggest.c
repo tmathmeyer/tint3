@@ -7,7 +7,7 @@
 #include "weather.h"
 #include "netinfo.h"
 
-#define PARSEBLOCK(x, c) do{block*__b__=(x);(c);}while(0)
+#define PARSEBLOCK(x, c) do{block*__b__=(x);__extension__(c);}while(0)
 #define ID(z) else if(!strcmp(__b__->id, (#z)))
 
 dlist *questions(baritem *meh) {
@@ -36,9 +36,6 @@ void infer_type(block *conf_inf, baritem *ipl) {
         ID(active) {
             if (!strncmp(conf_inf->source, "window_title", 12)) {
                 ipl->update = &get_active_window_name;
-            } else {
-                //DEBUG("unrecognized active source");
-                //DEBUG(conf_inf->source);
             }
         }
 
@@ -63,6 +60,7 @@ void infer_type(block *conf_inf, baritem *ipl) {
         ID(graph) {
             if (!strncmp(conf_inf->source, "network", 7)) {
                 ipl->update = &get_net_graph;
+            } else if (!strncmp(conf_inf->source, "group", 5)) {
             }
         }
 

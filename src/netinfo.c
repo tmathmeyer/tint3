@@ -39,13 +39,17 @@ void update_network(char *interface) {
         sscanf(bt, "%llu %llu", &down, &up);
 
         int ud = up-old_up, dd = down-old_down;
+        graph_t UP, DOWN;
+        UP._i = ud;
+        DOWN._i = dd;
+
 
         if (old_down != 0 && old_up != 0) {
             char *graph = malloc(strlen(interface)+6);
             sprintf(graph, "%s down", interface);
-            write_graph_value(graph, (float)dd);
+            write_graph_value(graph, DOWN);
             sprintf(graph, "%s up", interface);
-            write_graph_value(graph, (float)ud);
+            write_graph_value(graph, UP);
             free(graph);
         }
 
@@ -65,17 +69,18 @@ dlist *get_net_graph(baritem *item) {
     *block = 0; // break the interface and type
     update_network(interface);
     *block = ' ';
-    graph_element *a = get_named(interface);
-    element *e = calloc(sizeof(element), 1);
-    e->opt = 1;
-    e->graph = a;
+    graph_element *a = get_element_by_name(interface);
     dlist *res = dlist_new();
     if (a) {
+        element *e = calloc(sizeof(element), 1);
+        e->opt = 1;
+        e->graph = a;
         dlist_add(res, e);
-        a->color = item->default_colors;
+        a->colors = calloc(1, sizeof(void *));
+        a->colors[0] = item->default_colors;
     } else {
-        free(e);
         dlist_free(res);
+        res = NULL;
     }
     return res;
 }

@@ -215,3 +215,12 @@ dlist *get_plain_text(baritem *item) {
     dlist_add(result, e);
     return result;
 }
+
+void get_mem_percent() {
+#ifdef __linux__
+
+
+
+
+#endif
+}
