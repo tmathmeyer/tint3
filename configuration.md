@@ -6,7 +6,12 @@
  * [Extended Color Codes](#extended-color-codes)
  * [Custom Format Specifiers](#custom-format-specifiers)
    * [Weather](#formatting-weather)
-   * []
+   * [X11 Workspaces](#formatting-workspaces)
+   * [Clock](#formatting-clock)
+ * []
+ * []
+ * []
+ * []
 
 
 ##Requirements
@@ -57,7 +62,7 @@ escaped:
 | H | humidity percentage                                  |
 | D | dew point                                            |
 
-For example, `%W, %F°F (%H%%)` would become "Mist, 44°F (93%)" on a Misty day at 44 degrees
+For example, `%W, %F°F (%H%%)` would become `Mist, 44°F (93%)` on a Misty day at 44 degrees
 Farenheight and 93 percent humidity.
 
 ####Formatting Workspaces
@@ -74,6 +79,63 @@ X11 or by assigning a number to them.
 ####Formatting Clock
 The clock is formatted with the same set of format strings as the unix 
 'date' utility, see `man date` for examples and instructions. 
+
+
+##Bar Configuration
+Each configuration file MUST include a "bar" block, which is denoted by double
+brackets around the word "bar". This is required for tint3 to start. A simple
+configuration would be
+````
+[[bar]]
+  fontcolor #000000
+  left
+  center
+    hello
+  right
+
+[hello]
+  id text
+  source hello
+````
+Indentation is not required.
+The only required property in the `[[bar]]` section is the `fontcolor`
+property, which is followed by a [color code](#extended-color-codes).
+The left, center, and right properties are groups, which are followed by
+names of [blocks](#blocks). There are also many optional properties
+for the `[[bar]]` block:
+
+| Property       | Default |                  Description                    |
+| -------------- | ------- | ----------------------------------------------- |
+| borderwidth    | 0 | the width of the bar border, in pixels                |
+| padding        | 0 | the padding on each side (space between text and edge |
+| margin         | 0 | the space between the bar and edge of monitor         |
+| margin-left*   | 0 | the space between the bar and left edge of monitor    |
+| margin-right*  | 0 | the space between the bar and right edge of monitor   |
+| margin-top*    | 0 | the space between the bar and top edge of monitor     |
+| margin-bottom* | 0 | the space between the mar and bottom edge of monitor  |
+| width          | 100% | the width of the bar in pixels, defaults to 100%   |
+| location       | TOP | location of bar, can be either TOP or BOTTOM        |
+| bordercolor    | none | the [color code](#extended-color-codes) for the border |
+| fontname       | * | the name of the font. Defaults to the X11 default     |
+| background     | transparent | the [color code](#extended-color-codes) for the background |
+| options        | none | developmental use |
+
+*the margin specifiers can also be preceded by `manual-`, for example,
+`margin-left 10` is the same as `manual-margin-left 100`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -142,22 +204,6 @@ config file.
 | | cutoff:low | no | number 0-100, denotes change from low to med |
 | shell | source | yes | a command to execute, the output of which will be displayed |
 
-###Format Strings:
-tint3 uses standard-style format strings, where any characters escaped with a
-% are liable to be replaced by corresponding values. 
-
-
-###Colorcodes
-Color codes come in any of the following forms:
-````
-#rgb
-#argb
-#rrggbb
-#aarrggbb
-````
-Where A, R, G, and B are hexadecimal values corresponding to the 
-alpha (transparency), red, green, and blue componenets of a color.
-
 ###System Sources
 There are currently three supported system resources:
  * alsa - requires a playback id and device
@@ -173,55 +219,6 @@ source network wlp3s0 up
 
 
 ## Bar Config
-Each configuration file MUST include a "bar" block, which is denoted by 
-double brackets around the word "bar". This is required for tint3 to start. 
-A basic example of a configuration is shown:
-````
-[[bar]]
-  fontcolor #22EE88
-  background #252117
-  borderwidth 1
-  padding 1
-  margin 5
-  location bottom
-  left
-    desktops
-    active
-  center
-    date
-    time
-  right
-    upload
-    download
-    weather
-    volume
-    batteryone
-    batterytwo
-````
-####Required Properties: 
- * fontcolor : # symbol followed by six digit RGB hexadecimal
- * borderwidth : the width of the border of the bar, in pixels
- * margin : the margins of the bar, in pixels
- * padding : the padding around the top and bottom of the letters, in pixels
- * location, only "top" (future work)
- * left
- * right
- * center
-
-####Optional Properties
-* background : [Colorcode](#Colorcodes) default is fully transparent
-* bordercolor : [Colorcode](#Colorcodes) This is required if borderwidth is greater than 0
-* fontname : the name of the font to use. Use the name of the ttf file,
-than the actual font name. use 'fc-list' to get a list of font files and their names
-* width : force the bar width to the given value (in *pixel*)
-
-The left, center, and right keywords are special however. Following them is 
-any number of names, which correspond to the names of the blocks you have
-defined. These determine the order and location of the elements you have
-defined. For this reason, blocks cannot be named any of the default keywords
-in the bar block. 
-
-You can also replace the `margin` property by `manual-margin-left`, `manual-margin-right`, `manual-margin-top` and `manual-margin-bottom`. Note that `manual-margin-left` override `manual-margin-right` when `width` is defined. 
 
 ##Location Examples
  * Boston,usa

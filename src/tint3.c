@@ -134,7 +134,7 @@ int main(int argc, char *argv[]) {
     }
     if (configuration->font_color == NULL) {
         DEBUG("no font-color.");
-        DEBUG("please add a {fontcolor #xxxxxx} option to your config gile");
+        DEBUG("please add a {fontcolor #xxxxxx} option to your config file");
         DEBUG("Exiting...");
         exit(1);
     }

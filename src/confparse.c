@@ -269,15 +269,31 @@ bar_config *as_bar(dlist *src, dlist *blocks) {
             config->margin_right = atoi(line+20);
         }
 
+        else match("margin-right") {
+            config->margin_right = atoi(line+20);
+        }
+
         else match("manual-margin-left") {
+            config->margin_left = atoi(line+19);
+        }
+
+        else match("margin-left") {
             config->margin_left = atoi(line+19);
         }
         
         else match("manual-margin-top") {
             config->margin_top = atoi(line+18);
         }
+
+        else match("margin-top") {
+            config->margin_top = atoi(line+18);
+        }
         
         else match("manual-margin-bottom") {
+            config->margin_bottom = atoi(line+21);
+        }
+
+        else match("margin-bottom") {
             config->margin_bottom = atoi(line+21);
         }
 
