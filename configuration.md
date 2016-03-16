@@ -1,23 +1,78 @@
 #tint3 configuration
 
-## Table of Contents
+##Table of Contents
 1. [Requirements](#Requirements)
 2. [Configuration Location](#Configuration-Location)
+3. [Extended Color Codes](#Extended-Color-Codes)
+4. [Custom Format Specifiers](#Custom-Format-Specifiers)
 
 
-### Requirements
-#### To run
-tint3 requires a linux system and X11 in all cases.
-To use the weather feature, tint3 requires an internet connection.
-To use the volume toggle feature, tint3 requires alsa.
+##Requirements
+#### Running
+ - tint3 requires a linux system and X11 in all cases.
+ - To use the weather feature, tint3 requires an internet connection.
+ - To use the volume toggle feature, tint3 requires alsa.
+#### Building
+ - tint3 requires xlib, xcb, freetype2 in all cases
+ - To compile with libnotify (by default), tint3 requires gdk-pixbuf, glib2.0, libpng. 
+   See src/config.mk for compiling tint3 without libnotify support.
 
 
+##Configuration Location
+tint3 will read from three different locations in the following order of precedence:
 
-###Configuration path
+ - command line: `tint3 -c /path/to/config`
+ - `~/.tint3rc`
+ - `~/.config/tint3/tint3rc`
 
-tint3 will read a default configuration from either `~/.tint3rc` or
-`~/.config/tint3/tint3rc`, with the former taking precedence.  You can also set
-a custom path using the `tint3 -c /path/to/your/awesome/config/file` command.
+
+##Extended Colors
+tint3 uses standard hexadecimal colors with an optional alpha component.
+Throughout the configuration, colors can be in one of four forms:
+
+ - `#RGB`
+ - `#ARGB`
+ - `#RRGGBB`
+ - `#AARRGGBB`
+
+
+##Custom Format Specifiers
+format strings in tint3 are C style, where the `%` character is used to
+escape other characters for special meanings. literal % signs can be created with `%%`.
+
+####Formatting Weather
+The following characters will be replaced by the corresponding values when
+escaped:
+
+| Character | Parsed as |
+| ---------- | ----------- |
+| K | temperature in kelvin |
+| F | temperature in degrees farenheight |
+| C | temperature in degrees celcius |
+| W | the current conditions (sunny, cloudy, snowing, etc) |
+| A | pressure in atmospheres |
+| P | pressure in millimeters of mercury (mmHg) |
+| H | humidity percentage |
+| D | dew point |
+
+For example, "%W, ▉%C" might become "Clouds, ▉57", depending on the weather
+in the area.
+
+####Formatting Workspaces
+
+| character | Parsed as |
+| ---------- | ---------- |
+| n | the 1-indexed workspace number | 
+| J | the 1-indexed workspace number, in Han Zi (chinese/japanese numerals) |
+| R | the 1-indexed workspace number, in Roman numerals |
+| N | The desktop name, if provided by X11 |
+
+####Formatting Clock
+
+The clock is formatted with the same set of format strings as the unix 
+'date' utility, see `man date` for examples and instructions. 
+
+
 
 ##Blocks
 ###overview
@@ -85,37 +140,7 @@ config file.
 ###Format Strings:
 tint3 uses standard-style format strings, where any characters escaped with a
 % are liable to be replaced by corresponding values. 
-####Formatting Weather
-The following characters will be replaced by the corresponding values when
-escaped:
 
-| Character | Parsed as |
-| ---------- | ----------- |
-| K | temperature in kelvin |
-| F | temperature in degrees farenheight |
-| C | temperature in degrees celcius |
-| W | the current conditions (sunny, cloudy, snowing, etc) |
-| A | pressure in atmospheres |
-| P | pressure in millimeters of mercury (mmHg) |
-| H | humidity percentage |
-| D | dew point |
-
-For example, "%W, ▉%C" might become "Clouds, ▉57", depending on the weather
-in the area.
-
-####Formatting Workspaces
-
-| character | Parsed as |
-| ---------- | ---------- |
-| n | the 1-indexed workspace number | 
-| J | the 1-indexed workspace number, in Han Zi (chinese/japanese numerals) |
-| R | the 1-indexed workspace number, in Roman numerals |
-| N | The desktop name, if provided by X11 |
-
-####Formatting Clock
-
-The clock is formatted with the same set of format strings as the unix 
-'date' utility
 
 ###Colorcodes
 Color codes come in any of the following forms:
