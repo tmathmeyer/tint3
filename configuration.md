@@ -177,59 +177,63 @@ have an `id` property, which is one of the following:
 Based on the id, blocks may require other properties. click on each id for
 more specific information. In addition, all blocks will recognize 3 additional
 properties:
- - shell: execute shell script on bar click
- - fontcolor: override bar font color for this block
- - background: override bar background color for this block
+ - `shell`: execute shell script on bar click
+ - `fontcolor`: override bar font color for this block
+ - `background`: override bar background color for this block
 
-###Workspace
-The workspace block requires a [workspace format string](#formatting-workspaces).
+####Workspace
+The workspace block requires a `format` property with a
+[workspace format string](#formatting-workspaces).
 In addition, this block also recognized the properties
 `active:background` and `active:font`, which are used to change the background
 and forground colors of the currently active desktop. These two properties each
 take a [color code](#extended-color-codes).
 
 
-###Clock
-The clock block requires a [clock format string](#formatting-clock).
+####Clock
+The clock block requires a `format` property with a
+[clock format string](#formatting-clock).
 In addition, this block also recognizes a `timeout` property, which is
 used to change how often this element should refresh in seconds. It defaults
 to 60 seconds.
 
-###Active
+####Active
 The active block requires a `source` property. currently the only valid
 value for this property is `window_title`. The window_title value will
 cause this block to display the title of the currently active X11 window.
 In the future there will be more sources for this block.
 
-###Text
+####Text
 The text block requires a `source` property. The value of this property is
 displayed in the bar as plain text.
 
-###Weather
+####Weather
 The weather block requires the `format` and `source` properties.
 The `format` property controls how the weather data is formatted, see
 [weather formatting](#formatting-weather). The source property tells tint3
 what location to pull weather data from, see
 [location formatting](#formatting-location).
 
-###Scale
+####Scale
 The scale block requires the `source` property. Currently, the supported values
 of the `source` property are `battery [BAT_ID]` and `alsa [CARD] [MIXER]`.
- - availible choices for `BAT_ID` can be found in /sys/class/power_supply
+ - availible choices for `BAT_ID` can be found in `/sys/class/power_supply`
  - availible choices for `CARD` and `MIXER` can be found with the `amixer` utility
    (however these are usually `0` and `Master` respectively)
 
-###Graph
+####Graph
 The graph block requires the `source` property in all cases. The supported
 values of the `source` property are:
  - `memory`
  - `network [interface] [up/down]`
  - `multi-network [interface]`
+
 For the network graphs, interfaces can be found in `/proc/net/dev`.
 The multi-network value also requires additional properties declared:
  - `targets [A] ...`
  - `[A] [up/down] x[number] [color code]`
  - ...
+
 An example configuration is:
 ````
 [network]
@@ -240,7 +244,7 @@ An example configuration is:
   download down x1 #aabbcc
 ````
 
-###Shell
+####Shell
 The shell block requires the `source` property. The value of this property is
 passed to the `popen` syscall, so be careful what you put in here; the stdout
 from that process is displayed as text in this block.
