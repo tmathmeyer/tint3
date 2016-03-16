@@ -1,10 +1,11 @@
 #tint3 configuration
 
 ##Table of Contents
-1. [Requirements](#Requirements)
-2. [Configuration Location](#Configuration-Location)
-3. [Extended Color Codes](#Extended-Color-Codes)
-4. [Custom Format Specifiers](#Custom-Format-Specifiers)
+ * [Requirements](#requirements)
+ * [Configuration Location](#configuration-location)
+ * [Extended Color Codes](#extended-color-codes)
+ * [Custom Format Specifiers](#custom-format-specifiers)
+   * [Weather](#formatting-weather)
 
 
 ##Requirements
