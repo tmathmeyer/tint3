@@ -73,6 +73,7 @@ void free_stylized(void *ste_v) {
             free(ste->text);
             break;
         case 1:
+            free(ste->graph->colors);
             free(ste->graph->data);
             free(ste->graph);
             break;
@@ -202,7 +203,6 @@ baritem *makeitem(block *block) {
     return result;
 }
 
-#define is_digit(x) ((x)<='9' && (x)>='0')
 void set_timeout(baritem *ipl) {
     char *set = get_baritem_option("timeout", ipl);
     unsigned short t_timeout = 0;

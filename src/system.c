@@ -20,6 +20,7 @@
 #include "lwbi.h"
 #include "draw.h"
 #include "format.h"
+#include "graph.h"
 
 #define MAX_WINDOW_TITLE_LENGTH 256
 
@@ -216,11 +217,69 @@ dlist *get_plain_text(baritem *item) {
     return result;
 }
 
-void get_mem_percent() {
+unsigned long ram_tick = 0;
+dlist *get_mem_graph(baritem *item) {
+    if (time(NULL)-ram_tick > 0) { // TODO redesign
+        time((time_t *)&ram_tick);
+        graph_t G;
+        G._i = get_mem_percent();
+        write_graph_value("memory", G);
+    }
+    graph_element *a = get_percentage_graph_element_by_name("memory");
+    dlist *res = dlist_new();
+    if (a) {
+        element *e = calloc(sizeof(element), 1);
+        e->opt = 1;
+        e->graph = a;
+        dlist_add(res, e);
+        a->colors = calloc(1, sizeof(void *));
+        a->colors[0] = item->default_colors;
+    } else {
+        dlist_free(res);
+        res = NULL;
+    }
+    return res;
+}
+
+dlist *get_mem_text(baritem *item) {
+    int percent = get_mem_percent();
+    char text[16] = {0};
+    snprintf(text, 15, "%%%i", percent);
+
+
+    dlist *result = dlist_new();
+    text_element *elem = calloc(sizeof(text_element), 1);
+    elem->text = text;
+    elem->color = copy_color(item->default_colors);
+
+    element *e = calloc(sizeof(element), 1);
+    e->text = elem;
+    e->opt = 0;
+
+    dlist_add(result, e);
+    return result;
+}
+
+#define DIGIT(x) ((x)>='0'&&(x)<='9')
+int get_mem_percent() {
 #ifdef __linux__
-
-
-
-
+#define MAX_CHARS_NEEDED 128
+    FILE *meminfo = fopen("/proc/meminfo", "r");
+    if (meminfo) {
+        char buffer[MAX_CHARS_NEEDED] = {0};
+        fread(buffer, sizeof(char), MAX_CHARS_NEEDED-2, meminfo);
+        fclose(meminfo);
+        char *memTotal = strstr(buffer, "MemTotal");
+        char *memFree = strstr(buffer, "MemFree");
+        int mem_total = 0;
+        int mem_free = 0;
+        while(!DIGIT(*memTotal))memTotal++;
+        while(!DIGIT(*memFree))memFree++;
+        sscanf(memTotal, "%i", &mem_total);
+        sscanf(memFree, "%i", &mem_free);
+        mem_free = mem_total-mem_free;
+        return (mem_free*100)/mem_total;
+    }
 #endif
+    return 0;
 }

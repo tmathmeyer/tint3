@@ -60,7 +60,10 @@ void infer_type(block *conf_inf, baritem *ipl) {
         ID(graph) {
             if (!strncmp(conf_inf->source, "network", 7)) {
                 ipl->update = &get_net_graph;
-            } else if (!strncmp(conf_inf->source, "group", 5)) {
+            } else if (!strncmp(conf_inf->source, "memory", 6)) {
+                ipl->update = &get_mem_graph;
+            } else if (!strncmp(conf_inf->source, "multi-network", 13)) {
+                ipl->update = &get_multi_net_graph;
             }
         }
 

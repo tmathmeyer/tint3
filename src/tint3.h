@@ -4,6 +4,7 @@
 #include <X11/Xft/Xft.h>
 #include "dlist.h"
 
+#define is_digit(x) ((x)<='9' && (x)>='0')
 //=========================//
 // structs //
 //=========================//

@@ -20,6 +20,7 @@ void free_list(dlist *list);
 void free_baritem(baritem *item);
 void draw_list(dlist *list);
 unsigned int total_list_length(dlist *list);
+int get_mem_percent();
 
 
 dlist *get_battery(baritem *item);
@@ -28,5 +29,7 @@ dlist *get_active_window_name(baritem *item);
 dlist *get_plain_text(baritem *item);
 dlist *get_time_format(baritem *item);
 dlist *shell_cmd(baritem *item);
+dlist *get_mem_graph(baritem *item);
+dlist *get_mem_text(baritem *item);
 
 #endif
