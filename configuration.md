@@ -1,9 +1,17 @@
-#CONFIGURATION
-### Example
-Example rc file:
-[tint3rc](https://github.com/tmathmeyer/tint3/blob/master/tint3rc)
-produces:
-![screenshot](https://github.com/tmathmeyer/tint3/blob/master/screenshot.png)
+#tint3 configuration
+
+## Table of Contents
+1. [Requirements](#Requirements)
+2. [Configuration Location](#Configuration-Location)
+
+
+### Requirements
+#### To run
+tint3 requires a linux system and X11 in all cases.
+To use the weather feature, tint3 requires an internet connection.
+To use the volume toggle feature, tint3 requires alsa.
+
+
 
 ###Configuration path
 
@@ -190,3 +198,9 @@ You can also replace the `margin` property by `manual-margin-left`, `manual-marg
  * Seattle,usa
  * Brisbane,aus
  * London,uk
+
+### Example
+Example rc file:
+[tint3rc](https://github.com/tmathmeyer/tint3/blob/master/tint3rc)
+produces:
+![screenshot](https://github.com/tmathmeyer/tint3/blob/master/screenshot.png)
