@@ -6,6 +6,7 @@
  * [Extended Color Codes](#extended-color-codes)
  * [Custom Format Specifiers](#custom-format-specifiers)
    * [Weather](#formatting-weather)
+   * []
 
 
 ##Requirements
@@ -45,21 +46,23 @@ escape other characters for special meanings. literal % signs can be created wit
 The following characters will be replaced by the corresponding values when
 escaped:
 
-| Character | Parsed as |
-| ---------- | ----------- |
-| K | temperature in kelvin |
-| F | temperature in degrees farenheight |
-| C | temperature in degrees celcius |
+| Character |                  Parsed as                   |
+| --------- | -------------------------------------------- |
+| K | temperature in kelvin                                |
+| F | temperature in degrees farenheight                   |
+| C | temperature in degrees celcius                       |
 | W | the current conditions (sunny, cloudy, snowing, etc) |
-| A | pressure in atmospheres |
-| P | pressure in millimeters of mercury (mmHg) |
-| H | humidity percentage |
-| D | dew point |
+| A | pressure in atmospheres                              |
+| P | pressure in millimeters of mercury (mmHg)            |
+| H | humidity percentage                                  |
+| D | dew point                                            |
 
-For example, "%W, ▉%C" might become "Clouds, ▉57", depending on the weather
-in the area.
+For example, `%W, %F°F (%H%%)` would become "Mist, 44°F (93%)" on a Misty day at 44 degrees
+Farenheight and 93 percent humidity.
 
 ####Formatting Workspaces
+X11 allows multiple desktops. tint3 can display these desktops either using the names provided by
+X11 or by assigning a number to them.
 
 | character | Parsed as |
 | ---------- | ---------- |
@@ -69,9 +72,10 @@ in the area.
 | N | The desktop name, if provided by X11 |
 
 ####Formatting Clock
-
 The clock is formatted with the same set of format strings as the unix 
 'date' utility, see `man date` for examples and instructions. 
+
+
 
 
 
