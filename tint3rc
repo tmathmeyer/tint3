@@ -1,9 +1,11 @@
 [[bar]]
-  fontcolor #ffffff
+  fontcolor #aaaaaa
+  background #002b36
   fontname Fantasque Sans Mono
   borderwidth 0
   padding 6
-  margin 0
+  manual-margin-left 95
+  manual-margin-right 95
   location top
   options debug
   left
@@ -13,11 +15,19 @@
     time
     date
   right
-    download
+    network
+    RAM
     weather
     volume
     batteryone
     batterytwo
+
+[network]
+  id graph
+  source multi-network wlp3s0
+  targets upload download
+  upload up x400 #ccffcc
+  download down x1 #aabbcc
 
 [active]
   id active
@@ -26,7 +36,7 @@
 [desktops]
   id workspace
   format %N
-  active:background #2002
+  active:background #28545c
 
 [time]
   id clock
@@ -43,11 +53,10 @@
   format %W, %F°F (%H%%)
   source Boston,usa
 
-[download]
-  id network
-  style graph
-  source wlp3s0 down
-  forground #ff0000
+[RAM]
+  id graph
+  source memory
+  forground #00ff00
 
 #dual battery system (x240)
 [batteryone]
