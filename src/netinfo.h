@@ -10,7 +10,9 @@
 
 #include "graph.h"
 
-dlist *get_net_graph(baritem * item);
+dlist *get_net_graph(baritem *);
+dlist *get_multi_net_graph(baritem *);
+void update_network(char *);
 
 #endif
 

@@ -31,20 +31,19 @@
 #include "netinfo.h"
 #include "mouse.h"
 #include "dlist.h"
+#include "suggest.h"
 
 /* Macros */
 #define INRECT(x,y,a,b,c,d)((x)>=(a)&&(x)<(a)+(c)&&(y)>=(b)&&(y)<(b)+(d))
 #define MIN(a,b)                ((a) < (b) ? (a) : (b))
 #define MAX(a,b)                ((a) > (b) ? (a) : (b))
 #define DEBUG(str) if (__debug__){puts(str);}
-#define IS_ID(x, a) (!(strncmp(x->id, a, strlen(a))))
 
 /* Functions */
 static void run(void);
 static void setup(void);
 static void config_to_layout(void);
 void update_nba(baritem *item);
-static void infer_type(block *conf_inf, baritem *ipl);
 
 /* Variables */
 static int height = 0;
@@ -74,7 +73,8 @@ void free_stylized(void *ste_v) {
             free(ste->text);
             break;
         case 1:
-            free(ste->graph->xys);
+            free(ste->graph->colors);
+            free(ste->graph->data);
             free(ste->graph);
             break;
     }
@@ -134,7 +134,7 @@ int main(int argc, char *argv[]) {
     }
     if (configuration->font_color == NULL) {
         DEBUG("no font-color.");
-        DEBUG("please add a {fontcolor #xxxxxx} option to your config gile");
+        DEBUG("please add a {fontcolor #xxxxxx} option to your config file");
         DEBUG("Exiting...");
         exit(1);
     }
@@ -199,10 +199,10 @@ baritem *makeitem(block *block) {
     result->length = 0;
     infer_type(block, result);
     update_nba(result);
+    result->name = block->name;
     return result;
 }
 
-#define is_digit(x) ((x)<='9' && (x)>='0')
 void set_timeout(baritem *ipl) {
     char *set = get_baritem_option("timeout", ipl);
     unsigned short t_timeout = 0;
@@ -232,57 +232,9 @@ char *get_baritem_option(char *opt_name, baritem* item) {
     return NULL;
 }
 
-// fallback, in case no other source can be found
-dlist *questions(baritem *meh) {
-    (void)meh;
-    return dlist_new();
-}
-
 void shell_exec(baritem *item, int xpos) {
     (void) xpos;
     system(item->shell);
-}
-
-// set the function that creates information
-void infer_type(block *conf_inf, baritem *ipl) {
-    ipl->update = &questions;
-    if (ipl->shell) {
-        ipl->click = &shell_exec;
-    }
-
-    if (IS_ID(conf_inf, "workspace")) {
-        spawn_vdesk_thread(ipl);
-        ipl->update = NULL;
-        ipl->elements = get_desktops_info(ipl);
-    } else if (IS_ID(conf_inf, "clock")) {
-        ipl->update = &get_time_format;
-        set_timeout(ipl);
-    } else if (IS_ID(conf_inf, "active")) {
-        if (!strncmp(conf_inf->source, "window_title", 12)) {
-            ipl->update = &get_active_window_name;
-        } else {
-            DEBUG("unrecognized active source");
-            DEBUG(conf_inf->source);
-        }
-    } else if (IS_ID(conf_inf, "text")) {
-        ipl->update = &get_plain_text;
-    } else if (IS_ID(conf_inf, "weather")) {
-        spawn_weather_thread(ipl);
-        ipl->update = NULL;
-        ipl->elements = get_weather(ipl);
-    } else if (IS_ID(conf_inf, "scale")) {
-        if (!strncmp(conf_inf->source, "battery", 7)) {
-            ipl->update = &get_battery;
-        } else if (!strncmp(conf_inf->source, "alsa", 4)) {
-            ipl->update = &get_volume_level;
-        }
-    } else if (IS_ID(conf_inf, "network")) {
-        if (!strncmp("graph", get_baritem_option("style", ipl), 5)) {
-            ipl->update = &get_net_graph;
-        }
-    } else if (IS_ID(conf_inf, "shell")) {
-       ipl->update=&shell_cmd; 
-    }
 }
 
 // gets the item by 
@@ -384,24 +336,19 @@ void drawmenu(void) {
 
 
 void drawgraph(DC *dc, graph_element *element) {
-    drawline(dc, element->color, dc->x, element->xy_count, element->xys);
+    for(size_t i=0;i<element->rows; i++) {
+        drawline(
+                dc
+               ,element->colors[i]
+               ,dc->x
+               ,element->cols
+               ,element->data + (element->cols * i * 2)
+        );
+    }
 }
 
 unsigned int graphlength(graph_element *element) {
-    int smallest = 9999999; // honestly, its just easier
-    int largest = 0;
-    unsigned int i = element->xy_count;
-    int *el = element->xys;
-    while(i --> 0) {
-        if (*el > largest) {
-            largest = *el;
-        }
-        if (*el < smallest) {
-            smallest = *el;
-        }
-        el += 2;
-    }
-    //return largest - smallest;
+    (void)element;
     return 100;
 }
 
@@ -411,16 +358,18 @@ unsigned int total_list_length(dlist *list) {
     each(list, item) {
         item->length = 0;
         element *element;
-        each(item->elements, element) {
-            switch(element->opt) {
-                case 0:
-                    item->length +=
-                        (element->length=textw(dc, element->text->text));
-                    break;
-                case 1:
-                    item->length +=
-                        (element->length = graphlength(element->graph));
-                    break;
+        if (item->elements) {
+            each(item->elements, element) {
+                switch(element->opt) {
+                    case 0:
+                        item->length +=
+                            (element->length=textw(dc, element->text->text));
+                        break;
+                    case 1:
+                        item->length +=
+                            (element->length = graphlength(element->graph));
+                        break;
+                }
             }
         }
         len += item->length;
@@ -433,16 +382,18 @@ void draw_list(dlist *list) {
     element *elem;
     each(list, item) {
         item->xstart = dc->x;
-        each(item->elements, elem) {
-            dc->w = elem->length;
-            switch(elem->opt) {
-                case 0:
-                    drawtext(dc, elem->text->text, elem->text->color);
-                    break;
-                case 1:
-                    drawgraph(dc, elem->graph);
+        if (item->elements) {
+            each(item->elements, elem) {
+                dc->w = elem->length;
+                switch(elem->opt) {
+                    case 0:
+                        drawtext(dc, elem->text->text, elem->text->color);
+                        break;
+                    case 1:
+                        drawgraph(dc, elem->graph);
+                }
+                dc->x += dc->w;
             }
-            dc->x += dc->w;
         }
     }
 }

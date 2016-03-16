@@ -4,6 +4,7 @@
 #include <X11/Xft/Xft.h>
 #include "dlist.h"
 
+#define is_digit(x) ((x)<='9' && (x)>='0')
 //=========================//
 // structs //
 //=========================//
@@ -23,9 +24,9 @@ typedef struct stylized_text_element {
 } text_element;
 
 typedef struct colored_graph_element {
-    int *xys;
-    unsigned int xy_count;
-    ColorSet *color;
+    int *data;
+    size_t rows, cols;
+    ColorSet **colors;
 } graph_element;
 
 typedef struct generic_element {
@@ -51,6 +52,9 @@ typedef struct baritem{
     char *format;
     char *source;
     char *shell;
+
+    // name
+    char *name;
     
     // update listeners
     dlist *(* update)(struct baritem *);
@@ -116,6 +120,8 @@ extern Window win;
 // redraw the bar (why did I call it menu?)
 void drawmenu(void);
 void update_nba(baritem *item);
+void shell_exec(baritem *item, int xpos);
+void set_timeout(baritem *ipl);
 
 // get a property 
 int get_x11_cardinal_property(Atom at, Atom type);
