@@ -1,5 +1,6 @@
 #define _DEFAULT_SOURCE
 
+#include <malloc.h>
 #include <pthread.h>
 #include "vdesk.h"
 #include "format.h"
@@ -10,7 +11,7 @@ static int current_desktop = 0;
 static fmt_map *formatmap = 0;
 static pthread_t vdesk_ltnr;
 static char *han_zi[10] = {"一", "二", "三", "四", "五", "六", "七", "八", "九", "十"};
-
+int i = 0;
 
 void spawn_vdesk_thread(baritem *ipl) {
     pthread_create(&vdesk_ltnr, NULL, vdesk_listen, ipl);
@@ -25,10 +26,12 @@ void *vdesk_listen(void *DATA) {
         XNextEvent(dsp, &xe);
         switch(xe.type) {
             case PropertyNotify:
+                drawlock();
                 if ((ipl->elements != NULL)) {
                     dlist_deep_free_custom(ipl->elements, &free_stylized);
                 }
                 ipl->elements = get_desktops_info(ipl);
+                drawunlock();
                 drawmenu();
                 break;
         }
@@ -168,12 +171,13 @@ dlist *get_desktops_info(baritem *source) {
         fmt_map_put(formatmap, 'J', &_han_zi);
         fmt_map_put(formatmap, 'N', &_xlib_names);
     }
+
     dlist *result = dlist_new();
-    
+
     int numdesk = get_number_of_desktops();
     int curdesk = get_current_desktop();
     current_desktop = 1;
-    
+
     char *cur_bg = get_baritem_option("active:background", source);
     char *cur_fg = get_baritem_option("action:font", source);
 
@@ -194,7 +198,7 @@ dlist *get_desktops_info(baritem *source) {
             dsk->color = copy_color(source->default_colors);
         }
         dsk->text = name;
-        
+
         element *elem = calloc(sizeof(element), 1);
         elem->text = dsk;
         elem->opt = 0;
@@ -204,5 +208,4 @@ dlist *get_desktops_info(baritem *source) {
         current_desktop++;
     }
     return result;
-
 }

@@ -134,6 +134,11 @@ char *get_baritem_option(char *opt_name, baritem* item);
 
 ColorSet *make_baritem_colours(char *fg, char *bg);
 void free_stylized(void *ste_v);
+void setup(void);
+void set_dc(DC *);
+void set_root(Window w);
+void drawlock(void);
+void drawunlock(void);
 
 //================//
 // cardinals used //

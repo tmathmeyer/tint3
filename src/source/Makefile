@@ -7,11 +7,10 @@ all: tint3
 tint3: tint3.o dmap.o mouse.o dlist.o netinfo.o graph.o vdesk.o draw.o system.o lwxt.o confparse.o lwbi.o format.o http.o weather.o json.o popup.o suggest.o
 
 .c.o: config.mk
-	@echo CC -c $< ${CFLAGS}
+	@echo CC -c $<
 	@${CC} -c $< ${CFLAGS}
 
 tint3 tint3_path:
-	@echo ld -r *.o -o $@.o
 	@ld -r $+ -o $@_all.o
 	@rm $+
 

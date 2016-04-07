@@ -20,9 +20,6 @@
 
 #define MAX(a, b)   ((a) > (b) ? (a) : (b))
 #define MIN(a, b)   ((a) < (b) ? (a) : (b))
-#define unint unsigned int
-#define unlong unsigned long
-
 
 #define MAX_TITLE_LENGTH 50
 #define MAX_TITLE_LENGTH_PX 300
@@ -127,7 +124,7 @@ unlong _getcolor(DC *dc, const char *colstr) {
     return color.pixel;
 }
 
-ulong alphaset(ulong color, uint8_t alpha) {
+unlong alphaset(unlong color, uint8_t alpha) {
     uint32_t mod = alpha;
     mod <<= 24;
     return (0x00ffffff & color) | mod;
@@ -146,7 +143,7 @@ uint8_t hex(char c) {
     return 0;
 }
 
-ulong getcolor(DC *dc, const char *colstr) {
+unlong getcolor(DC *dc, const char *colstr) {
     char *rgbcs = strdup(colstr);
     char *freeme = rgbcs;
     uint8_t value;
@@ -166,7 +163,7 @@ ulong getcolor(DC *dc, const char *colstr) {
     }
 
     rgbcs[0] = '#';
-    ulong result = _getcolor(dc, rgbcs);
+    unlong result = _getcolor(dc, rgbcs);
     result = alphaset(result, value);
     free(freeme);
     return result;

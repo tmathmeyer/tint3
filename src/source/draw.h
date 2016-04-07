@@ -11,6 +11,9 @@
 #include <stdint.h>
 #include "tint3.h"
 
+#define unint unsigned int
+#define unlong unsigned long
+
 DC *dc;
 
 unsigned long getcolor(DC *dc, const char *colstr);
@@ -29,7 +32,7 @@ int textnw(DC *dc, const char *text, size_t len);
 int textw(DC *dc, const char *text);
 ColorSet *copy_color(ColorSet *color);
 XftColor get_xft_color(DC *dc, const char *colstr);
-ulong alphaset(ulong color, uint8_t alpha);
+unlong alphaset(unlong color, uint8_t alpha);
 const char *progname;
 
 void drawline(DC *dc, ColorSet *cs, int at_x, int npts, int *points);

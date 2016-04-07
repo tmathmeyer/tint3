@@ -43,7 +43,6 @@
 
 /* Functions */
 static void run(void);
-static void setup(void);
 static void config_to_layout(void);
 void update_nba(baritem *item);
 
@@ -107,7 +106,7 @@ int scale_to(int from, int to, float by) {
 }
 
 // Main
-int main(int argc, char *argv[]) {
+int tint3_main(int argc, char *argv[]) {
     XInitThreads();
     pthread_mutex_init(&lock, NULL);
 
@@ -175,7 +174,7 @@ ColorSet *make_baritem_colours(char *fg, char *bg) {
     result->BG = (bg) ? getcolor(dc, bg) : bar_background_colour;
     if(dc->font.xft_font) {
         if(!XftColorAllocName(
-            dc->dpy
+             dc->dpy
             ,DefaultVisual(dc->dpy, DefaultScreen(dc->dpy))
             ,DefaultColormap(dc->dpy, DefaultScreen(dc->dpy))
             ,fg?fg:bar_font_colour, &result->FG_xft)
@@ -305,9 +304,17 @@ void update_with_lens() {
     layout->centerlen = total_list_length(layout->center);
 }
 
+void drawlock(void ) {
+    pthread_mutex_lock(&lock);
+}
+
+void drawunlock(void) {
+    pthread_mutex_unlock(&lock);
+}
+
 // Draw the bar
 void drawmenu(void) {
-    pthread_mutex_lock(&lock);
+    drawlock();
     struct mallinfo init = mallinfo();
     printf("%i\n", init.uordblks);
     dc->x = 0;
@@ -335,7 +342,7 @@ void drawmenu(void) {
     }
 
     mapdc(dc, win, width, height);
-    pthread_mutex_unlock(&lock);
+    drawunlock();
 }
 
 
@@ -512,11 +519,15 @@ FILE *test_set_config() {
     return NULL;
 }
 
+void set_dc(DC *_dc) {
+    dc = _dc;
+}
 
+void set_root(Window w) {
+    root = w;
+}
 
-
-// TODO: clean this shit
-void setup() {
+void setup(void) {
 
     configuration = build_bar_config(test_set_config());
     __debug__ = has_options("debug", configuration);
@@ -532,7 +543,7 @@ void setup() {
 
     DEBUG("DEBUG_INIT");
 
-    dc = initdc();
+    set_dc(initdc());
     XVisualInfo vinfo;
     XMatchVisualInfo(dc->dpy, DefaultScreen(dc->dpy), 32, TrueColor, &vinfo);
     XSetWindowAttributes wa;
@@ -552,7 +563,7 @@ void setup() {
     int x, y;
 
     int screen = DefaultScreen(dc->dpy);
-    root = RootWindow(dc->dpy, screen);
+    set_root(RootWindow(dc->dpy, screen));
 
     /* menu geometry */
     height = get_bar_height(dc->font.height);
@@ -568,8 +579,7 @@ void setup() {
 
     /* menu window */
     wa.override_redirect = True;
-    //wa.background_pixmap = ParentRelative;
-    wa.event_mask = ExposureMask | KeyPressMask | VisibilityChangeMask;
+    wa.event_mask = 0;
     win = XCreateWindow(dc->dpy, root, x, y, width, height, 0,
             vinfo.depth, InputOutput,
             vinfo.visual,
@@ -634,7 +644,7 @@ void setup() {
     _UTF8_STRING_       = XInternAtom(dc->dpy, "UTF8_String", 0);
     _CARDINAL_ = XA_CARDINAL;
 
-    XSelectInput(dc->dpy, win, ExposureMask);
+    XSelectInput(dc->dpy, win, wa.event_mask);
 }
 
 
@@ -654,6 +664,7 @@ int get_x11_cardinal_property(Atom at, Atom type) {
         data = ((unsigned long *) prop_value)[0];
         XFree(prop_value);
     }
+
     return data;
 }
 

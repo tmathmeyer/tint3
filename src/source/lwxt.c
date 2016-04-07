@@ -31,7 +31,7 @@ int _setup = 1;
 
 void get_title(char * buffer, size_t buf_len) {
     if (_setup) {
-        if (setup()) {
+        if (lwxt_setup()) {
             return;
         }
     }
@@ -41,7 +41,7 @@ void get_title(char * buffer, size_t buf_len) {
     }
 }
 
-int setup(void) {
+int lwxt_setup(void) {
     _setup = 0;
     dpy = xcb_connect(NULL, &default_screen);
     if (xcb_connection_has_error(dpy)) {

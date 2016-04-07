@@ -8,7 +8,7 @@
 #ifndef _LWXT_H_
 #define _LWXT_H_
 
-int setup(void);
+int lwxt_setup(void);
 char* expand_escapes(const char *src);
 int get_active_window(xcb_window_t *win);
 void get_window_title(xcb_window_t win, char *title, size_t len);
