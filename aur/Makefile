@@ -17,4 +17,4 @@ git:
 	rm -rf src pkg PKGBUILD
 
 clean:
-	rm -rf src pkg PKGBUILD *.xz
+	rm -rf src pkg PKGBUILD *.xz *.zip tint3
