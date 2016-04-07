@@ -15,8 +15,8 @@ conflicts=("${pkgname}" "tint3-cpp-git" "tint3-git")
 
 build() {
     pwd
-    cp ../../src/* ./
-    cp ../../fonts/* ./
+    cp -r ../../src/* ./
+    cp -r ../../fonts/* ./
     make
 }
 
@@ -26,5 +26,5 @@ package() {
     install -dm755 "$installDir"
     install -dm755 "$fontDir"
     install -m755 "$srcdir/sakamoto-11.bdf" "$fontDir/sakamoto-11.bdf"
-    install -m755 "$srcdir/tint3" "$installDir/tint3"
+    install -m755 "$srcdir/build/tint3" "$installDir/tint3"
 }
