@@ -21,6 +21,8 @@
 #include <sys/types.h>
 #include <pthread.h>
 #include <pwd.h>
+#include <malloc.h>
+
 #include "draw.h"
 #include "system.h"
 #include "confparse.h"
@@ -306,6 +308,8 @@ void update_with_lens() {
 // Draw the bar
 void drawmenu(void) {
     pthread_mutex_lock(&lock);
+    struct mallinfo init = mallinfo();
+    printf("%i\n", init.uordblks);
     dc->x = 0;
     dc->y = 0;
     dc->w = 0;

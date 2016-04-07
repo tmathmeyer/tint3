@@ -1,6 +1,6 @@
 # See LICENSE file for copyright and license details.
 
-include config.mk
+include ../config.mk
 
 all: tint3
 
@@ -11,8 +11,9 @@ tint3: tint3.o dmap.o mouse.o dlist.o netinfo.o graph.o vdesk.o draw.o system.o 
 	@${CC} -c $< ${CFLAGS}
 
 tint3 tint3_path:
-	@echo CC -o $@
-	@${CC} -o $@ $+ ${LDFLAGS}
+	@echo ld -r *.o -o $@.o
+	@ld -r $+ -o $@_all.o
+	@rm $+
 
 clean:
 	@echo cleaning
