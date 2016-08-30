@@ -4,11 +4,11 @@
 #include <stdbool.h>
 #include <malloc.h>
 
+#include "libtint3/tint3.h"
+#include "libtint3/vdesk.h"
+#include "libtint3/dlist.h"
+#include "libtint3/draw.h"
 #include "test.h"
-#include "../source/tint3.h"
-#include "../source/vdesk.h"
-#include "../source/dlist.h"
-#include "../source/draw.h"
 
 char *strdup(const char *s);
 void simple_setup() {
@@ -28,6 +28,10 @@ void simple_setup() {
     NET_DESKTOP_NAMES   = XInternAtom(dc->dpy, "_NET_DESKTOP_NAMES", 0);
     set_root(RootWindow(dc->dpy, DefaultScreen(dc->dpy)));
     set_dc(dc);
+}
+START_TEST(huh) {
+    simple_setup();
+    ASSERT_SUCCESS();
 }
 
 
@@ -103,9 +107,4 @@ START_TEST(desktops_memory_freed) {
 
 
 int main() {
-    simple_setup();
-    int runs = 1;
-    while(runs --> 0) {
-        RUN_TESTS();
-    }
 }
