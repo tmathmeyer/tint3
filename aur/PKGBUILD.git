@@ -2,7 +2,7 @@
 
 _pkgname=tint3
 pkgname=$_pkgname-git
-pkgver=303
+pkgver=304
 pkgrel=1
 pkgdesc='An independant status bar for X11 (works best with bspwm)'
 arch=('x86_64')
@@ -22,7 +22,7 @@ pkgver() {
 }
 
 build() {
-    cd "$srcdir/$_pkgname/src"
+    cd "$srcdir/$_pkgname"
     make binary
 }
 
@@ -32,5 +32,5 @@ package() {
     install -dm755 "$installDir"
     install -dm755 "$fontDir"
     install -m755 "$srcdir/$_pkgname/fonts/sakamoto-11.bdf" "$fontDir/sakamoto-11.bdf"
-    install -m755 "$srcdir/$_pkgname/src/build/binary/tint3" "$installDir/tint3"
+    install -m755 "$srcdir/$_pkgname/build/binary/tint3" "$installDir/tint3"
 }
