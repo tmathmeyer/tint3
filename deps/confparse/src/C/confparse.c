@@ -258,13 +258,6 @@ bar_config *as_bar(dlist *src, dlist *blocks) {
             config->padding_size = atoi(line+8);
         }
 
-        else match("margin") {
-            config->margin_right  =
-            config->margin_left   =
-            config->margin_top    =
-            config->margin_bottom = atoi(line+7);
-        }
-
         else match("manual-margin-right") {
             config->margin_right = atoi(line+20);
         }
@@ -295,6 +288,13 @@ bar_config *as_bar(dlist *src, dlist *blocks) {
 
         else match("margin-bottom") {
             config->margin_bottom = atoi(line+14);
+        }
+
+        else match("margin") {
+            config->margin_right  =
+            config->margin_left   =
+            config->margin_top    =
+            config->margin_bottom = atoi(line+7);
         }
 
         else match("width") {
