@@ -17,7 +17,7 @@ compiled_source_files := $(patsubst src/C/%.c, \
 	build/obj/%.o, $(c_source_files))
 
 
-build: copy_exported library export_headers
+build: copy_exported library export_headers $(dependancies_unlink)
 
 #build a binary if you can
 binary: build
