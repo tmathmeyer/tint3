@@ -21,14 +21,14 @@ build: copy_exported library export_headers $(dependancies_unlink)
 
 #build a binary if you can
 binary: build
-	@echo "$(shell pwd) binary"
+#	@echo "$(shell pwd) binary"
 	@mkdir -p build/binary
 	@gcc -o build/binary/$(project) build/library/*.o $(link_libs)
 
 
 #build staticly linkable object file
 library: $(compiled_source_files)
-	@echo "$(shell pwd) library"
+#	@echo "$(shell pwd) library"
 	@mkdir -p build/library
 	@ld -o build/library/$(project).o -r $^
 build/obj/%.o: src/C/%.c
@@ -52,7 +52,7 @@ deps/%/build/library: deps/%
 	@$(MAKE) -C $< build
 	@cp $@/*.o build/library/
 copy_exported: $(dependancies_target) $(dependancies_links)
-	@echo "$(shell pwd) copy exported"
+#	@echo "$(shell pwd) copy exported"
 
 
 
@@ -61,7 +61,7 @@ C/%.h:
 	@mkdir -p build/exported
 	@cp src/$@ build/exported/
 export_headers: $(exported)
-	@echo "$(shell pwd) export headers"
+#	@echo "$(shell pwd) export headers"
 
 
 

@@ -270,7 +270,7 @@ bar_config *as_bar(dlist *src, dlist *blocks) {
         }
 
         else match("margin-right") {
-            config->margin_right = atoi(line+20);
+            config->margin_right = atoi(line+13);
         }
 
         else match("manual-margin-left") {
@@ -278,7 +278,7 @@ bar_config *as_bar(dlist *src, dlist *blocks) {
         }
 
         else match("margin-left") {
-            config->margin_left = atoi(line+19);
+            config->margin_left = atoi(line+12);
         }
         
         else match("manual-margin-top") {
@@ -286,7 +286,7 @@ bar_config *as_bar(dlist *src, dlist *blocks) {
         }
 
         else match("margin-top") {
-            config->margin_top = atoi(line+18);
+            config->margin_top = atoi(line+11);
         }
         
         else match("manual-margin-bottom") {
@@ -294,7 +294,7 @@ bar_config *as_bar(dlist *src, dlist *blocks) {
         }
 
         else match("margin-bottom") {
-            config->margin_bottom = atoi(line+21);
+            config->margin_bottom = atoi(line+14);
         }
 
         else match("width") {
