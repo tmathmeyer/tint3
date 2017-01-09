@@ -98,13 +98,15 @@ int get_bar_height(int font_height) {
 
 // get the bar width
 int get_bar_width(int display_width) {
+    int result = 0;
     if (configuration->width != 0) {
-        return configuration->width;
+        result = configuration->width;
     } else {
-        return display_width
+        result = display_width
              - configuration->margin_right 
              - configuration->margin_left;
     }
+    return result - configuration->margin_right;
 }
 
 int scale_to(int from, int to, float by) {
@@ -419,8 +421,6 @@ int vertical_position(location bar_on_top, int display_height, int bar_height) {
 int horizontal_position() {
     if (configuration->margin_left != 0) {
         return configuration->margin_left;
-    } else if (configuration->margin_right != 0) {
-        return 0 - configuration->margin_right;
     } else {
         return 0;
     }
