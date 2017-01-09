@@ -4,6 +4,7 @@
  * [Requirements](#requirements)
  * [Configuration Location](#configuration-location)
  * [Extended Color Codes](#extended-color-codes)
+ * [Font Naming](#font-naming)
  * [Custom Format Specifiers](#custom-format-specifiers)
    * [Weather](#formatting-weather)
    * [X11 Workspaces](#formatting-workspaces)
@@ -40,6 +41,15 @@ tint3 will read from three different locations in the following order of precede
  - command line: `tint3 -c /path/to/config`
  - `~/.tint3rc`
  - `~/.config/tint3/tint3rc`
+
+
+
+#Font Naming
+tint3 uses the xft standard font naming. For example, to set the font to be
+FantasqueSansMono and size 30, the following line in the [[bar]] block is used:
+```
+fontname Fantasque Sans Mono:size=30
+```
 
 
 
