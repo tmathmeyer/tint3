@@ -16,6 +16,11 @@
 #include <time.h>
 #include <unistd.h>
 #include <X11/Xlib.h>
+#include <X11/Xlibint.h>
+#include <X11/Xproto.h>
+#include <X11/extensions/Xinerama.h>
+#include <X11/extensions/Xrender.h>
+#include <X11/extensions/Xrandr.h>
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
 #include <sys/types.h>
@@ -540,21 +545,62 @@ void setup(void) {
     dc->text_offset_y = configuration->padding_size; 
 
     int x, y;
-
     int screen = DefaultScreen(dc->dpy);
     set_root(RootWindow(dc->dpy, screen));
 
-    /* menu geometry */
-    height = get_bar_height(dc->font.height);
-    width  = get_bar_width(DisplayWidth(dc->dpy, screen));
 
-    x = horizontal_position();
-    y = vertical_position(
-            configuration->location
-            ,DisplayHeight(dc->dpy, screen)
-            ,height);
+    if (configuration->monitor) {
+        XRRScreenResources  *res = XRRGetScreenResourcesCurrent(dc->dpy, root);
+        if (res->noutput <= 0) {
+            fprintf(stderr, "XRandR cannot detect any monitors!\n");
+            exit(1);
+        }
+        XRROutputInfo *output = XRRGetOutputInfo(dc->dpy, res, res->outputs[0]);
 
+        if (res->ncrtc != output->ncrtc) {
+            fprintf(stderr, "There are a different number of crts and outputs [%i != %i].\n"
+                            "For more information see https://github.com/tmathmeyer/tint3\n",
+                            res->ncrtc, res->noutput);
+            exit(1);
+        }
 
+        int unfound = 1;
+        for(int i = 0; i<res->noutput && unfound; i++) {
+            XRROutputInfo *output = XRRGetOutputInfo(dc->dpy, res, res->outputs[i]);
+
+            if (!strcmp(configuration->monitor, output->name)) {
+                unfound = 0;
+                if (output->nmode == 0) {
+                    fprintf(stderr, "configuration monitor \"%s\" not in use.\n"
+                        ,configuration->monitor);
+                    exit(1);
+                }
+                for(int j=0; j<output->ncrtc; j++) {
+                    if (output->crtcs[j] == output->crtc) {
+                        // j is the index of the crtc array!
+                        XRRCrtcInfo *crt = XRRGetCrtcInfo(dc->dpy, res, res->crtcs[j]);
+
+                        width = get_bar_width(crt->width);
+                        height = get_bar_height(dc->font.height);
+                        x = horizontal_position()+crt->x;
+                        y = vertical_position(
+                            configuration->location
+                            ,crt->height, height);
+                    }
+                }
+            }
+        }
+    } else {
+        /* menu geometry :: stretch across all monitors*/
+        height = get_bar_height(dc->font.height);
+        width  = get_bar_width(DisplayWidth(dc->dpy, screen));
+
+        x = horizontal_position();
+        y = vertical_position(
+                configuration->location
+                ,DisplayHeight(dc->dpy, screen)
+                ,height);
+    }
 
     /* menu window */
     wa.override_redirect = True;

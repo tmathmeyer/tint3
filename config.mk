@@ -2,7 +2,7 @@ exported :=
 project := tint3
 
 link_libnodify := -lnotify -lgdk_pixbuf-2.0 -lgio-2.0 -lgobject-2.0 -lglib-2.0
-link_libx11 := -lX11 -lXinerama -lXft -lXrender
+link_libx11 := -lX11 -lXinerama -lXft -lXrender -lXrandr
 link_libfreetype := -lfreetype -lz -lfontconfig
 link_libxcb := -lxcb -lxcb-icccm -lxcb-ewmh
 link_libpthread := -lpthread

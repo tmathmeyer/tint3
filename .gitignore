@@ -2,5 +2,5 @@
 tint3
 *.out
 a.out
-BUILD/
+build/
 *.swp

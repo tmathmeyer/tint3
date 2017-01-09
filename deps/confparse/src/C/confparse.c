@@ -306,6 +306,11 @@ bar_config *as_bar(dlist *src, dlist *blocks) {
                 TOP : BOTTOM;
         }
 
+        else match("monitor") {
+            config->monitor = strdup(line+8);
+            (config->monitor)[strlen(config->monitor)-1] = 0;
+        }
+
         else match("bordercolor") {
             config->border_color = strdup(line+12);
             (config->border_color)[strlen(config->border_color)-1] = 0;
