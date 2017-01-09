@@ -138,6 +138,7 @@ for the `[[bar]]` block:
 | bordercolor    | none | the [color code](#extended-color-codes) for the border |
 | fontname       | * | the name of the font. Defaults to the X11 default     |
 | background     | transparent | the [color code](#extended-color-codes) for the background |
+| monitor        | none | monitor to render tint3 on (see xrandr). defaults to all monitors |
 | options        | none | developmental use |
 
 *the margin specifiers can also be preceded by `manual-`, for example,
