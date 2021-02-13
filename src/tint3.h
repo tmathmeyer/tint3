@@ -69,12 +69,12 @@ void drawunlock(void);
 // cardinals used //
 //================//
 
-Atom NET_NUMBER_DESKTOPS
+extern Atom NET_NUMBER_DESKTOPS
     ,NET_CURRENT_DESKTOP
     ,NET_DESKTOP_NAMES
     ;
 
-Atom _CARDINAL_
+extern Atom _CARDINAL_
     ,_UTF8_STRING_
     ;
 

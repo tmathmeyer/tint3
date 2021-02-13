@@ -14,7 +14,7 @@
 #define unint unsigned int
 #define unlong unsigned long
 
-DC *dc;
+extern DC *dc;
 
 void drawrect_modifier(DC *dc, int x, int y, unsigned int w, unsigned int h, Bool fill, unsigned long color);
 void draw_rectangle(DC * dc, unsigned int x, unsigned int y, unsigned int w, unsigned int h, Bool fill, unsigned long color);
@@ -31,7 +31,7 @@ int textnw(DC *dc, const char *text, size_t len);
 int textw(DC *dc, const char *text);
 ColorSet *copy_color(ColorSet *color);
 XftColor get_xft_color(DC *dc, const char *colstr);
-const char *progname;
+extern const char *progname;
 
 void drawline(DC *dc, ColorSet *cs, int at_x, int npts, int *points);
 #endif

@@ -70,6 +70,15 @@ int topbar = 1;
 static int __debug__;
 static int __valgrind__;
 
+Atom NET_NUMBER_DESKTOPS
+    ,NET_CURRENT_DESKTOP
+    ,NET_DESKTOP_NAMES
+    ;
+
+Atom _CARDINAL_
+    ,_UTF8_STRING_
+    ;
+
 /* Implementation */
 
 void free_stylized(void *ste_v) {
@@ -297,8 +306,6 @@ void drawunlock(void) {
 // Draw the bar
 void drawmenu(void) {
     drawlock();
-    struct mallinfo init = mallinfo();
-    printf("%i\n", init.uordblks);
     dc->x = 0;
     dc->y = 0;
     dc->w = 0;
@@ -557,12 +564,14 @@ void setup(void) {
         }
         XRROutputInfo *output = XRRGetOutputInfo(dc->dpy, res, res->outputs[0]);
 
+	
         if (res->ncrtc != output->ncrtc) {
             fprintf(stderr, "There are a different number of crts and outputs [%i != %i].\n"
                             "For more information see https://github.com/tmathmeyer/tint3\n",
                             res->ncrtc, res->noutput);
             exit(1);
         }
+	
 
         int unfound = 1;
         for(int i = 0; i<res->noutput && unfound; i++) {

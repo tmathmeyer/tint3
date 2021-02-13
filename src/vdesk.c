@@ -51,31 +51,37 @@ uint roman_numeral(char *buffer, uint num) {
             switch(special[sp]) {
                 case 900:
                     buffer[position++] = 'C';
+                    __attribute__ ((fallthrough));
                 case 1000:
                     buffer[position++] = 'M';
                     break;
                 case 400:
                     buffer[position++] = 'C';
+                    __attribute__ ((fallthrough));
                 case 500:
                     buffer[position++] = 'D';
                     break;
                 case 90:
                     buffer[position++] = 'X';
+                    __attribute__ ((fallthrough));
                 case 100:
                     buffer[position++] = 'C';
                     break;
                 case 40:
                     buffer[position++] = 'X';
+                    __attribute__ ((fallthrough));
                 case 50:
                     buffer[position++] = 'L';
                     break;
                 case 9:
                     buffer[position++] = 'I';
+                    __attribute__ ((fallthrough));
                 case 10:
                     buffer[position++] = 'X';
                     break;
                 case 4:
                     buffer[position++] = 'I';
+                    __attribute__ ((fallthrough));
                 case 5:
                     buffer[position++] = 'V';
                     break;

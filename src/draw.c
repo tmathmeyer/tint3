@@ -27,6 +27,8 @@
 #define MAX_TITLE_LENGTH 50
 #define MAX_TITLE_LENGTH_PX 300
 
+DC *dc = NULL;
+const char *progname = NULL;
 
 void drawline(DC *dc, ColorSet *cs, int at_x, int npts, int *points) {
     XSetForeground(dc->dpy, dc->gc, cs->FG);
