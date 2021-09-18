@@ -12,4 +12,4 @@ Contributions are welcome! If you would like to see a feature implemented, go fo
 ## TODO:
  - [ ] use pulseaudio libraries instead of alsa
  - [ ] clean up xlib calls
- - [ ] abi for adding modules
+ - [ ] api for adding modules
