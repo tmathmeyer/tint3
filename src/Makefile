@@ -2,13 +2,14 @@
 CC := gcc
 CFLAGS := -std=c11 -pedantic -Wextra -Wall -I. -I/usr/include/freetype2
 LFLAGS := -lpthread -lX11 -lXinerama -lXft -lXrender -lXrandr \
-          -lfreetype -lz -lfontconfig -lxcb -lxcb-icccm -lxcb-ewmh
+          -lfreetype -lz -lfontconfig -lxcb -lxcb-icccm -lxcb-ewmh \
+		  -lXft
 
 tint3: main.c tint3_main.h baritem.o colors.o confparse.o dlist.o dmap.o \
       format.o graph.o http.o json.o lwbi.o lwxt.o netinfo.o draw.o \
       mouse.o popup.o suggest.o system.o tint3.o vdesk.o weather.o
 	@echo $(CC) $<
-	@$(CC) $(CFLAGS) $(LFLAGS) -o $@ $< $(filter %.o,$^)
+	@$(CC) $(CFLAGS) -o $@ $< $(filter %.o,$^) $(LFLAGS)
 
 clean:
 	rm *.o tint3
